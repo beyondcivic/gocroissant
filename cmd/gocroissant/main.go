@@ -1,3 +1,4 @@
+// main.go
 package main
 
 import (
@@ -15,26 +16,78 @@ func main() {
 	viper.AutomaticEnv()
 
 	var rootCmd = &cobra.Command{
-		Use:   "croissant-metadata [csvPath]",
+		Use:   "croissant",
+		Short: "Croissant metadata tools",
+		Long:  `Tools for generating and validating Croissant metadata.`,
+	}
+
+	// Generate command
+	var generateCmd = &cobra.Command{
+		Use:   "generate [csvPath]",
 		Short: "Generate Croissant metadata from a CSV file",
-		Long:  `A tool to generate Croissant metadata from a CSV file, inferring data types and creating a structured JSON output.`,
-		Args:  cobra.MinimumNArgs(1),
+		Long:  `Generate Croissant metadata from a CSV file, inferring data types and creating a structured JSON output.`,
+		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			csvPath := args[0]
 			outputPath, _ := cmd.Flags().GetString("output")
+			validate, _ := cmd.Flags().GetBool("validate")
 
-			metadataPath, err := croissant.GenerateMetadata(csvPath, outputPath)
+			metadata, err := croissant.GenerateMetadataWithValidation(csvPath, outputPath)
 			if err != nil {
 				fmt.Printf("Error generating metadata: %v\n", err)
 				os.Exit(1)
 			}
 
-			fmt.Printf("Croissant metadata generated and saved to: %s\n", metadataPath)
+			if validate || cmd.Flags().Changed("validate") {
+				report := metadata.Report()
+				if report != "" {
+					fmt.Println(report)
+				} else {
+					fmt.Println("Validation passed with no issues.")
+				}
+
+				if metadata.HasErrors() {
+					os.Exit(1)
+				}
+			}
+
+			if outputPath != "" {
+				fmt.Printf("Croissant metadata generated and saved to: %s\n", outputPath)
+			}
 		},
 	}
+	generateCmd.Flags().StringP("output", "o", "", "Output path for the metadata JSON file")
+	generateCmd.Flags().BoolP("validate", "v", false, "Validate the generated metadata and print issues")
+	rootCmd.AddCommand(generateCmd)
 
-	// Add flags
-	rootCmd.Flags().StringP("output", "o", "", "Output path for the metadata JSON file")
+	// Validate command
+	var validateCmd = &cobra.Command{
+		Use:   "validate [jsonldPath]",
+		Short: "Validate an existing Croissant metadata file",
+		Long:  `Validate an existing Croissant metadata JSON-LD file and report any issues found.`,
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			jsonldPath := args[0]
+
+			issues, err := croissant.ValidateFile(jsonldPath)
+			if err != nil {
+				fmt.Printf("Error validating metadata: %v\n", err)
+				os.Exit(1)
+			}
+
+			report := issues.Report()
+			if report != "" {
+				fmt.Println(report)
+			} else {
+				fmt.Println("Validation passed with no issues.")
+			}
+
+			if issues.HasErrors() {
+				os.Exit(1)
+			}
+		},
+	}
+	rootCmd.AddCommand(validateCmd)
 
 	// Execute the command
 	if err := rootCmd.Execute(); err != nil {

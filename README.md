@@ -60,7 +60,7 @@ import (
 )
 
 func main() {
-	outputPath, err := croissant.GenerateMetadata("data.csv", "output.json")
+	outputPath, err := croissant.GenerateMetadata("data.csv", "dataset.jsonld")
 	if err != nil {
 		log.Fatalf("Error generating metadata: %v", err)
 	}
@@ -78,6 +78,56 @@ func main() {
 ## Configuration
 
 The application supports configuration through environment variables with the prefix `CROISSANT_`.
+
+## Usage Examples
+
+### Generate metadata without validation
+```bash
+$ gocroissant generate data.csv -o metadata.jsonld
+```
+
+### Generate metadata with validation
+
+```bash
+$ gocroissant generate data.csv -o metadata.jsonld -v
+
+Validation passed with no issues.
+Croissant metadata generated and saved to: metadata.json
+```
+### Generate metadata with validation but without saving to a file
+```bash
+$ gocroissant generate data.csv -v
+Validation passed with no issues.
+```
+
+### Validate an existing metadata file
+```bash
+$ gocroissant validate metadata.json
+Validation passed with no issues.
+```
+
+
+### Example with issues 
+```
+$ gocroissant validate ./samples_jsonld/missing_fields.jsonld
+
+Found the following 3 error(s) during the validation:
+  -  [Metadata(mydataset) > FileObject(a-csv-table)] Property "https://schema.org/contentUrl" is mandatory, but does not exist.
+  -  [Metadata(mydataset) > RecordSet(a-record-set) > Field(first-field)] The field does not specify a valid http://mlcommons.org/croissant/dataType, neither does any of its predecessor. Got: 
+  -  [Metadata(mydataset)] The current JSON-LD doesn't extend https://schema.org/Dataset.
+
+Found the following 1 warning(s) during the validation:
+  -  [Metadata(mydataset)] Property "http://purl.org/dc/terms/conformsTo" is recommended, but does not exist.
+exit status 1
+```
+
+```bash
+$ gocroissant validate ./samples_jsonld/invalid_references.jsonld
+
+Found the following 1 error(s) during the validation:
+  -  [Metadata(mydataset) > FileObject(a-csv-table)] "a-csv-table" should have an attribute "@type": "http://mlcommons.org/croissant/FileObject" or "@type": "http://mlcommons.org/croissant/FileSet". Got sc:WRONG_TYPE instead.
+exit status 1
+```
 
 ## Development
 

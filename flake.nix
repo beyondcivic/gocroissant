@@ -14,13 +14,11 @@
         packages = with pkgs; [
           go_1_24
           powershell
-          azure-cli
           jq
           delve
           gcc
           gnumake
           zsh
-          sqlc
         ];
 
         shellHook = ''
@@ -45,7 +43,6 @@
           echo "Go v1.24 development environment activated!"
           echo "Go version: $(go version)"
           echo "PowerShell version: $(pwsh -Version)"
-          echo "Azure CLI version: $(az --version | head -n 1)"
           echo "jq version: $(jq --version)"
           echo "Delve version: $(dlv version)"
           echo "GCC version: $(gcc --version | head -n 1)"

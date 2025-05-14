@@ -1,3 +1,4 @@
+// croissant.go
 package croissant
 
 import (
@@ -58,26 +59,26 @@ func CreateDefaultContext() Context {
 	}
 }
 
-// GenerateMetadata generates Croissant metadata from a CSV file
-func GenerateMetadata(csvPath string, outputPath string) (string, error) {
+// GenerateMetadataWithValidation generates Croissant metadata with validation from a CSV file
+func GenerateMetadataWithValidation(csvPath string, outputPath string) (*MetadataWithValidation, error) {
 	// Get file information
 	fileName := filepath.Base(csvPath)
 	fileInfo, err := os.Stat(csvPath)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	fileSize := fileInfo.Size()
 
 	// Calculate SHA-256 hash
 	fileSHA256, err := CalculateSHA256(csvPath)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// Get column information
 	headers, firstRow, err := GetCSVColumns(csvPath)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	// Create fields based on CSV columns
@@ -142,20 +143,24 @@ func GenerateMetadata(csvPath string, outputPath string) (string, error) {
 	}
 
 	// Set default output path if not provided
-	if outputPath == "" {
-		outputPath = fmt.Sprintf("%s_metadata.json", strings.TrimSuffix(csvPath, filepath.Ext(csvPath)))
+	if outputPath != "" {
+		// Marshal metadata to JSON
+		metadataJSON, err := json.MarshalIndent(metadata, "", "  ")
+		if err != nil {
+			return nil, err
+		}
+
+		// Write metadata to file
+		if err := os.WriteFile(outputPath, metadataJSON, 0644); err != nil {
+			return nil, err
+		}
 	}
 
-	// Marshal metadata to JSON
-	metadataJSON, err := json.MarshalIndent(metadata, "", "  ")
-	if err != nil {
-		return "", err
+	// Create and validate metadata
+	metadataWithValidation := &MetadataWithValidation{
+		Metadata: metadata,
 	}
+	metadataWithValidation.Validate()
 
-	// Write metadata to file
-	if err := os.WriteFile(outputPath, metadataJSON, 0644); err != nil {
-		return "", err
-	}
-
-	return outputPath, nil
+	return metadataWithValidation, nil
 }
