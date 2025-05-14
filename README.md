@@ -1,6 +1,6 @@
 # gocroissant
 
-[![Version](https://img.shields.io/badge/version-v0.0.1-blue)](https://github.com/beyondcivic/gocroissant/releases/tag/v0.0.1)
+[![Version](https://img.shields.io/badge/version-v0.1.1-blue)](https://github.com/beyondcivic/gocroissant/releases/tag/v0.1.1)
 [![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go)](https://golang.org/doc/devel/release.html)
 [![License](https://img.shields.io/badge/license-TBD-red)](LICENSE)
 
@@ -172,4 +172,3 @@ Then run the following command to build the project:
 ```bash
 ./build.ps1
 ```
-
