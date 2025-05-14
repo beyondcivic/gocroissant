@@ -1,20 +1,21 @@
 # gocroissant
-Basic library that generates a JSON-LD file compatible with ML Commons Croissant metadata format from a CSV file.
 
-This project provides a Go library and command-line tool for converting CSV files to Croissant metadata format.
+[![Version](https://img.shields.io/badge/version-v0.0.1-blue)](https://github.com/beyondcivic/gocroissant/releases/tag/v0.0.1)
+[![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go)](https://golang.org/doc/devel/release.html)
+[![License](https://img.shields.io/badge/license-TBD-red)](LICENSE)
 
-## Library Structure
+A Go implementation for working with the [ML Commons Croissant](https://github.com/mlcommons/croissant) metadata format - a standardized way to describe machine learning datasets using JSON-LD.
 
-The project is structured as follows:
+## Overview
 
-```
-croissant-metadata/
-├── croissant/
-│   └── croissant.go    # Library code
-├── main.go             # CLI application
-├── go.mod              # Go module file
-└── go.sum              # Go dependencies checksum
-```
+Croissant is an open metadata standard designed to improve dataset documentation, searchability, and usage in machine learning workflows. This library simplifies the creation of Croissant-compatible metadata from CSV data sources by:
+
+- Automatically inferring schema types from dataset content
+- Generating complete, valid JSON-LD metadata
+- Providing validation tools to ensure compatibility
+- Supporting the full Croissant specification
+
+This project provides both a command-line interface and a Go library for converting CSV files to Croissant metadata format.
 
 ## Getting Started
 
