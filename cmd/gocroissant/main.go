@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/beyondcivic/gocroissant/pkg/croissant"
+	"github.com/beyondcivic/gocroissant/pkg/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -20,6 +21,19 @@ func main() {
 		Short: "Croissant metadata tools",
 		Long:  `Tools for generating and validating Croissant metadata.`,
 	}
+
+	// Version command
+	var versionCmd = &cobra.Command{
+		Use:   "version",
+		Short: "Print the version information",
+		Long:  `Print the version, git hash, and build time information of the gocroissant tool.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("%s version %s\n", version.AppName, version.Version)
+			fmt.Printf("Git commit: %s\n", version.GitHash)
+			fmt.Printf("Built on: %s\n", version.BuildTime)
+		},
+	}
+	rootCmd.AddCommand(versionCmd)
 
 	// Generate command
 	var generateCmd = &cobra.Command{
