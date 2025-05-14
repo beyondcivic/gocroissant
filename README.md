@@ -153,3 +153,23 @@ func InferDataType(value string) string {
 ## License
 
 TODO.
+
+## Build environment
+Use NIX flakes to setup the build environment. 
+```bash
+nix develop
+```
+Check the build arguments in build.ps1, e.g.:
+```bash
+# Build static binary with version information
+$env:CGO_ENABLED = "1"
+$env:GOOS = "linux"
+$env:GOARCH = "amd64"
+```
+
+
+Then run the following command to build the project:
+```bash
+./build.ps1
+```
+

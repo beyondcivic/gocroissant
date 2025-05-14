@@ -1,0 +1,68 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    
+    env:
+      EXECUTABLE: gocroissant
+      GO_VERSION: 1.24.2
+      GO_PRIVATE: github.com/beyondcivic
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      
+      - name: Check Go version
+        run: go version
+      
+      - name: Download dependencies
+        run: go mod download
+      
+      - name: Verify dependencies
+        run: go mod verify
+      
+      - name: Set version from tag
+        id: build_number
+        run: |
+          # Extract the tag name
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          # Use the tag name as the build number
+          BUILD_NUMBER="$TAG_NAME"
+          echo "BUILD_NUMBER=$BUILD_NUMBER" >> $GITHUB_ENV
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+          echo "Using tag as build number: $BUILD_NUMBER"
+      
+      - name: Build
+        run: |
+          CGO_ENABLED=1 GOOS=linux GOARCH=amd64 \
+          go build -v \
+          -ldflags="-X github.com/beyondcivic/gocroissant/pkg/version.Version=${{ env.BUILD_NUMBER }} -X github.com/beyondcivic/gocroissant/pkg/version.GitHash=${{ github.sha }} -X github.com/beyondcivic/trustrelay-api/pkg/version.BuildTime=$(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+          -o ./bin/${{ env.EXECUTABLE }} ./cmd/${{ env.EXECUTABLE }}
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gocroissant
+          path: ./bin
+      
+      - name: Echo build number
+        run: echo "${{ env.BUILD_NUMBER }}"
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./bin/${{ env.EXECUTABLE }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
