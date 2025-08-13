@@ -13,6 +13,7 @@
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
           go_1_24
+          gopls
           powershell
           jq
           delve
@@ -42,6 +43,7 @@
           
           echo "Go v1.24 development environment activated!"
           echo "Go version: $(go version)"
+          echo "gopls version: $(gopls version)"
           echo "PowerShell version: $(pwsh -Version)"
           echo "jq version: $(jq --version)"
           echo "Delve version: $(dlv version)"
