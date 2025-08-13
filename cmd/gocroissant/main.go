@@ -46,6 +46,23 @@ func main() {
 			outputPath, _ := cmd.Flags().GetString("output")
 			validate, _ := cmd.Flags().GetBool("validate")
 
+			// Command line flag takes priority over environment variable
+			if outputPath == "" {
+				envOutputPath := os.Getenv("CROISSANT_OUTPUT_PATH")
+				if envOutputPath != "" {
+					// Validate the environment variable path
+					if err := croissant.ValidateOutputPath(envOutputPath); err != nil {
+						fmt.Printf("Error: Invalid CROISSANT_OUTPUT_PATH environment variable: %v\n", err)
+						os.Exit(1)
+					}
+					outputPath = envOutputPath
+				} else {
+					// Use default metadata.jsonld when no path is provided
+					outputPath = "metadata.jsonld"
+					fmt.Println("Notice: No output path provided, using default 'metadata.jsonld'")
+				}
+			}
+
 			metadata, err := croissant.GenerateMetadataWithValidation(csvPath, outputPath)
 			if err != nil {
 				fmt.Printf("Error generating metadata: %v\n", err)

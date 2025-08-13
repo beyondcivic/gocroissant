@@ -27,4 +27,4 @@ fr.sh
 repo_structure.yaml
 gocroissant
 bin/gocroissant
-output.jsonld
+metadata.jsonld
