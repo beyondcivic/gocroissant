@@ -4,8 +4,10 @@ package croissant
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -13,6 +15,18 @@ import (
 
 // InferDataType infers the schema.org data type from a value
 func InferDataType(value string) string {
+	// Trim whitespace
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return "sc:Text"
+	}
+
+	// Try to parse as boolean
+	lowerVal := strings.ToLower(value)
+	if lowerVal == "true" || lowerVal == "false" {
+		return "sc:Boolean"
+	}
+
 	// Try to parse as integer
 	if _, err := strconv.ParseInt(value, 10, 64); err == nil {
 		return "sc:Integer"
@@ -20,19 +34,40 @@ func InferDataType(value string) string {
 
 	// Try to parse as float
 	if _, err := strconv.ParseFloat(value, 64); err == nil {
-		return "sc:Float"
+		return "sc:Number"
 	}
 
-	// Try to parse as date (YYYY-MM-DD)
-	if _, err := time.Parse("2006-01-02", value); err == nil {
-		return "sc:Date"
+	// Try to parse as date (various formats)
+	dateFormats := []string{
+		"2006-01-02",
+		"01/02/2006",
+		"2006/01/02",
+		"2006-01-02T15:04:05",
+		"2006-01-02T15:04:05Z",
+		"2006-01-02T15:04:05-07:00",
+	}
+	for _, format := range dateFormats {
+		if _, err := time.Parse(format, value); err == nil {
+			return "sc:DateTime"
+		}
+	}
+
+	// Try to parse as URL
+	if _, err := url.ParseRequestURI(value); err == nil && (strings.HasPrefix(value, "http://") || strings.HasPrefix(value, "https://")) {
+		return "sc:URL"
+	}
+
+	// Try to detect email
+	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	if emailRegex.MatchString(value) {
+		return "sc:Text" // Email is still text but we could add a custom type if needed
 	}
 
 	// Default to Text
 	return "sc:Text"
 }
 
-// CreateDefaultContext creates the default context for Croissant metadata
+// CreateDefaultContext creates the ML Commons Croissant 1.0 compliant context
 func CreateDefaultContext() Context {
 	return Context{
 		Language:   "en",
@@ -42,6 +77,7 @@ func CreateDefaultContext() Context {
 		ConformsTo: "dct:conformsTo",
 		CR:         "http://mlcommons.org/croissant/",
 		DCT:        "http://purl.org/dc/terms/",
+		RAI:        "http://mlcommons.org/croissant/RAI/",
 		Data: DataContext{
 			ID:   "cr:data",
 			Type: "@json",
@@ -50,13 +86,49 @@ func CreateDefaultContext() Context {
 			ID:   "cr:dataType",
 			Type: "@vocab",
 		},
-		Extract:      "cr:extract",
-		Field:        "cr:field",
-		FileObject:   "cr:fileObject",
-		FileProperty: "cr:fileProperty",
-		SC:           "https://schema.org/",
-		Source:       "cr:source",
+		Examples: DataContext{
+			ID:   "cr:examples",
+			Type: "@json",
+		},
+		Extract:       "cr:extract",
+		Field:         "cr:field",
+		FileObject:    "cr:fileObject",
+		FileProperty:  "cr:fileProperty",
+		FileSet:       "cr:fileSet",
+		Format:        "cr:format",
+		Includes:      "cr:includes",
+		IsLiveDataset: "cr:isLiveDataset",
+		JSONPath:      "cr:jsonPath",
+		Key:           "cr:key",
+		MD5:           "cr:md5",
+		ParentField:   "cr:parentField",
+		Path:          "cr:path",
+		RecordSet:     "cr:recordSet",
+		References:    "cr:references",
+		Regex:         "cr:regex",
+		Repeated:      "cr:repeated",
+		Replace:       "cr:replace",
+		SC:            "https://schema.org/",
+		Separator:     "cr:separator",
+		Source:        "cr:source",
+		SubField:      "cr:subField",
+		Transform:     "cr:transform",
 	}
+}
+
+// GenerateMetadata generates Croissant metadata from a CSV file (simple API)
+func GenerateMetadata(csvPath string, outputPath string) (string, error) {
+	metadata, err := GenerateMetadataWithValidation(csvPath, outputPath)
+	if err != nil {
+		return "", err
+	}
+
+	// Check if there are validation errors
+	if metadata.HasErrors() {
+		return "", fmt.Errorf("validation failed: %s", metadata.Report())
+	}
+
+	return outputPath, nil
 }
 
 // GenerateMetadataWithValidation generates Croissant metadata with validation from a CSV file
@@ -65,29 +137,29 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 	fileName := filepath.Base(csvPath)
 	fileInfo, err := os.Stat(csvPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get file info: %w", err)
 	}
 	fileSize := fileInfo.Size()
 
 	// Calculate SHA-256 hash
 	fileSHA256, err := CalculateSHA256(csvPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to calculate SHA-256: %w", err)
 	}
 
 	// Get column information
 	headers, firstRow, err := GetCSVColumns(csvPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read CSV: %w", err)
 	}
 
-	// Create fields based on CSV columns
+	// Create fields based on CSV columns with data type inference
 	fields := make([]Field, 0, len(headers))
 	for i, header := range headers {
-		fieldID := fmt.Sprintf("main/%s", header)
+		fieldID := fmt.Sprintf("main/%s", cleanFieldName(header))
 		dataType := "sc:Text" // Default
 
-		// Try to infer data type from first row if available
+		// Infer data type from first row if available
 		if firstRow != nil && i < len(firstRow) {
 			dataType = InferDataType(firstRow[i])
 		}
@@ -112,10 +184,11 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 	}
 
 	// Create metadata structure
+	datasetName := strings.TrimSuffix(fileName, filepath.Ext(fileName))
 	metadata := Metadata{
 		Context:       CreateDefaultContext(),
 		Type:          "sc:Dataset",
-		Name:          fmt.Sprintf("%s_dataset", strings.Split(fileName, ".")[0]),
+		Name:          fmt.Sprintf("%s_dataset", datasetName),
 		Description:   fmt.Sprintf("Dataset created from %s", fileName),
 		ConformsTo:    "http://mlcommons.org/croissant/1.0",
 		DatePublished: time.Now().Format("2006-01-02"),
@@ -142,17 +215,22 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 		},
 	}
 
-	// Set default output path if not provided
+	// Write to file if output path is provided
 	if outputPath != "" {
-		// Marshal metadata to JSON
+		// Marshal metadata to JSON with proper indentation
 		metadataJSON, err := json.MarshalIndent(metadata, "", "  ")
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to marshal JSON: %w", err)
+		}
+
+		// Ensure directory exists
+		if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
+			return nil, fmt.Errorf("failed to create output directory: %w", err)
 		}
 
 		// Write metadata to file
 		if err := os.WriteFile(outputPath, metadataJSON, 0644); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to write file: %w", err)
 		}
 	}
 
@@ -163,4 +241,62 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 	metadataWithValidation.Validate()
 
 	return metadataWithValidation, nil
+}
+
+// cleanFieldName cleans field names to be valid identifiers
+func cleanFieldName(name string) string {
+	// Replace spaces and special characters with underscores
+	reg := regexp.MustCompile(`[^a-zA-Z0-9_]`)
+	cleaned := reg.ReplaceAllString(name, "_")
+
+	// Remove leading/trailing underscores and multiple consecutive underscores
+	cleaned = strings.Trim(cleaned, "_")
+	reg2 := regexp.MustCompile(`_{2,}`)
+	cleaned = reg2.ReplaceAllString(cleaned, "_")
+
+	// Ensure it doesn't start with a number
+	if len(cleaned) > 0 && cleaned[0] >= '0' && cleaned[0] <= '9' {
+		cleaned = "field_" + cleaned
+	}
+
+	return cleaned
+}
+
+// inferDataTypeFromSamples infers data type from multiple sample rows for better accuracy
+func inferDataTypeFromSamples(columnIndex int, rows [][]string) string {
+	if len(rows) == 0 {
+		return "sc:Text"
+	}
+
+	typeCounts := make(map[string]int)
+	totalSamples := 0
+
+	for _, row := range rows {
+		if columnIndex < len(row) && strings.TrimSpace(row[columnIndex]) != "" {
+			dataType := InferDataType(row[columnIndex])
+			typeCounts[dataType]++
+			totalSamples++
+		}
+	}
+
+	if totalSamples == 0 {
+		return "sc:Text"
+	}
+
+	// Find the most common type
+	maxCount := 0
+	mostCommonType := "sc:Text"
+	for dataType, count := range typeCounts {
+		if count > maxCount {
+			maxCount = count
+			mostCommonType = dataType
+		}
+	}
+
+	// If less than 80% of samples match the most common type, default to Text
+	if float64(maxCount)/float64(totalSamples) < 0.8 {
+		return "sc:Text"
+	}
+
+	return mostCommonType
 }

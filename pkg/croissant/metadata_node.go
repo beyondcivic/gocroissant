@@ -142,6 +142,7 @@ type DistributionNode struct {
 	ContentURL     string `json:"contentUrl,omitempty"`
 	EncodingFormat string `json:"encodingFormat,omitempty"`
 	SHA256         string `json:"sha256,omitempty"`
+	MD5            string `json:"md5,omitempty"`
 }
 
 // Validate validates the distribution node
