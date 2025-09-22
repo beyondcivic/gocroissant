@@ -77,7 +77,6 @@ func CreateDefaultContext() Context {
 		ConformsTo: "dct:conformsTo",
 		CR:         "http://mlcommons.org/croissant/",
 		DCT:        "http://purl.org/dc/terms/",
-		RAI:        "http://mlcommons.org/croissant/RAI/",
 		Data: DataContext{
 			ID:   "cr:data",
 			Type: "@json",
@@ -169,7 +168,7 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 			Type:        "cr:Field",
 			Name:        header,
 			Description: fmt.Sprintf("Field for %s", header),
-			DataType:    dataType,
+			DataType:    NewSingleDataType(dataType),
 			Source: FieldSource{
 				Extract: Extract{
 					Column: header,
@@ -266,43 +265,4 @@ func cleanFieldName(name string) string {
 	}
 
 	return cleaned
-}
-
-// inferDataTypeFromSamples infers data type from multiple sample rows for better accuracy
-func inferDataTypeFromSamples(columnIndex int, rows [][]string) string {
-	if len(rows) == 0 {
-		return "sc:Text"
-	}
-
-	typeCounts := make(map[string]int)
-	totalSamples := 0
-
-	for _, row := range rows {
-		if columnIndex < len(row) && strings.TrimSpace(row[columnIndex]) != "" {
-			dataType := InferDataType(row[columnIndex])
-			typeCounts[dataType]++
-			totalSamples++
-		}
-	}
-
-	if totalSamples == 0 {
-		return "sc:Text"
-	}
-
-	// Find the most common type
-	maxCount := 0
-	mostCommonType := "sc:Text"
-	for dataType, count := range typeCounts {
-		if count > maxCount {
-			maxCount = count
-			mostCommonType = dataType
-		}
-	}
-
-	// If less than 80% of samples match the most common type, default to Text
-	if float64(maxCount)/float64(totalSamples) < 0.8 {
-		return "sc:Text"
-	}
-
-	return mostCommonType
 }

@@ -257,10 +257,15 @@ func ValidateFieldNode(field *FieldNode, issues *Issues, options ValidationOptio
 		issues.AddError(fmt.Sprintf("\"%s\" should have an attribute \"@type\": \"http://mlcommons.org/croissant/Field\". Got %s instead.", field.Name, field.Type), field)
 	}
 
-	if field.DataType == "" {
+	if field.DataType.GetFirstType() == "" {
 		issues.AddError("The field does not specify a valid http://mlcommons.org/croissant/dataType, neither does any of its predecessor.", field)
-	} else if options.CheckDataTypes && !isValidDataType(field.DataType) {
-		issues.AddWarning(fmt.Sprintf("DataType \"%s\" is not a recognized schema.org type.", field.DataType), field)
+	} else if options.CheckDataTypes {
+		allValid, invalidTypes := validateDataTypes(field.DataType)
+		if !allValid {
+			for _, invalidType := range invalidTypes {
+				issues.AddWarning(fmt.Sprintf("DataType \"%s\" is not a recognized schema.org type.", invalidType), field)
+			}
+		}
 	}
 
 	// Strict mode validations for fields
@@ -440,18 +445,56 @@ func isValidEncodingFormat(format string) bool {
 
 func isValidDataType(dataType string) bool {
 	validTypes := map[string]bool{
-		"sc:Text":     true,
-		"sc:Integer":  true,
-		"sc:Number":   true,
-		"sc:Float":    true,
-		"sc:Boolean":  true,
-		"sc:Date":     true,
-		"sc:DateTime": true,
-		"sc:Time":     true,
-		"sc:URL":      true,
+		"sc:Text":        true,
+		"sc:Integer":     true,
+		"sc:Number":      true,
+		"sc:Float":       true,
+		"sc:Boolean":     true,
+		"sc:Date":        true,
+		"sc:DateTime":    true,
+		"sc:Time":        true,
+		"sc:URL":         true,
+		"sc:ImageObject": true,
+		"cr:BoundingBox": true,
+		// Wikidata entities are also valid (they start with "wd:")
 	}
 
-	return validTypes[dataType]
+	// Check if it's a known schema.org or croissant type
+	if validTypes[dataType] {
+		return true
+	}
+
+	// Allow Wikidata entity IDs (format: wd:Q followed by numbers)
+	if len(dataType) > 3 && dataType[:3] == "wd:" {
+		return true
+	}
+
+	// Allow full URLs (https://schema.org/... or https://www.wikidata.org/...)
+	if len(dataType) > 8 && (dataType[:8] == "https://" || dataType[:7] == "http://") {
+		return true
+	}
+
+	return false
+}
+
+// validateDataTypes validates all data types in a DataType (single or array)
+func validateDataTypes(dt DataType) (bool, []string) {
+	types := dt.GetTypes()
+	if len(types) == 0 {
+		return false, []string{}
+	}
+
+	var invalidTypes []string
+	allValid := true
+
+	for _, dataType := range types {
+		if !isValidDataType(dataType) {
+			allValid = false
+			invalidTypes = append(invalidTypes, dataType)
+		}
+	}
+
+	return allValid, invalidTypes
 }
 
 func isValidSHA256(hash string) bool {

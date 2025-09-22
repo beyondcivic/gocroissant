@@ -242,7 +242,7 @@ type FieldNode struct {
 	BaseNode
 	Type        string     `json:"@type"`
 	Description string     `json:"description,omitempty"`
-	DataType    string     `json:"dataType,omitempty"`
+	DataType    DataType   `json:"dataType,omitempty"`
 	Source      SourceNode `json:"source"`
 }
 
@@ -259,8 +259,8 @@ func (f *FieldNode) Validate(issues *Issues) {
 	}
 
 	// Validate data type
-	if f.DataType == "" {
-		issues.AddError(fmt.Sprintf("The field does not specify a valid http://mlcommons.org/croissant/dataType, neither does any of its predecessor. Got: %s", f.DataType), f)
+	if f.DataType.GetFirstType() == "" {
+		issues.AddError("The field does not specify a valid http://mlcommons.org/croissant/dataType, neither does any of its predecessor.", f)
 	}
 
 	// Validate source

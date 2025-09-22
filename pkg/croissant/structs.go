@@ -12,7 +12,7 @@ type Field struct {
 	Type        string      `json:"@type"`
 	Name        string      `json:"name"`
 	Description string      `json:"description,omitempty"`
-	DataType    string      `json:"dataType"`
+	DataType    DataType    `json:"dataType"`
 	Source      FieldSource `json:"source"`
 	Repeated    bool        `json:"repeated,omitempty"`
 	Examples    interface{} `json:"examples,omitempty"`
@@ -40,6 +40,14 @@ type FileObject struct {
 // KeyRef represents a key reference in a composite key
 type KeyRef struct {
 	ID string `json:"@id"`
+}
+
+// DataType represents a data type that can be either a single string or an array of strings
+type DataType struct {
+	// Single dataType case: just a string value
+	SingleType *string `json:"-"`
+	// Array dataType case: array of string values
+	ArrayType []string `json:"-"`
 }
 
 // RecordSetKey represents a record set key that can be either a single key or composite key
@@ -83,7 +91,7 @@ func (k *RecordSetKey) UnmarshalJSON(data []byte) error {
 
 // IsComposite returns true if this is a composite key
 func (k RecordSetKey) IsComposite() bool {
-	return k.CompositeKey != nil && len(k.CompositeKey) > 0
+	return len(k.CompositeKey) > 0
 }
 
 // GetKeyIDs returns all key IDs (single or composite)
@@ -99,6 +107,64 @@ func (k RecordSetKey) GetKeyIDs() []string {
 		return ids
 	}
 	return nil
+}
+
+// MarshalJSON implements custom JSON marshaling for DataType
+func (d DataType) MarshalJSON() ([]byte, error) {
+	if d.SingleType != nil {
+		return json.Marshal(*d.SingleType)
+	}
+	if d.ArrayType != nil {
+		return json.Marshal(d.ArrayType)
+	}
+	return []byte("null"), nil
+}
+
+// UnmarshalJSON implements custom JSON unmarshaling for DataType
+func (d *DataType) UnmarshalJSON(data []byte) error {
+	// Try to unmarshal as a single string first
+	var singleType string
+	if err := json.Unmarshal(data, &singleType); err == nil && singleType != "" {
+		d.SingleType = &singleType
+		return nil
+	}
+
+	// Try to unmarshal as an array of strings
+	var arrayType []string
+	if err := json.Unmarshal(data, &arrayType); err == nil && len(arrayType) > 0 {
+		d.ArrayType = arrayType
+		return nil
+	}
+
+	// Return error if neither format worked
+	return fmt.Errorf("dataType must be either a string or an array of strings")
+}
+
+// IsArray returns true if this is an array of data types
+func (d DataType) IsArray() bool {
+	return len(d.ArrayType) > 0
+}
+
+// GetTypes returns all data types (single or array)
+func (d DataType) GetTypes() []string {
+	if d.SingleType != nil {
+		return []string{*d.SingleType}
+	}
+	if d.ArrayType != nil {
+		return d.ArrayType
+	}
+	return nil
+}
+
+// GetFirstType returns the first data type (useful for backward compatibility)
+func (d DataType) GetFirstType() string {
+	if d.SingleType != nil {
+		return *d.SingleType
+	}
+	if len(d.ArrayType) > 0 {
+		return d.ArrayType[0]
+	}
+	return ""
 }
 
 // Distribution represents a file in the Croissant metadata
@@ -227,5 +293,19 @@ func NewCompositeKey(keyIDs ...string) *RecordSetKey {
 	}
 	return &RecordSetKey{
 		CompositeKey: keys,
+	}
+}
+
+// NewSingleDataType creates a DataType with a single type
+func NewSingleDataType(dataType string) DataType {
+	return DataType{
+		SingleType: &dataType,
+	}
+}
+
+// NewArrayDataType creates a DataType with multiple types
+func NewArrayDataType(dataTypes ...string) DataType {
+	return DataType{
+		ArrayType: dataTypes,
 	}
 }
