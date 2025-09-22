@@ -50,8 +50,8 @@ type KeyRef struct {
 
 // FieldRef represents a reference to another field
 type FieldRef struct {
-	ID    string `json:"@id,omitempty"`
-	Field string `json:"field,omitempty"`
+	ID    string  `json:"@id,omitempty"`
+	Field *KeyRef `json:"field,omitempty"`
 }
 
 // DataType represents a data type that can be either a single string or an array of strings

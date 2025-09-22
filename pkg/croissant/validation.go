@@ -455,6 +455,8 @@ func isValidDataType(dataType string) bool {
 		"sc:Time":        true,
 		"sc:URL":         true,
 		"sc:ImageObject": true,
+		"sc:name":        true, // Added for categorical data enumerations
+		"sc:Enumeration": true, // Added for enumeration RecordSet dataType
 		"cr:BoundingBox": true,
 		// Wikidata entities are also valid (they start with "wd:")
 	}
