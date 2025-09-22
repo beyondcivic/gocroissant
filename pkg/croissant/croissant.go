@@ -67,6 +67,150 @@ func InferDataType(value string) string {
 	return "sc:Text"
 }
 
+// IsValidDataType checks if a dataType is valid according to Croissant specification
+func IsValidDataType(dataType string) bool {
+	validTypes := map[string]bool{
+		// Schema.org types
+		"sc:Text":        true,
+		"sc:Boolean":     true,
+		"sc:Integer":     true,
+		"sc:Number":      true,
+		"sc:DateTime":    true,
+		"sc:URL":         true,
+		"sc:ImageObject": true,
+		"sc:VideoObject": true,
+		"sc:Enumeration": true,
+		"sc:GeoShape":    true,
+
+		// Croissant-specific types
+		"cr:Label":            true,
+		"cr:Split":            true,
+		"cr:BoundingBox":      true,
+		"cr:SegmentationMask": true,
+
+		// Croissant Split types
+		"cr:TrainingSplit":   true,
+		"cr:ValidationSplit": true,
+		"cr:TestSplit":       true,
+	}
+
+	// Also accept Wikidata entities (wd:Q...)
+	if strings.HasPrefix(dataType, "wd:Q") {
+		return true
+	}
+
+	return validTypes[dataType]
+}
+
+// InferSemanticDataType attempts to infer semantic data types for ML datasets
+func InferSemanticDataType(fieldName, value string, context map[string]interface{}) []string {
+	fieldNameLower := strings.ToLower(fieldName)
+
+	// Check for split-related fields
+	if strings.Contains(fieldNameLower, "split") {
+		splitValues := []string{"train", "training", "val", "validation", "test", "testing"}
+		for _, splitVal := range splitValues {
+			if strings.Contains(strings.ToLower(value), splitVal) {
+				return []string{"cr:Split", "sc:Text"}
+			}
+		}
+	}
+
+	// Check for label-related fields
+	labelFields := []string{"label", "class", "category", "target", "annotation"}
+	for _, labelField := range labelFields {
+		if strings.Contains(fieldNameLower, labelField) {
+			baseType := InferDataType(value)
+			return []string{baseType, "cr:Label"}
+		}
+	}
+
+	// Check for bounding box patterns (arrays of 4 numbers)
+	if strings.Contains(fieldNameLower, "bbox") || strings.Contains(fieldNameLower, "box") {
+		// This would need more sophisticated parsing for actual bounding box detection
+		return []string{"cr:BoundingBox"}
+	}
+
+	// Check for enumeration patterns
+	if context != nil {
+		if enumValues, exists := context["enumValues"]; exists {
+			if enumSlice, ok := enumValues.([]string); ok {
+				for _, enumVal := range enumSlice {
+					if value == enumVal {
+						return []string{"sc:Enumeration", "sc:Text"}
+					}
+				}
+			}
+		}
+	}
+
+	// Default to basic type inference
+	return []string{InferDataType(value)}
+}
+
+// CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data
+func CreateEnumerationRecordSet(id, name string, values []string, urls []string) RecordSet {
+	fields := []Field{
+		{
+			ID:       fmt.Sprintf("%s/name", id),
+			Type:     "cr:Field",
+			Name:     fmt.Sprintf("%s/name", id),
+			DataType: NewSingleDataType("sc:Text"),
+		},
+	}
+
+	// Add URL field if URLs are provided
+	if len(urls) > 0 {
+		urlField := Field{
+			ID:       fmt.Sprintf("%s/url", id),
+			Type:     "cr:Field",
+			Name:     fmt.Sprintf("%s/url", id),
+			DataType: NewSingleDataType("sc:URL"),
+		}
+		fields = append(fields, urlField)
+	}
+
+	// Create data entries
+	data := make([]map[string]interface{}, len(values))
+	for i, value := range values {
+		entry := map[string]interface{}{
+			fmt.Sprintf("%s/name", id): value,
+		}
+		if i < len(urls) && urls[i] != "" {
+			entry[fmt.Sprintf("%s/url", id)] = urls[i]
+		}
+		data[i] = entry
+	}
+
+	recordSet := RecordSet{
+		ID:          id,
+		Type:        "cr:RecordSet",
+		Name:        name,
+		Description: fmt.Sprintf("Enumeration values for %s", name),
+		DataType:    NewSingleDataType("sc:Enumeration"),
+		Fields:      fields,
+		Key:         NewSingleKey(fmt.Sprintf("%s/name", id)),
+		Data:        data,
+	}
+
+	return recordSet
+}
+
+// CreateSplitRecordSet creates a standard ML split RecordSet
+func CreateSplitRecordSet() RecordSet {
+	recordSet := CreateEnumerationRecordSet(
+		"splits",
+		"splits",
+		[]string{"train", "val", "test"},
+		[]string{"cr:TrainingSplit", "cr:ValidationSplit", "cr:TestSplit"},
+	)
+
+	// Set the dataType to cr:Split for splits
+	recordSet.DataType = NewSingleDataType("cr:Split")
+
+	return recordSet
+}
+
 // CreateDefaultContext creates the ML Commons Croissant 1.0 compliant context
 func CreateDefaultContext() Context {
 	return Context{
@@ -77,6 +221,7 @@ func CreateDefaultContext() Context {
 		ConformsTo: "dct:conformsTo",
 		CR:         "http://mlcommons.org/croissant/",
 		DCT:        "http://purl.org/dc/terms/",
+		WD:         "https://www.wikidata.org/wiki/",
 		Data: DataContext{
 			ID:   "cr:data",
 			Type: "@json",

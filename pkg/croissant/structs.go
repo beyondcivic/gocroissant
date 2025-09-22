@@ -13,23 +13,29 @@ type Field struct {
 	Name        string      `json:"name"`
 	Description string      `json:"description,omitempty"`
 	DataType    DataType    `json:"dataType"`
-	Source      FieldSource `json:"source"`
+	Source      FieldSource `json:"source,omitempty"`
 	Repeated    bool        `json:"repeated,omitempty"`
 	Examples    interface{} `json:"examples,omitempty"`
+	SubField    []Field     `json:"subField,omitempty"`
+	References  *FieldRef   `json:"references,omitempty"`
 }
 
 // FieldSource represents the source information for a field
 type FieldSource struct {
-	Extract    Extract    `json:"extract"`
-	FileObject FileObject `json:"fileObject"`
+	Extract    Extract    `json:"extract,omitempty"`
+	FileObject FileObject `json:"fileObject,omitempty"`
+	FileSet    FileObject `json:"fileSet,omitempty"`
+	Transform  *Transform `json:"transform,omitempty"`
+	Format     string     `json:"format,omitempty"`
 }
 
 // Extract represents the extraction information for a field source
 type Extract struct {
-	Column    string `json:"column,omitempty"`
-	JSONPath  string `json:"jsonPath,omitempty"`
-	Regex     string `json:"regex,omitempty"`
-	Separator string `json:"separator,omitempty"`
+	Column       string `json:"column,omitempty"`
+	JSONPath     string `json:"jsonPath,omitempty"`
+	Regex        string `json:"regex,omitempty"`
+	Separator    string `json:"separator,omitempty"`
+	FileProperty string `json:"fileProperty,omitempty"`
 }
 
 // FileObject represents a file object reference
@@ -40,6 +46,12 @@ type FileObject struct {
 // KeyRef represents a key reference in a composite key
 type KeyRef struct {
 	ID string `json:"@id"`
+}
+
+// FieldRef represents a reference to another field
+type FieldRef struct {
+	ID    string `json:"@id,omitempty"`
+	Field string `json:"field,omitempty"`
 }
 
 // DataType represents a data type that can be either a single string or an array of strings
@@ -169,25 +181,29 @@ func (d DataType) GetFirstType() string {
 
 // Distribution represents a file in the Croissant metadata
 type Distribution struct {
-	ID             string `json:"@id"`
-	Type           string `json:"@type"`
-	Name           string `json:"name"`
-	Description    string `json:"description,omitempty"`
-	ContentSize    string `json:"contentSize,omitempty"`
-	ContentURL     string `json:"contentUrl"`
-	EncodingFormat string `json:"encodingFormat"`
-	SHA256         string `json:"sha256,omitempty"`
-	MD5            string `json:"md5,omitempty"`
+	ID             string      `json:"@id"`
+	Type           string      `json:"@type"`
+	Name           string      `json:"name"`
+	Description    string      `json:"description,omitempty"`
+	ContentSize    string      `json:"contentSize,omitempty"`
+	ContentURL     string      `json:"contentUrl,omitempty"`
+	EncodingFormat string      `json:"encodingFormat"`
+	SHA256         string      `json:"sha256,omitempty"`
+	MD5            string      `json:"md5,omitempty"`
+	ContainedIn    *FileObject `json:"containedIn,omitempty"`
+	Includes       string      `json:"includes,omitempty"`
 }
 
 // RecordSet represents a record set in the Croissant metadata
 type RecordSet struct {
-	ID          string        `json:"@id"`
-	Type        string        `json:"@type"`
-	Name        string        `json:"name"`
-	Description string        `json:"description,omitempty"`
-	Fields      []Field       `json:"field"`
-	Key         *RecordSetKey `json:"key,omitempty"`
+	ID          string                   `json:"@id"`
+	Type        string                   `json:"@type"`
+	Name        string                   `json:"name"`
+	Description string                   `json:"description,omitempty"`
+	DataType    DataType                 `json:"dataType,omitempty"`
+	Fields      []Field                  `json:"field"`
+	Key         *RecordSetKey            `json:"key,omitempty"`
+	Data        []map[string]interface{} `json:"data,omitempty"`
 }
 
 // Context represents the complete JSON-LD context for Croissant 1.0
@@ -200,6 +216,7 @@ type Context struct {
 	CR            string          `json:"cr"`
 	DCT           string          `json:"dct"`
 	RAI           string          `json:"rai,omitempty"`
+	WD            string          `json:"wd,omitempty"`
 	Data          DataContext     `json:"data"`
 	DataType      DataTypeContext `json:"dataType"`
 	Examples      DataContext     `json:"examples"`

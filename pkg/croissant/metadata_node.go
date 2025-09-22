@@ -102,7 +102,9 @@ func FromMetadata(metadata Metadata) *MetadataNode {
 			},
 			Type:        rs.Type,
 			Description: rs.Description,
+			DataType:    rs.DataType,
 			Key:         rs.Key,
+			Data:        rs.Data,
 		}
 		rsNode.SetParent(node)
 
@@ -118,14 +120,41 @@ func FromMetadata(metadata Metadata) *MetadataNode {
 				DataType:    field.DataType,
 				Source: SourceNode{
 					Extract: ExtractNode{
-						Column: field.Source.Extract.Column,
+						Column:       field.Source.Extract.Column,
+						JSONPath:     field.Source.Extract.JSONPath,
+						FileProperty: field.Source.Extract.FileProperty,
 					},
 					FileObject: FileObjectRef{
 						ID: field.Source.FileObject.ID,
 					},
+					FileSet: FileObjectRef{
+						ID: field.Source.FileSet.ID,
+					},
+					Transform: field.Source.Transform,
+					Format:    field.Source.Format,
 				},
+				Repeated:   field.Repeated,
+				Examples:   field.Examples,
+				References: field.References,
 			}
 			fieldNode.SetParent(rsNode)
+
+			// Convert subfields if they exist
+			for _, subField := range field.SubField {
+				subFieldNode := &FieldNode{
+					BaseNode: BaseNode{
+						ID:   subField.ID,
+						Name: subField.Name,
+					},
+					Type:        subField.Type,
+					Description: subField.Description,
+					DataType:    subField.DataType,
+					// Note: subfields may have their own sources, but for now we'll handle basic conversion
+				}
+				subFieldNode.SetParent(fieldNode)
+				fieldNode.SubField = append(fieldNode.SubField, subFieldNode)
+			}
+
 			rsNode.Fields = append(rsNode.Fields, fieldNode)
 		}
 
@@ -172,10 +201,12 @@ func (d *DistributionNode) Validate(issues *Issues) {
 // RecordSetNode represents a record set
 type RecordSetNode struct {
 	BaseNode
-	Type        string        `json:"@type"`
-	Description string        `json:"description,omitempty"`
-	Fields      []*FieldNode  `json:"field"`
-	Key         *RecordSetKey `json:"key,omitempty"`
+	Type        string                   `json:"@type"`
+	Description string                   `json:"description,omitempty"`
+	DataType    DataType                 `json:"dataType,omitempty"`
+	Fields      []*FieldNode             `json:"field"`
+	Key         *RecordSetKey            `json:"key,omitempty"`
+	Data        []map[string]interface{} `json:"data,omitempty"`
 }
 
 // Validate validates the record set node
@@ -190,6 +221,11 @@ func (r *RecordSetNode) Validate(issues *Issues) {
 		issues.AddError(fmt.Sprintf("\"%s\" should have an attribute \"@type\": \"http://mlcommons.org/croissant/RecordSet\". Got %s instead.", r.Name, r.Type), r)
 	}
 
+	// Validate dataType if specified
+	if r.DataType.GetFirstType() != "" {
+		r.validateDataType(issues)
+	}
+
 	// Validate key references if key is specified
 	if r.Key != nil {
 		r.validateKey(issues)
@@ -199,6 +235,66 @@ func (r *RecordSetNode) Validate(issues *Issues) {
 	for _, field := range r.Fields {
 		field.SetParent(r)
 		field.Validate(issues)
+	}
+}
+
+// validateDataType validates RecordSet dataType and associated requirements
+func (r *RecordSetNode) validateDataType(issues *Issues) {
+	firstType := r.DataType.GetFirstType()
+
+	// Validate enumeration RecordSets
+	if firstType == "sc:Enumeration" {
+		r.validateEnumeration(issues)
+	}
+
+	// Validate split RecordSets
+	if firstType == "cr:Split" {
+		r.validateSplit(issues)
+	}
+}
+
+// validateEnumeration validates enumeration-specific requirements
+func (r *RecordSetNode) validateEnumeration(issues *Issues) {
+	// Enumeration RecordSets must have a key
+	if r.Key == nil {
+		issues.AddError("Enumeration RecordSet must specify a key", r)
+		return
+	}
+
+	// Should have a name field
+	hasNameField := false
+	for _, field := range r.Fields {
+		if field.Name == fmt.Sprintf("%s/name", r.Name) || field.Name == "name" {
+			hasNameField = true
+			break
+		}
+	}
+	if !hasNameField {
+		issues.AddWarning("Enumeration RecordSet should have a 'name' field", r)
+	}
+}
+
+// validateSplit validates split-specific requirements
+func (r *RecordSetNode) validateSplit(issues *Issues) {
+	// Split RecordSets should have name and url fields
+	hasNameField := false
+	hasUrlField := false
+
+	for _, field := range r.Fields {
+		fieldName := field.Name
+		if fieldName == fmt.Sprintf("%s/name", r.Name) || fieldName == "name" {
+			hasNameField = true
+		}
+		if fieldName == fmt.Sprintf("%s/url", r.Name) || fieldName == "url" {
+			hasUrlField = true
+		}
+	}
+
+	if !hasNameField {
+		issues.AddWarning("Split RecordSet should have a 'name' field", r)
+	}
+	if !hasUrlField {
+		issues.AddWarning("Split RecordSet should have a 'url' field", r)
 	}
 }
 
@@ -240,10 +336,14 @@ func (r *RecordSetNode) validateKey(issues *Issues) {
 // FieldNode represents a field
 type FieldNode struct {
 	BaseNode
-	Type        string     `json:"@type"`
-	Description string     `json:"description,omitempty"`
-	DataType    DataType   `json:"dataType,omitempty"`
-	Source      SourceNode `json:"source"`
+	Type        string       `json:"@type"`
+	Description string       `json:"description,omitempty"`
+	DataType    DataType     `json:"dataType,omitempty"`
+	Source      SourceNode   `json:"source,omitempty"`
+	Repeated    bool         `json:"repeated,omitempty"`
+	Examples    interface{}  `json:"examples,omitempty"`
+	SubField    []*FieldNode `json:"subField,omitempty"`
+	References  *FieldRef    `json:"references,omitempty"`
 }
 
 // Validate validates the field node
@@ -261,29 +361,58 @@ func (f *FieldNode) Validate(issues *Issues) {
 	// Validate data type
 	if f.DataType.GetFirstType() == "" {
 		issues.AddError("The field does not specify a valid http://mlcommons.org/croissant/dataType, neither does any of its predecessor.", f)
+	} else {
+		// Validate that all dataTypes are valid
+		for _, dataType := range f.DataType.GetTypes() {
+			if !IsValidDataType(dataType) {
+				issues.AddWarning(fmt.Sprintf("DataType \"%s\" may not be recognized", dataType), f)
+			}
+		}
 	}
 
-	// Validate source
+	// Validate source - but skip validation for fields in enumeration RecordSets with inline data
 	if !f.Source.ValidateSource() {
-		issues.AddError(fmt.Sprintf("Node \"%s\" is a field and has no source. Please, use http://mlcommons.org/croissant/source to specify the source.", f.ID), f)
+		// Check if this field belongs to an enumeration RecordSet with inline data
+		if parent := f.GetParent(); parent != nil {
+			if recordSet, ok := parent.(*RecordSetNode); ok {
+				// If it's an enumeration with inline data, skip source validation
+				if recordSet.DataType.GetFirstType() == "sc:Enumeration" && len(recordSet.Data) > 0 {
+					// Skip validation for enumeration fields with inline data
+				} else {
+					issues.AddError(fmt.Sprintf("Node \"%s\" is a field and has no source. Please, use http://mlcommons.org/croissant/source to specify the source.", f.ID), f)
+				}
+			} else {
+				issues.AddError(fmt.Sprintf("Node \"%s\" is a field and has no source. Please, use http://mlcommons.org/croissant/source to specify the source.", f.ID), f)
+			}
+		} else {
+			issues.AddError(fmt.Sprintf("Node \"%s\" is a field and has no source. Please, use http://mlcommons.org/croissant/source to specify the source.", f.ID), f)
+		}
 	}
 }
 
 // SourceNode represents a source
 type SourceNode struct {
-	Extract    ExtractNode   `json:"extract"`
-	FileObject FileObjectRef `json:"fileObject"`
+	Extract    ExtractNode   `json:"extract,omitempty"`
+	FileObject FileObjectRef `json:"fileObject,omitempty"`
+	FileSet    FileObjectRef `json:"fileSet,omitempty"`
+	Transform  *Transform    `json:"transform,omitempty"`
+	Format     string        `json:"format,omitempty"`
 }
 
 // ValidateSource validates the source node
 func (s *SourceNode) ValidateSource() bool {
-	// Check if both extract and file object references are valid
-	return s.Extract.Column != "" && s.FileObject.ID != ""
+	// Check if either extract has content or file object/set references are valid
+	hasExtract := s.Extract.Column != "" || s.Extract.JSONPath != "" || s.Extract.FileProperty != ""
+	hasFileRef := s.FileObject.ID != "" || s.FileSet.ID != ""
+
+	return hasExtract && hasFileRef
 }
 
 // ExtractNode represents extraction details
 type ExtractNode struct {
-	Column string `json:"column,omitempty"`
+	Column       string `json:"column,omitempty"`
+	JSONPath     string `json:"jsonPath,omitempty"`
+	FileProperty string `json:"fileProperty,omitempty"`
 }
 
 // FileObjectRef represents a reference to a file object
