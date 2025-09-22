@@ -217,15 +217,21 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 
 	// Write to file if output path is provided
 	if outputPath != "" {
-		// Marshal metadata to JSON with proper indentation
+		// Marshal metadata to JSON-LD with proper indentation
 		metadataJSON, err := json.MarshalIndent(metadata, "", "  ")
 		if err != nil {
-			return nil, fmt.Errorf("failed to marshal JSON: %w", err)
+			return nil, fmt.Errorf("failed to marshal JSON-LD: %w", err)
+		}
+
+		// Validate that the generated JSON is valid JSON-LD
+		processor := NewJSONLDProcessor()
+		if err := processor.ValidateJSONLD(metadataJSON); err != nil {
+			return nil, fmt.Errorf("generated invalid JSON-LD: %w", err)
 		}
 
 		// Ensure directory exists
 		if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
-			return nil, fmt.Errorf("failed to create output directory: %w", err)
+			return nil, fmt.Errorf("failed to create directory: %w", err)
 		}
 
 		// Write metadata to file

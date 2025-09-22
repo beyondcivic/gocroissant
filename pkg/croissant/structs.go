@@ -1,6 +1,11 @@
 // structs.go
 package croissant
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 // Field represents a field in the Croissant metadata
 type Field struct {
 	ID          string      `json:"@id"`
@@ -32,6 +37,70 @@ type FileObject struct {
 	ID string `json:"@id"`
 }
 
+// KeyRef represents a key reference in a composite key
+type KeyRef struct {
+	ID string `json:"@id"`
+}
+
+// RecordSetKey represents a record set key that can be either a single key or composite key
+type RecordSetKey struct {
+	// Single key case: just an ID reference
+	SingleKey *KeyRef `json:"-"`
+	// Composite key case: array of ID references
+	CompositeKey []KeyRef `json:"-"`
+}
+
+// MarshalJSON implements custom JSON marshaling for RecordSetKey
+func (k RecordSetKey) MarshalJSON() ([]byte, error) {
+	if k.SingleKey != nil {
+		return json.Marshal(k.SingleKey)
+	}
+	if k.CompositeKey != nil {
+		return json.Marshal(k.CompositeKey)
+	}
+	return []byte("null"), nil
+}
+
+// UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey
+func (k *RecordSetKey) UnmarshalJSON(data []byte) error {
+	// Try to unmarshal as a single key first
+	var singleKey KeyRef
+	if err := json.Unmarshal(data, &singleKey); err == nil && singleKey.ID != "" {
+		k.SingleKey = &singleKey
+		return nil
+	}
+
+	// Try to unmarshal as an array of keys
+	var compositeKey []KeyRef
+	if err := json.Unmarshal(data, &compositeKey); err == nil && len(compositeKey) > 0 {
+		k.CompositeKey = compositeKey
+		return nil
+	}
+
+	// Return error if neither format worked
+	return fmt.Errorf("key must be either a single key object or an array of key objects")
+}
+
+// IsComposite returns true if this is a composite key
+func (k RecordSetKey) IsComposite() bool {
+	return k.CompositeKey != nil && len(k.CompositeKey) > 0
+}
+
+// GetKeyIDs returns all key IDs (single or composite)
+func (k RecordSetKey) GetKeyIDs() []string {
+	if k.SingleKey != nil {
+		return []string{k.SingleKey.ID}
+	}
+	if k.CompositeKey != nil {
+		ids := make([]string, len(k.CompositeKey))
+		for i, key := range k.CompositeKey {
+			ids[i] = key.ID
+		}
+		return ids
+	}
+	return nil
+}
+
 // Distribution represents a file in the Croissant metadata
 type Distribution struct {
 	ID             string `json:"@id"`
@@ -47,12 +116,12 @@ type Distribution struct {
 
 // RecordSet represents a record set in the Croissant metadata
 type RecordSet struct {
-	ID          string  `json:"@id"`
-	Type        string  `json:"@type"`
-	Name        string  `json:"name"`
-	Description string  `json:"description,omitempty"`
-	Fields      []Field `json:"field"`
-	Key         string  `json:"key,omitempty"`
+	ID          string        `json:"@id"`
+	Type        string        `json:"@type"`
+	Name        string        `json:"name"`
+	Description string        `json:"description,omitempty"`
+	Fields      []Field       `json:"field"`
+	Key         *RecordSetKey `json:"key,omitempty"`
 }
 
 // Context represents the complete JSON-LD context for Croissant 1.0
@@ -141,4 +210,22 @@ type Source struct {
 	FileObject FileObject  `json:"fileObject,omitempty"`
 	Field      string      `json:"field,omitempty"`
 	Transform  []Transform `json:"transform,omitempty"`
+}
+
+// NewSingleKey creates a RecordSetKey with a single key reference
+func NewSingleKey(keyID string) *RecordSetKey {
+	return &RecordSetKey{
+		SingleKey: &KeyRef{ID: keyID},
+	}
+}
+
+// NewCompositeKey creates a RecordSetKey with multiple key references
+func NewCompositeKey(keyIDs ...string) *RecordSetKey {
+	keys := make([]KeyRef, len(keyIDs))
+	for i, id := range keyIDs {
+		keys[i] = KeyRef{ID: id}
+	}
+	return &RecordSetKey{
+		CompositeKey: keys,
+	}
 }

@@ -102,6 +102,7 @@ func FromMetadata(metadata Metadata) *MetadataNode {
 			},
 			Type:        rs.Type,
 			Description: rs.Description,
+			Key:         rs.Key,
 		}
 		rsNode.SetParent(node)
 
@@ -171,9 +172,10 @@ func (d *DistributionNode) Validate(issues *Issues) {
 // RecordSetNode represents a record set
 type RecordSetNode struct {
 	BaseNode
-	Type        string       `json:"@type"`
-	Description string       `json:"description,omitempty"`
-	Fields      []*FieldNode `json:"field"`
+	Type        string        `json:"@type"`
+	Description string        `json:"description,omitempty"`
+	Fields      []*FieldNode  `json:"field"`
+	Key         *RecordSetKey `json:"key,omitempty"`
 }
 
 // Validate validates the record set node
@@ -188,10 +190,50 @@ func (r *RecordSetNode) Validate(issues *Issues) {
 		issues.AddError(fmt.Sprintf("\"%s\" should have an attribute \"@type\": \"http://mlcommons.org/croissant/RecordSet\". Got %s instead.", r.Name, r.Type), r)
 	}
 
+	// Validate key references if key is specified
+	if r.Key != nil {
+		r.validateKey(issues)
+	}
+
 	// Validate fields
 	for _, field := range r.Fields {
 		field.SetParent(r)
 		field.Validate(issues)
+	}
+}
+
+// validateKey validates that key references point to existing fields
+func (r *RecordSetNode) validateKey(issues *Issues) {
+	if r.Key == nil {
+		return
+	}
+
+	keyIDs := r.Key.GetKeyIDs()
+	if len(keyIDs) == 0 {
+		issues.AddError("Record set key is empty", r)
+		return
+	}
+
+	// Build a map of available field IDs for this record set
+	fieldIDs := make(map[string]bool)
+	for _, field := range r.Fields {
+		if field.ID != "" {
+			fieldIDs[field.ID] = true
+		}
+		if field.Name != "" {
+			fieldIDs[field.Name] = true
+		}
+	}
+
+	// Check that all key IDs reference existing fields
+	for _, keyID := range keyIDs {
+		if !fieldIDs[keyID] {
+			if r.Key.IsComposite() {
+				issues.AddError(fmt.Sprintf("Composite key references non-existent field \"%s\"", keyID), r)
+			} else {
+				issues.AddError(fmt.Sprintf("Key references non-existent field \"%s\"", keyID), r)
+			}
+		}
 	}
 }
 

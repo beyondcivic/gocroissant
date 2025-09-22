@@ -2,7 +2,6 @@
 package croissant
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/url"
 	"os"
@@ -38,24 +37,42 @@ func ValidateFile(filePath string) (*Issues, error) {
 	return ValidateJSON(data)
 }
 
-// ValidateJSON validates Croissant metadata in JSON format and returns issues
+// ValidateJSON validates Croissant metadata in JSON-LD format and returns issues
 func ValidateJSON(data []byte) (*Issues, error) {
-	var metadata Metadata
-	if err := json.Unmarshal(data, &metadata); err != nil {
-		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+	// Use JSON-LD processor for proper validation and parsing
+	processor := NewJSONLDProcessor()
+
+	// First, validate that it's valid JSON-LD
+	if err := processor.ValidateJSONLD(data); err != nil {
+		return nil, fmt.Errorf("invalid JSON-LD document: %w", err)
 	}
 
-	return ValidateMetadata(metadata), nil
+	// Parse the metadata using JSON-LD processor
+	metadata, err := processor.ParseCroissantMetadata(data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse Croissant metadata: %w", err)
+	}
+
+	return ValidateMetadata(*metadata), nil
 }
 
-// ValidateJSONWithOptions validates Croissant metadata in JSON format with options and returns issues
+// ValidateJSONWithOptions validates Croissant metadata in JSON-LD format with options and returns issues
 func ValidateJSONWithOptions(data []byte, options ValidationOptions) (*Issues, error) {
-	var metadata Metadata
-	if err := json.Unmarshal(data, &metadata); err != nil {
-		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+	// Use JSON-LD processor for proper validation and parsing
+	processor := NewJSONLDProcessor()
+
+	// First, validate that it's valid JSON-LD
+	if err := processor.ValidateJSONLD(data); err != nil {
+		return nil, fmt.Errorf("invalid JSON-LD document: %w", err)
 	}
 
-	return ValidateMetadataWithOptions(metadata, options), nil
+	// Parse the metadata using JSON-LD processor
+	metadata, err := processor.ParseCroissantMetadata(data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse Croissant metadata: %w", err)
+	}
+
+	return ValidateMetadataWithOptions(*metadata, options), nil
 }
 
 // ValidateMetadata validates a Metadata struct and returns issues
@@ -184,9 +201,49 @@ func ValidateRecordSetNode(rs *RecordSetNode, issues *Issues, options Validation
 		issues.AddWarning("RecordSet has no fields defined.", rs)
 	}
 
+	// Validate key references if key is specified
+	if rs.Key != nil {
+		validateRecordSetKey(rs, issues)
+	}
+
 	for _, field := range rs.Fields {
 		field.SetParent(rs)
 		ValidateFieldNode(field, issues, options)
+	}
+}
+
+// validateRecordSetKey validates that key references point to existing fields
+func validateRecordSetKey(rs *RecordSetNode, issues *Issues) {
+	if rs.Key == nil {
+		return
+	}
+
+	keyIDs := rs.Key.GetKeyIDs()
+	if len(keyIDs) == 0 {
+		issues.AddError("Record set key is empty", rs)
+		return
+	}
+
+	// Build a map of available field IDs for this record set
+	fieldIDs := make(map[string]bool)
+	for _, field := range rs.Fields {
+		if field.ID != "" {
+			fieldIDs[field.ID] = true
+		}
+		if field.Name != "" {
+			fieldIDs[field.Name] = true
+		}
+	}
+
+	// Check that all key IDs reference existing fields
+	for _, keyID := range keyIDs {
+		if !fieldIDs[keyID] {
+			if rs.Key.IsComposite() {
+				issues.AddError(fmt.Sprintf("Composite key references non-existent field \"%s\"", keyID), rs)
+			} else {
+				issues.AddError(fmt.Sprintf("Key references non-existent field \"%s\"", keyID), rs)
+			}
+		}
 	}
 }
 
