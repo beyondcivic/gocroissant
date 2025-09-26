@@ -102,7 +102,7 @@ func FromMetadata(metadata Metadata) *MetadataNode {
 			},
 			Type:        rs.Type,
 			Description: rs.Description,
-			DataType:    rs.DataType,
+			DataType:    *rs.DataType,
 			Key:         rs.Key,
 			Data:        rs.Data,
 		}

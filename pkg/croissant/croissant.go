@@ -187,7 +187,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 		Type:        "cr:RecordSet",
 		Name:        name,
 		Description: fmt.Sprintf("Enumeration values for %s", name),
-		DataType:    NewSingleDataType("sc:Enumeration"),
+		DataType:    NewNullableSingleDataType("sc:Enumeration"),
 		Fields:      fields,
 		Key:         NewSingleKey(fmt.Sprintf("%s/name", id)),
 		Data:        data,
@@ -206,7 +206,7 @@ func CreateSplitRecordSet() RecordSet {
 	)
 
 	// Set the dataType to cr:Split for splits
-	recordSet.DataType = NewSingleDataType("cr:Split")
+	recordSet.DataType = NewNullableSingleDataType("cr:Split")
 
 	return recordSet
 }

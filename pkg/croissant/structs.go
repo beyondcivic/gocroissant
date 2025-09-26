@@ -200,7 +200,7 @@ type RecordSet struct {
 	Type        string                   `json:"@type"`
 	Name        string                   `json:"name"`
 	Description string                   `json:"description,omitempty"`
-	DataType    DataType                 `json:"dataType,omitempty"`
+	DataType    *DataType                `json:"dataType,omitempty"`
 	Fields      []Field                  `json:"field"`
 	Key         *RecordSetKey            `json:"key,omitempty"`
 	Data        []map[string]interface{} `json:"data,omitempty"`
@@ -310,6 +310,13 @@ func NewCompositeKey(keyIDs ...string) *RecordSetKey {
 	}
 	return &RecordSetKey{
 		CompositeKey: keys,
+	}
+}
+
+// NewSingleDataType creates a DataType with a single type
+func NewNullableSingleDataType(dataType string) *DataType {
+	return &DataType{
+		SingleType: &dataType,
 	}
 }
 

@@ -28,3 +28,4 @@ repo_structure.yaml
 gocroissant
 bin/gocroissant
 metadata.jsonld
+temp/
