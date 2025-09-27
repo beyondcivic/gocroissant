@@ -123,7 +123,7 @@ func ValidateOutputPath(outputPath string) error {
 	// Check if the directory exists or can be created
 	dir := filepath.Dir(outputPath)
 	if dir != "." && dir != "" {
-		if err := os.MkdirAll(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0750); err != nil {
 			return CroissantError{
 				Message: fmt.Sprintf("cannot create directory %s", dir),
 				Value:   err,

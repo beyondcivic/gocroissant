@@ -374,12 +374,12 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 		}
 
 		// Ensure directory exists
-		if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(outputPath), 0750); err != nil {
 			return nil, CroissantError{Message: "failed to create directory", Value: err}
 		}
 
 		// Write metadata to file
-		if err := os.WriteFile(outputPath, metadataJSON, 0644); err != nil {
+		if err := os.WriteFile(outputPath, metadataJSON, 0600); err != nil {
 			return nil, CroissantError{Message: "failed to write file", Value: err}
 		}
 	}
