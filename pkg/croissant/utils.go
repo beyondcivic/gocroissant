@@ -140,7 +140,7 @@ func ValidateOutputPath(outputPath string) error {
 		}
 	}
 	file.Close()
-	os.Remove(tempFile) // Clean up the temporary file
+	_ = os.Remove(tempFile) // Clean up the temporary file, ignore error
 
 	return nil
 }
