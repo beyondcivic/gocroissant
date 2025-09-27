@@ -11,9 +11,8 @@ type CroissantError struct {
 
 func (e CroissantError) Error() string {
 	if e.Value != nil {
-
 		return fmt.Sprintf("%s: %v", e.Message, e.Value)
 	} else {
-		return fmt.Sprintf("%s", e.Message)
+		return e.Message
 	}
 }
