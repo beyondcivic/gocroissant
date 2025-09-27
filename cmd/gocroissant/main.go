@@ -33,8 +33,10 @@ Croissant is a standardized way to describe machine learning datasets using JSON
 		Long:  `Print the version, git hash, and build time information of the gocroissant tool.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Printf("%s version %s\n", version.AppName, version.Version)
-			fmt.Printf("Git commit: %s\n", version.GitHash)
-			fmt.Printf("Built on: %s\n", version.BuildTime)
+			stamp := version.RetrieveStamp()
+			fmt.Printf("  Built with %s on %s\n", stamp.InfoGoCompiler, stamp.InfoBuildTime)
+			fmt.Printf("  Git ref: %s\n", stamp.VCSRevision)
+			fmt.Printf("  Go version %s, GOOS %s, GOARCH %s\n", stamp.InfoGoVersion, stamp.InfoGOOS, stamp.InfoGOARCH)
 		},
 	}
 	rootCmd.AddCommand(versionCmd)
