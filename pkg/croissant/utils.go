@@ -4,6 +4,7 @@ package croissant
 import (
 	"crypto/sha256"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -51,12 +52,12 @@ func GetCSVColumns(csvPath string) ([]string, []string, error) {
 
 	// Read first row for data type inference
 	firstRow, err := reader.Read()
-	if err != nil && err != io.EOF {
+	if err != nil && !errors.Is(err, io.EOF) {
 		return nil, nil, CroissantError{Message: "failed to read first CSV row: %w", Value: err}
 	}
 
 	// If we hit EOF, there's no data row
-	if err == io.EOF {
+	if errors.Is(err, io.EOF) {
 		return headers, nil, nil
 	}
 
@@ -155,7 +156,7 @@ func DetectCSVDelimiter(csvPath string) (rune, error) {
 	// Read first few lines to detect delimiter
 	buffer := make([]byte, 1024)
 	n, err := file.Read(buffer)
-	if err != nil && err != io.EOF {
+	if err != nil && !errors.Is(err, io.EOF) {
 		return ',', CroissantError{Message: "failed to read file sample: %w", Value: err}
 	}
 
