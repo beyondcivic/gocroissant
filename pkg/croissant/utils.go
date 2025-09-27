@@ -4,6 +4,8 @@ package croissant
 import (
 	"crypto/sha256"
 	"encoding/csv"
+	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -15,23 +17,23 @@ import (
 func CalculateSHA256(filePath string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		return "", fmt.Errorf("failed to open file: %w", err)
+		return "", CroissantError{Message: "failed to open file: %w", Value: err}
 	}
 	defer file.Close()
 
 	hash := sha256.New()
 	if _, err := io.Copy(hash, file); err != nil {
-		return "", fmt.Errorf("failed to calculate hash: %w", err)
+		return "", CroissantError{Message: "failed to calculate hash: %w", Value: err}
 	}
 
-	return fmt.Sprintf("%x", hash.Sum(nil)), nil
+	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
 // GetCSVColumns reads the column names and first row from a CSV file
 func GetCSVColumns(csvPath string) ([]string, []string, error) {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to open CSV file: %w", err)
+		return nil, nil, CroissantError{Message: "failed to open CSV file: %w", Value: err}
 	}
 	defer file.Close()
 
@@ -41,7 +43,7 @@ func GetCSVColumns(csvPath string) ([]string, []string, error) {
 	// Read headers
 	headers, err := reader.Read()
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to read CSV headers: %w", err)
+		return nil, nil, CroissantError{Message: "failed to read CSV headers: %w", Value: err}
 	}
 
 	// Clean headers
@@ -51,12 +53,12 @@ func GetCSVColumns(csvPath string) ([]string, []string, error) {
 
 	// Read first row for data type inference
 	firstRow, err := reader.Read()
-	if err != nil && err != io.EOF {
-		return nil, nil, fmt.Errorf("failed to read first CSV row: %w", err)
+	if err != nil && !errors.Is(err, io.EOF) {
+		return nil, nil, CroissantError{Message: "failed to read first CSV row: %w", Value: err}
 	}
 
 	// If we hit EOF, there's no data row
-	if err == io.EOF {
+	if errors.Is(err, io.EOF) {
 		return headers, nil, nil
 	}
 
@@ -67,7 +69,7 @@ func GetCSVColumns(csvPath string) ([]string, []string, error) {
 func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]string, error) {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to open CSV file: %w", err)
+		return nil, nil, CroissantError{Message: "failed to open CSV file: %w", Value: err}
 	}
 	defer file.Close()
 
@@ -81,7 +83,7 @@ func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]stri
 	// Read headers
 	headers, err := reader.Read()
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to read CSV headers: %w", err)
+		return nil, nil, CroissantError{Message: "failed to read CSV headers: %w", Value: err}
 	}
 
 	// Clean headers
@@ -99,7 +101,10 @@ func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]stri
 			break
 		}
 		if err != nil {
-			return nil, nil, fmt.Errorf("failed to read CSV row %d: %w", rowCount+1, err)
+			return nil, nil, CroissantError{
+				Message: fmt.Sprintf("failed to read CSV row %d", rowCount+1),
+				Value:   err,
+			}
 		}
 
 		sampleRows = append(sampleRows, row)
@@ -112,14 +117,17 @@ func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]stri
 // ValidateOutputPath validates if the given path is a valid file path
 func ValidateOutputPath(outputPath string) error {
 	if outputPath == "" {
-		return fmt.Errorf("output path cannot be empty")
+		return CroissantError{Message: "output path cannot be empty"}
 	}
 
 	// Check if the directory exists or can be created
 	dir := filepath.Dir(outputPath)
 	if dir != "." && dir != "" {
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			return fmt.Errorf("cannot create directory %s: %v", dir, err)
+		if err := os.MkdirAll(dir, 0750); err != nil {
+			return CroissantError{
+				Message: fmt.Sprintf("cannot create directory %s", dir),
+				Value:   err,
+			}
 		}
 	}
 
@@ -127,27 +135,28 @@ func ValidateOutputPath(outputPath string) error {
 	tempFile := outputPath + ".tmp"
 	file, err := os.Create(tempFile)
 	if err != nil {
-		return fmt.Errorf("cannot write to path %s: %v", outputPath, err)
+		return CroissantError{
+			Message: fmt.Sprintf("cannot write to path %s", outputPath),
+			Value:   err,
+		}
 	}
 	file.Close()
-	os.Remove(tempFile) // Clean up the temporary file
-
-	return nil
+	return os.Remove(tempFile) // Clean up the temporary file
 }
 
 // DetectCSVDelimiter attempts to detect the CSV delimiter
 func DetectCSVDelimiter(csvPath string) (rune, error) {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return ',', fmt.Errorf("failed to open CSV file: %w", err)
+		return ',', CroissantError{Message: "failed to open CSV file: %w", Value: err}
 	}
 	defer file.Close()
 
 	// Read first few lines to detect delimiter
 	buffer := make([]byte, 1024)
 	n, err := file.Read(buffer)
-	if err != nil && err != io.EOF {
-		return ',', fmt.Errorf("failed to read file sample: %w", err)
+	if err != nil && !errors.Is(err, io.EOF) {
+		return ',', CroissantError{Message: "failed to read file sample: %w", Value: err}
 	}
 
 	sample := string(buffer[:n])
@@ -177,7 +186,7 @@ func DetectCSVDelimiter(csvPath string) (rune, error) {
 func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]string, [][]string, error) {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to open CSV file: %w", err)
+		return nil, nil, CroissantError{Message: "failed to open CSV file: %w", Value: err}
 	}
 	defer file.Close()
 
@@ -193,11 +202,14 @@ func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]stri
 	// Read all records
 	records, err := reader.ReadAll()
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to read CSV records: %w", err)
+		return nil, nil, CroissantError{
+			Message: "failed to read CSV records",
+			Value:   err,
+		}
 	}
 
 	if len(records) == 0 {
-		return nil, nil, fmt.Errorf("CSV file is empty")
+		return nil, nil, CroissantError{Message: "CSV file is empty"}
 	}
 
 	if hasHeader {
@@ -228,7 +240,7 @@ func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]stri
 func GetFileStats(filePath string) (map[string]interface{}, error) {
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get file stats: %w", err)
+		return nil, CroissantError{Message: "failed to get file stats: %w", Value: err}
 	}
 
 	stats := map[string]interface{}{
@@ -248,7 +260,10 @@ func GetFileStats(filePath string) (map[string]interface{}, error) {
 func CountCSVRows(csvPath string) (int, error) {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return 0, fmt.Errorf("failed to open CSV file: %w", err)
+		return 0, CroissantError{
+			Message: "failed to open CSV file",
+			Value:   err,
+		}
 	}
 	defer file.Close()
 
@@ -263,7 +278,9 @@ func CountCSVRows(csvPath string) (int, error) {
 			break
 		}
 		if err != nil {
-			return 0, fmt.Errorf("failed to read CSV row %d: %w", rowCount+1, err)
+			return 0, CroissantError{
+				Message: fmt.Sprintf("failed to read CSV row %d", rowCount+1),
+				Value:   err}
 		}
 		rowCount++
 	}
@@ -275,7 +292,10 @@ func CountCSVRows(csvPath string) (int, error) {
 func ValidateCSVStructure(csvPath string) error {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return fmt.Errorf("failed to open CSV file: %w", err)
+		return CroissantError{
+			Message: "failed to open CSV file",
+			Value:   err,
+		}
 	}
 	defer file.Close()
 
@@ -286,11 +306,17 @@ func ValidateCSVStructure(csvPath string) error {
 	// Read first row (headers)
 	headers, err := reader.Read()
 	if err != nil {
-		return fmt.Errorf("failed to read CSV headers: %w", err)
+		return CroissantError{
+			Message: "failed to read CSV headers",
+			Value:   err,
+		}
 	}
 
 	if len(headers) == 0 {
-		return fmt.Errorf("CSV file has no columns")
+		return CroissantError{
+			Message: "CSV file has no columns",
+			Value:   nil,
+		}
 	}
 
 	// Check for duplicate headers
@@ -298,10 +324,16 @@ func ValidateCSVStructure(csvPath string) error {
 	for _, header := range headers {
 		cleanHeader := strings.TrimSpace(header)
 		if cleanHeader == "" {
-			return fmt.Errorf("CSV file has empty column header")
+			return CroissantError{
+				Message: "CSV file has empty column header",
+				Value:   nil,
+			}
 		}
 		if headerMap[cleanHeader] {
-			return fmt.Errorf("CSV file has duplicate column header: %s", cleanHeader)
+			return CroissantError{
+				Message: "CSV file has duplicate column header",
+				Value:   cleanHeader,
+			}
 		}
 		headerMap[cleanHeader] = true
 	}
