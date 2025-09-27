@@ -257,13 +257,9 @@ type DataTypeContext struct {
 }
 
 // Metadata represents the complete Croissant metadata
-// schema.org/Dataset
 type Metadata struct {
-	// JSON-LD context definitions.
-	Context Context `json:"@context"`
-	// Must be schema.org/Dataset.
-	Type string `json:"@type"`
-	// The name of the dataset.
+	Context       Context        `json:"@context"`
+	Type          string         `json:"@type"`
 	Name          string         `json:"name"`
 	Description   string         `json:"description,omitempty"`
 	ConformsTo    string         `json:"conformsTo"`
