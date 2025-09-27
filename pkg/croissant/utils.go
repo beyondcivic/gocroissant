@@ -4,6 +4,7 @@ package croissant
 import (
 	"crypto/sha256"
 	"encoding/csv"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -25,7 +26,7 @@ func CalculateSHA256(filePath string) (string, error) {
 		return "", CroissantError{Message: "failed to calculate hash: %w", Value: err}
 	}
 
-	return fmt.Sprintf("%x", hash.Sum(nil)), nil
+	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
 // GetCSVColumns reads the column names and first row from a CSV file
@@ -140,9 +141,7 @@ func ValidateOutputPath(outputPath string) error {
 		}
 	}
 	file.Close()
-	_ = os.Remove(tempFile) // Clean up the temporary file, ignore error
-
-	return nil
+	return os.Remove(tempFile) // Clean up the temporary file
 }
 
 // DetectCSVDelimiter attempts to detect the CSV delimiter
