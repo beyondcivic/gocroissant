@@ -3,7 +3,6 @@ package croissant
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Field represents a field in the Croissant metadata
@@ -98,7 +97,7 @@ func (k *RecordSetKey) UnmarshalJSON(data []byte) error {
 	}
 
 	// Return error if neither format worked
-	return fmt.Errorf("key must be either a single key object or an array of key objects")
+	return CroissantError{Message: "key must be either a single key object or an array of key objects"}
 }
 
 // IsComposite returns true if this is a composite key
@@ -149,7 +148,7 @@ func (d *DataType) UnmarshalJSON(data []byte) error {
 	}
 
 	// Return error if neither format worked
-	return fmt.Errorf("dataType must be either a string or an array of strings")
+	return CroissantError{Message: "dataType must be either a string or an array of strings"}
 }
 
 // IsArray returns true if this is an array of data types

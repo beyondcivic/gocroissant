@@ -270,7 +270,7 @@ func GenerateMetadata(csvPath string, outputPath string) (string, error) {
 
 	// Check if there are validation errors
 	if metadata.HasErrors() {
-		return "", fmt.Errorf("validation failed: %s", metadata.Report())
+		return "", CroissantError{Message: "validation failed", Value: metadata.Report()}
 	}
 
 	return outputPath, nil
@@ -282,20 +282,20 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 	fileName := filepath.Base(csvPath)
 	fileInfo, err := os.Stat(csvPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get file info: %w", err)
+		return nil, CroissantError{Message: "failed to get file info", Value: err}
 	}
 	fileSize := fileInfo.Size()
 
 	// Calculate SHA-256 hash
 	fileSHA256, err := CalculateSHA256(csvPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to calculate SHA-256: %w", err)
+		return nil, CroissantError{Message: "failed to calculate SHA-256", Value: err}
 	}
 
 	// Get column information
 	headers, firstRow, err := GetCSVColumns(csvPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read CSV: %w", err)
+		return nil, CroissantError{Message: "failed to read CSV", Value: err}
 	}
 
 	// Create fields based on CSV columns with data type inference
@@ -365,23 +365,23 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 		// Marshal metadata to JSON-LD with proper indentation
 		metadataJSON, err := json.MarshalIndent(metadata, "", "  ")
 		if err != nil {
-			return nil, fmt.Errorf("failed to marshal JSON-LD: %w", err)
+			return nil, CroissantError{Message: "failed to marshal JSON-LD: %w", Value: err}
 		}
 
 		// Validate that the generated JSON is valid JSON-LD
 		processor := NewJSONLDProcessor()
 		if err := processor.ValidateJSONLD(metadataJSON); err != nil {
-			return nil, fmt.Errorf("generated invalid JSON-LD: %w", err)
+			return nil, CroissantError{Message: "generated invalid JSON-LD", Value: err}
 		}
 
 		// Ensure directory exists
-		if err := os.MkdirAll(filepath.Dir(outputPath), 0755); err != nil {
-			return nil, fmt.Errorf("failed to create directory: %w", err)
+		if err := os.MkdirAll(filepath.Dir(outputPath), 0750); err != nil {
+			return nil, CroissantError{Message: "failed to create directory", Value: err}
 		}
 
 		// Write metadata to file
-		if err := os.WriteFile(outputPath, metadataJSON, 0644); err != nil {
-			return nil, fmt.Errorf("failed to write file: %w", err)
+		if err := os.WriteFile(outputPath, metadataJSON, 0600); err != nil {
+			return nil, CroissantError{Message: "failed to write file", Value: err}
 		}
 	}
 

@@ -3,7 +3,6 @@ package croissant
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/piprate/json-gold/ld"
@@ -28,13 +27,13 @@ func (j *JSONLDProcessor) ParseJSONLD(data []byte) (map[string]interface{}, erro
 	// First, parse as regular JSON to get a map
 	var jsonDoc interface{}
 	if err := json.Unmarshal(data, &jsonDoc); err != nil {
-		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+		return nil, CroissantError{Message: "failed to parse JSON: %w", Value: err}
 	}
 
 	// Expand the JSON-LD document using json-gold
 	expanded, err := j.processor.Expand(jsonDoc, j.options)
 	if err != nil {
-		return nil, fmt.Errorf("failed to expand JSON-LD: %w", err)
+		return nil, CroissantError{Message: "failed to expand JSON-LD: %w", Value: err}
 	}
 
 	// Convert expanded document back to map[string]interface{}
@@ -47,14 +46,14 @@ func (j *JSONLDProcessor) ParseJSONLD(data []byte) (map[string]interface{}, erro
 		return expandedMap, nil
 	}
 
-	return nil, fmt.Errorf("unexpected expanded JSON-LD structure")
+	return nil, CroissantError{Message: "unexpected expanded JSON-LD structure"}
 }
 
 // CompactJSONLD compacts an expanded JSON-LD document with the given context
 func (j *JSONLDProcessor) CompactJSONLD(expanded interface{}, context map[string]interface{}) (map[string]interface{}, error) {
 	compacted, err := j.processor.Compact(expanded, context, j.options)
 	if err != nil {
-		return nil, fmt.Errorf("failed to compact JSON-LD: %w", err)
+		return nil, CroissantError{Message: "failed to compact JSON-LD: %w", Value: err}
 	}
 
 	// The compacted result should already be a map[string]interface{}
@@ -65,13 +64,13 @@ func (j *JSONLDProcessor) CompactJSONLD(expanded interface{}, context map[string
 func (j *JSONLDProcessor) ValidateJSONLD(data []byte) error {
 	var jsonDoc interface{}
 	if err := json.Unmarshal(data, &jsonDoc); err != nil {
-		return fmt.Errorf("invalid JSON: %w", err)
+		return CroissantError{Message: "invalid JSON: %w", Value: err}
 	}
 
 	// Try to expand the document - this will fail if it's not valid JSON-LD
 	_, err := j.processor.Expand(jsonDoc, j.options)
 	if err != nil {
-		return fmt.Errorf("invalid JSON-LD: %w", err)
+		return CroissantError{Message: "invalid JSON-LD: %w", Value: err}
 	}
 
 	return nil
@@ -88,7 +87,7 @@ func (j *JSONLDProcessor) ParseCroissantMetadata(data []byte) (*Metadata, error)
 	// The json-gold validation ensures it's properly structured JSON-LD
 	var metadata Metadata
 	if err := json.Unmarshal(data, &metadata); err != nil {
-		return nil, fmt.Errorf("failed to parse Croissant metadata: %w", err)
+		return nil, CroissantError{Message: "failed to parse Croissant metadata: %w", Value: err}
 	}
 
 	return &metadata, nil
