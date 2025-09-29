@@ -96,7 +96,7 @@ func GoMarkDoc() error {
 	}
 
 	docFiles := map[string]string{
-		"../pkg/croissant": "croissant-types.md",
+		"../pkg/croissant": "gocroissant.md",
 	}
 
 	for pkgPath, pkgDoc := range docFiles {
