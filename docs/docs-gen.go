@@ -6,6 +6,7 @@ package main
 import (
 	"errors"
 	"go/build"
+	"log"
 	"os"
 
 	cmd "github.com/beyondcivic/gocroissant/cmd/gocroissant"
@@ -86,7 +87,7 @@ func GoMarkDoc() error {
 	repo := lang.Repo{
 		Remote:        "https://github.com:beyondcivic/gocroissant",
 		DefaultBranch: "main",
-		PathFromRoot:  "../",
+		PathFromRoot:  "",
 	}
 
 	err = os.Mkdir("godoc", 0750)
@@ -124,12 +125,12 @@ func GoMarkDoc() error {
 
 func main() {
 	if err := GenerateCobraDocs(); err != nil {
-		return
+		log.Fatal(err)
 	}
 	if err := GoMarkDoc(); err != nil {
-		return
+		log.Fatal(err)
 	}
 	if err := GenerateTypeSchemas(); err != nil {
-		return
+		log.Fatal(err)
 	}
 }
