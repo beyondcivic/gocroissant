@@ -333,3 +333,13 @@ func NewArrayDataType(dataTypes ...string) DataType {
 		ArrayType: dataTypes,
 	}
 }
+
+// ValidateSource validates the source configuration
+func (fs FieldSource) ValidateSource() bool {
+	// If no source is configured, it's invalid unless it's a parent field with subfields
+	hasFileObject := fs.FileObject.ID != "" || fs.FileSet.ID != ""
+	hasExtract := fs.Extract.Column != "" || fs.Extract.JSONPath != "" || fs.Extract.FileProperty != "" || fs.Extract.Regex != ""
+
+	// A valid source needs either a file object reference with extraction info, or other valid configurations
+	return hasFileObject && (hasExtract || fs.Format != "")
+}

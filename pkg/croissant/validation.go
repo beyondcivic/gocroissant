@@ -249,6 +249,10 @@ func validateRecordSetKey(rs *RecordSetNode, issues *Issues) {
 
 // ValidateFieldNode validates a field node
 func ValidateFieldNode(field *FieldNode, issues *Issues, options ValidationOptions) {
+	if field == nil {
+		return
+	}
+
 	if field.Name == "" {
 		issues.AddError("Property \"https://schema.org/name\" is mandatory, but does not exist.", field)
 	}
@@ -257,13 +261,13 @@ func ValidateFieldNode(field *FieldNode, issues *Issues, options ValidationOptio
 		issues.AddError(fmt.Sprintf("\"%s\" should have an attribute \"@type\": \"http://mlcommons.org/croissant/Field\". Got %s instead.", field.Name, field.Type), field)
 	}
 
+	// More explicit dataType validation
 	if field.DataType.GetFirstType() == "" {
-		issues.AddError("The field does not specify a valid http://mlcommons.org/croissant/dataType, neither does any of its predecessor.", field)
+		issues.AddError(fmt.Sprintf("Field \"%s\" is missing required \"dataType\" property.", field.Name), field)
 	} else if options.CheckDataTypes {
-		allValid, invalidTypes := validateDataTypes(field.DataType)
-		if !allValid {
+		if isValid, invalidTypes := validateDataTypes(field.DataType); !isValid {
 			for _, invalidType := range invalidTypes {
-				issues.AddWarning(fmt.Sprintf("DataType \"%s\" is not a recognized schema.org type.", invalidType), field)
+				issues.AddError(fmt.Sprintf("Field \"%s\" has invalid dataType \"%s\". Valid types include: sc:Text, sc:Number, sc:Boolean, sc:DateTime, sc:URL, sc:GeoCoordinates, sc:ImageObject, cr:BoundingBox, etc.", field.Name, invalidType), field)
 			}
 		}
 	}
@@ -271,13 +275,48 @@ func ValidateFieldNode(field *FieldNode, issues *Issues, options ValidationOptio
 	// Strict mode validations for fields
 	if options.StrictMode {
 		if field.Description == "" {
-			issues.AddWarning(fmt.Sprintf("Field \"%s\" is missing a description.", field.Name), field)
+			issues.AddWarning(fmt.Sprintf("Field \"%s\" is missing recommended \"description\" property.", field.Name), field)
 		}
 	}
 
-	if !field.Source.ValidateSource() {
-		issues.AddError(fmt.Sprintf("Node \"%s\" is a field and has no source. Please, use http://mlcommons.org/croissant/source to specify the source.", field.ID), field)
+	// Check if field has subfields - use len check that's safe even if SubFields is nil
+	hasSubFields := field.SubField != nil && len(field.SubField) > 0
+
+	// Only validate source for leaf fields (fields without subfields)
+	if !hasSubFields {
+		// Check if source is properly configured
+		if !hasValidFieldSource(field) {
+			issues.AddError(fmt.Sprintf("Field \"%s\" has invalid or missing source configuration.", field.Name), field)
+		}
 	}
+
+	// Validate subfields recursively
+	if field.SubField != nil {
+		for _, subField := range field.SubField {
+			if subField != nil {
+				subField.SetParent(field)
+				ValidateFieldNode(subField, issues, options)
+			}
+		}
+	}
+}
+
+// hasValidFieldSource checks if a field node has valid source configuration
+func hasValidFieldSource(field *FieldNode) bool {
+	if field == nil {
+		return false
+	}
+
+	// Check if the source has file object reference and extraction method
+	hasFileObject := field.Source.FileObject.ID != ""
+	hasExtract := field.Source.Extract.Column != "" ||
+		field.Source.Extract.JSONPath != "" ||
+		field.Source.Extract.FileProperty != "" ||
+		field.Source.Extract.Regex != ""
+	hasFormat := field.Source.Format != ""
+
+	// A valid source needs either a file object reference with extraction info, or format
+	return hasFileObject && (hasExtract || hasFormat)
 }
 
 // ValidateCrossReferences validates that all references are valid
@@ -443,42 +482,6 @@ func isValidEncodingFormat(format string) bool {
 	return validFormats[format] || strings.HasPrefix(format, "text/") || strings.HasPrefix(format, "application/") || strings.HasPrefix(format, "image/") || strings.HasPrefix(format, "audio/") || strings.HasPrefix(format, "video/")
 }
 
-func isValidDataType(dataType string) bool {
-	validTypes := map[string]bool{
-		"sc:Text":        true,
-		"sc:Integer":     true,
-		"sc:Number":      true,
-		"sc:Float":       true,
-		"sc:Boolean":     true,
-		"sc:Date":        true,
-		"sc:DateTime":    true,
-		"sc:Time":        true,
-		"sc:URL":         true,
-		"sc:ImageObject": true,
-		"sc:name":        true, // Added for categorical data enumerations
-		"sc:Enumeration": true, // Added for enumeration RecordSet dataType
-		"cr:BoundingBox": true,
-		// Wikidata entities are also valid (they start with "wd:")
-	}
-
-	// Check if it's a known schema.org or croissant type
-	if validTypes[dataType] {
-		return true
-	}
-
-	// Allow Wikidata entity IDs (format: wd:Q followed by numbers)
-	if len(dataType) > 3 && dataType[:3] == "wd:" {
-		return true
-	}
-
-	// Allow full URLs (https://schema.org/... or https://www.wikidata.org/...)
-	if len(dataType) > 8 && (dataType[:8] == "https://" || dataType[:7] == "http://") {
-		return true
-	}
-
-	return false
-}
-
 // validateDataTypes validates all data types in a DataType (single or array)
 func validateDataTypes(dt DataType) (bool, []string) {
 	types := dt.GetTypes()
@@ -490,7 +493,7 @@ func validateDataTypes(dt DataType) (bool, []string) {
 	allValid := true
 
 	for _, dataType := range types {
-		if !isValidDataType(dataType) {
+		if !IsValidDataType(dataType) {
 			allValid = false
 			invalidTypes = append(invalidTypes, dataType)
 		}

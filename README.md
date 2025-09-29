@@ -1,6 +1,6 @@
 # gocroissant
 
-[![Version](https://img.shields.io/badge/version-v0.2.4-blue)](https://github.com/beyondcivic/gocroissant/releases/tag/v0.2.4)
+[![Version](https://img.shields.io/badge/version-v0.2.5-blue)](https://github.com/beyondcivic/gocroissant/releases/tag/v0.2.5)
 [![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go)](https://golang.org/doc/devel/release.html)
 [![License](https://img.shields.io/badge/license-TBD-red)](LICENSE)
 

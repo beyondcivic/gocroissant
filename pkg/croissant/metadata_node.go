@@ -102,59 +102,23 @@ func FromMetadata(metadata Metadata) *MetadataNode {
 			},
 			Type:        rs.Type,
 			Description: rs.Description,
-			DataType:    *rs.DataType,
 			Key:         rs.Key,
 			Data:        rs.Data,
 		}
+
+		// Handle DataType safely - check for nil
+		if rs.DataType != nil {
+			rsNode.DataType = *rs.DataType
+		} else {
+			// Set empty DataType if nil
+			rsNode.DataType = DataType{}
+		}
+
 		rsNode.SetParent(node)
 
 		// Convert fields
 		for _, field := range rs.Fields {
-			fieldNode := &FieldNode{
-				BaseNode: BaseNode{
-					ID:   field.ID,
-					Name: field.Name,
-				},
-				Type:        field.Type,
-				Description: field.Description,
-				DataType:    field.DataType,
-				Source: SourceNode{
-					Extract: ExtractNode{
-						Column:       field.Source.Extract.Column,
-						JSONPath:     field.Source.Extract.JSONPath,
-						FileProperty: field.Source.Extract.FileProperty,
-					},
-					FileObject: FileObjectRef{
-						ID: field.Source.FileObject.ID,
-					},
-					FileSet: FileObjectRef{
-						ID: field.Source.FileSet.ID,
-					},
-					Transform: field.Source.Transform,
-					Format:    field.Source.Format,
-				},
-				Repeated:   field.Repeated,
-				Examples:   field.Examples,
-				References: field.References,
-			}
-			fieldNode.SetParent(rsNode)
-
-			// Convert subfields if they exist
-			for _, subField := range field.SubField {
-				subFieldNode := &FieldNode{
-					BaseNode: BaseNode{
-						ID:   subField.ID,
-						Name: subField.Name,
-					},
-					Type:        subField.Type,
-					Description: subField.Description,
-					DataType:    subField.DataType,
-					// Note: subfields may have their own sources, but for now we'll handle basic conversion
-				}
-				subFieldNode.SetParent(fieldNode)
-				fieldNode.SubField = append(fieldNode.SubField, subFieldNode)
-			}
-
+			fieldNode := convertFieldToNode(field, rsNode)
 			rsNode.Fields = append(rsNode.Fields, fieldNode)
 		}
 
@@ -162,6 +126,47 @@ func FromMetadata(metadata Metadata) *MetadataNode {
 	}
 
 	return node
+}
+
+// convertFieldToNode converts a Field to a FieldNode with proper nil handling
+func convertFieldToNode(field Field, parent Node) *FieldNode {
+	fieldNode := &FieldNode{
+		BaseNode: BaseNode{
+			ID:   field.ID,
+			Name: field.Name,
+		},
+		Type:        field.Type,
+		Description: field.Description,
+		DataType:    field.DataType,
+		Source: SourceNode{
+			Extract: ExtractNode{
+				Column:       field.Source.Extract.Column,
+				JSONPath:     field.Source.Extract.JSONPath,
+				Regex:        field.Source.Extract.Regex,
+				FileProperty: field.Source.Extract.FileProperty,
+			},
+			FileObject: FileObjectRef{
+				ID: field.Source.FileObject.ID,
+			},
+			FileSet: FileObjectRef{
+				ID: field.Source.FileSet.ID,
+			},
+			Transform: field.Source.Transform,
+			Format:    field.Source.Format,
+		},
+		Repeated:   field.Repeated,
+		Examples:   field.Examples,
+		References: field.References,
+	}
+	fieldNode.SetParent(parent)
+
+	// Convert subfields if they exist
+	for _, subField := range field.SubField {
+		subFieldNode := convertFieldToNode(subField, fieldNode)
+		fieldNode.SubField = append(fieldNode.SubField, subFieldNode)
+	}
+
+	return fieldNode
 }
 
 // DistributionNode represents a file distribution
@@ -410,6 +415,7 @@ func (s *SourceNode) ValidateSource() bool {
 
 // ExtractNode represents extraction details
 type ExtractNode struct {
+	Regex        string `json:"regex,omitempty"`
 	Column       string `json:"column,omitempty"`
 	JSONPath     string `json:"jsonPath,omitempty"`
 	FileProperty string `json:"fileProperty,omitempty"`

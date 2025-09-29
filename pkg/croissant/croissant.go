@@ -71,16 +71,17 @@ func InferDataType(value string) string {
 func IsValidDataType(dataType string) bool {
 	validTypes := map[string]bool{
 		// Schema.org types
-		"sc:Text":        true,
-		"sc:Boolean":     true,
-		"sc:Integer":     true,
-		"sc:Number":      true,
-		"sc:DateTime":    true,
-		"sc:URL":         true,
-		"sc:ImageObject": true,
-		"sc:VideoObject": true,
-		"sc:Enumeration": true,
-		"sc:GeoShape":    true,
+		"sc:Text":           true,
+		"sc:Boolean":        true,
+		"sc:Integer":        true,
+		"sc:Number":         true,
+		"sc:DateTime":       true,
+		"sc:URL":            true,
+		"sc:ImageObject":    true,
+		"sc:VideoObject":    true,
+		"sc:Enumeration":    true,
+		"sc:GeoShape":       true,
+		"sc:GeoCoordinates": true,
 
 		// Croissant-specific types
 		"cr:Label":            true,
