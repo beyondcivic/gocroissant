@@ -13,12 +13,6 @@ var (
 
 	// Version is the service version
 	Version = "dev"
-
-	// GitHash is the hash of git commit the service is built from
-	GitHash = "dev"
-
-	// BuildTime build time in RFC3339 format
-	BuildTime = "now"
 )
 
 type Stamp struct {
