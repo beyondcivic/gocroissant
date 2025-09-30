@@ -1,3 +1,16 @@
+// Package version provides version information for gocroissant.
+//
+// This package contains build-time version information including version number,
+// build time, and Git commit hash. The version information is typically set during
+// the build process using Go build flags.
+//
+// # Usage
+//
+//	fmt.Printf("Version: %s\n", version.Version)
+//	fmt.Printf("Build info: %s\n", version.GetBuildInfo())
+//
+// The GetBuildInfo function provides detailed build information including
+// version, build time, Git commit, and Go version used for compilation.
 package version
 
 import (

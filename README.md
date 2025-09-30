@@ -1,7 +1,8 @@
 # gocroissant
 
-[![Version](https://img.shields.io/badge/version-v0.2.8-blue)](https://github.com/beyondcivic/gocroissant/releases/tag/v0.2.8)
+[![Version](https://img.shields.io/badge/version-v0.2.9-blue)](https://github.com/beyondcivic/gocroissant/releases/tag/v0.2.9)
 [![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go)](https://golang.org/doc/devel/release.html)
+[![Go Reference](https://pkg.go.dev/badge/github.com/beyondcivic/gocroissant.svg)](https://pkg.go.dev/github.com/beyondcivic/gocroissant)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A Go implementation for working with the [ML Commons Croissant](https://github.com/mlcommons/croissant) metadata format - a standardized way to describe machine learning datasets using JSON-LD.

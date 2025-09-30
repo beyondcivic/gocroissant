@@ -1,4 +1,34 @@
-// main.go
+// Package cmd provides the command-line interface for gocroissant.
+//
+// Gocroissant is a Go implementation for working with the ML Commons Croissant
+// metadata format - a standardized way to describe machine learning datasets using JSON-LD.
+//
+// The command-line tool provides functionality to:
+//   - Generate Croissant metadata from CSV files
+//   - Validate existing Croissant metadata files
+//   - Display version information
+//
+// # Usage Examples
+//
+// Generate metadata with default output path:
+//
+//	gocroissant generate data.csv
+//
+// Generate metadata with custom output path:
+//
+//	gocroissant generate data.csv -o output.json
+//
+// Generate and validate metadata:
+//
+//	gocroissant generate data.csv -o metadata.jsonld -v
+//
+// Validate existing metadata:
+//
+//	gocroissant validate metadata.json
+//
+// Show version information:
+//
+//	gocroissant version
 package cmd
 
 import (

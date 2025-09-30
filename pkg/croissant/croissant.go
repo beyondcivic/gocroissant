@@ -1,4 +1,42 @@
-// croissant.go
+// Package croissant provides functionality for working with the ML Commons Croissant
+// metadata format - a standardized way to describe machine learning datasets using JSON-LD.
+//
+// This package simplifies the creation of Croissant-compatible metadata from CSV data sources by
+// automatically inferring schema types from dataset content, generating complete valid JSON-LD
+// metadata, providing validation tools to ensure compatibility, and supporting the full
+// Croissant specification.
+//
+// # Basic Usage
+//
+// Generate metadata from a CSV file:
+//
+//	outputPath, err := croissant.GenerateMetadata("data.csv", "dataset.jsonld")
+//	if err != nil {
+//		log.Fatalf("Error generating metadata: %v", err)
+//	}
+//	fmt.Printf("Metadata saved to: %s\n", outputPath)
+//
+// # Data Type Inference
+//
+// The package automatically infers schema.org data types from CSV content:
+//   - Boolean values (true/false)
+//   - Integer numbers
+//   - Floating-point numbers
+//   - Dates in various formats
+//   - URLs
+//   - Default to Text for other content
+//
+// # Validation
+//
+// Validate existing Croissant metadata:
+//
+//	issues, err := croissant.ValidateMetadata("metadata.jsonld")
+//	if err != nil {
+//		log.Fatalf("Validation error: %v", err)
+//	}
+//	if len(issues) == 0 {
+//		fmt.Println("Validation passed")
+//	}
 package croissant
 
 import (
