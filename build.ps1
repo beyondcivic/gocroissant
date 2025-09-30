@@ -17,4 +17,4 @@ $env:GOARCH = "amd64"
 
 go build -v `
     -ldflags "-X 'github.com/beyondcivic/gocroissant/pkg/version.Version=$APP_VERSION' -X 'github.com/beyondcivic/gocroissant/pkg/version.GitHash=$GIT_HASH' -X 'github.com/beyondcivic/gocroissant/pkg/version.BuildTime=$BUILD_TIME'" `
-    -o ./bin/gocroissant ./cmd/gocroissant
+    -o ./bin/gocroissant .
