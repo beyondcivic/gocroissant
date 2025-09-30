@@ -33,11 +33,11 @@ type Field struct {
 
 // FieldSource represents the source information for a field
 type FieldSource struct {
-	Extract    Extract    `json:"extract,omitempty"`
-	FileObject FileObject `json:"fileObject,omitempty"`
-	FileSet    FileObject `json:"fileSet,omitempty"`
-	Transform  *Transform `json:"transform,omitempty"`
-	Format     string     `json:"format,omitempty"`
+	Extract    *Extract    `json:"extract,omitempty"`
+	FileObject *FileObject `json:"fileObject,omitempty"`
+	FileSet    *FileObject `json:"fileSet,omitempty"`
+	Transform  *Transform  `json:"transform,omitempty"`
+	Format     string      `json:"format,omitempty"`
 }
 
 // Extract represents the extraction information for a field source
@@ -372,8 +372,8 @@ type Transform struct {
 
 // Source represents a more complete source definition
 type Source struct {
-	Extract    Extract     `json:"extract,omitempty"`
-	FileObject FileObject  `json:"fileObject,omitempty"`
+	Extract    *Extract    `json:"extract,omitempty"`
+	FileObject *FileObject `json:"fileObject,omitempty"`
 	Field      string      `json:"field,omitempty"`
 	Transform  []Transform `json:"transform,omitempty"`
 }
