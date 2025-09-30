@@ -42,11 +42,14 @@ type FieldSource struct {
 
 // Extract represents the extraction information for a field source
 type Extract struct {
-	Column       string `json:"column,omitempty"`
-	JSONPath     string `json:"jsonPath,omitempty"`
-	Regex        string `json:"regex,omitempty"`
-	Separator    string `json:"separator,omitempty"`
+	// Extraction method
 	FileProperty string `json:"fileProperty,omitempty"`
+	// Name of the column (field) that contains values.
+	Column string `json:"column,omitempty"`
+	// A JSONPATH expression that extracts values.
+	JSONPath  string `json:"jsonPath,omitempty"`
+	Regex     string `json:"regex,omitempty"`
+	Separator string `json:"separator,omitempty"`
 }
 
 // FileObject represents a file object reference
@@ -228,17 +231,29 @@ func (d DataType) GetFirstType() string {
 
 // Distribution represents a file in the Croissant metadata
 type Distribution struct {
-	ID             string      `json:"@id"`
-	Type           string      `json:"@type"`
-	Name           string      `json:"name"`
-	Description    string      `json:"description,omitempty"`
-	ContentSize    string      `json:"contentSize,omitempty"`
-	ContentURL     string      `json:"contentUrl,omitempty"`
-	EncodingFormat string      `json:"encodingFormat"`
-	SHA256         string      `json:"sha256,omitempty"`
-	MD5            string      `json:"md5,omitempty"`
-	ContainedIn    *FileObject `json:"containedIn,omitempty"`
-	Includes       string      `json:"includes,omitempty"`
+	ID   string `json:"@id"`
+	Type string `json:"@type"`
+	// The name of the file.
+	Name string `json:"name"`
+	// Description of the file.
+	Description string `json:"description,omitempty"`
+	// File size in kb, mb, gb etc...
+	// Defaults to bytes if unit not specified.
+	ContentSize string `json:"contentSize,omitempty"`
+	// URL to the actual bytes of the file object.
+	ContentURL string `json:"contentUrl,omitempty"`
+	// Format of the file, given as a MIME type.
+	EncodingFormat string `json:"encodingFormat"`
+	// SHA256 checksum of the file contents.
+	SHA256 string `json:"sha256,omitempty"`
+	// MD5 checksum of the file contents.
+	MD5 string `json:"md5,omitempty"`
+	// A FileObject or FileSet this resource is contained in.
+	ContainedIn *FileObjectRef `json:"containedIn,omitempty"`
+	// A glob pattern of the files to include (FileSet).
+	Includes string `json:"includes,omitempty"`
+	// A glob pattern of the files to exclude (FileSet).
+	Excludes string `json:"excludes,omitempty"`
 }
 
 // RecordSet represents a record set in the Croissant metadata
@@ -304,24 +319,45 @@ type DataTypeContext struct {
 	Type string `json:"@type"`
 }
 
-// Metadata represents the complete Croissant metadata
+// Metadata represents the complete Croissant metadata for a dataset.
 type Metadata struct {
-	Context       Context        `json:"@context"`
-	Type          string         `json:"@type"`
-	Name          string         `json:"name"`
-	Description   string         `json:"description,omitempty"`
-	ConformsTo    string         `json:"conformsTo"`
-	DatePublished string         `json:"datePublished,omitempty"`
-	Version       string         `json:"version,omitempty"`
-	URL           string         `json:"url,omitempty"`
-	License       string         `json:"license,omitempty"`
-	CiteAs        string         `json:"citeAs,omitempty"`
-	Creator       interface{}    `json:"creator,omitempty"`
-	Publisher     interface{}    `json:"publisher,omitempty"`
-	Keywords      []string       `json:"keywords,omitempty"`
+	Context Context `json:"@context"`
+	// Dataset Type.  Must by `schema.org/Dataset`
+	Type string `json:"@type"`
+	// Name of the dataset.
+	Name string `json:"name"`
+	// Description of the dataset.
+	Description string `json:"description,omitempty"`
+	// Versioned schema the croissant metadata conforms to.
+	ConformsTo string `json:"conformsTo"`
+	// Date the dataset was published.
+	DatePublished string `json:"datePublished,omitempty"`
+	// Version of the dataset.
+	// Either an single int, or a MAJOR.MINOR.PATCH sematic version string.
+	// [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html)
+	Version string `json:"version,omitempty"`
+	// Url of the dataset, usually a webpage.
+	URL string `json:"url,omitempty"`
+	// Licenses of the dataset.
+	// Spec suggests using references from https://spdx.org/licenses/.
+	License string `json:"license,omitempty"`
+	// A citation to the dataset itself, or a citation for a publication that describes the dataset.
+	// Ideally, citations should be expressed using the bibtex format.
+	// Note that this is different from schema.org/citation, which is used to make a citation to another publication from this dataset.
+	CiteAs string `json:"citeAs,omitempty"`
+	// Creator(s) of the dataset.
+	Creator interface{} `json:"creator,omitempty"`
+	// Publisher(s) of the dataset.
+	Publisher interface{} `json:"publisher,omitempty"`
+	// A set of keywords associated with the dataset, either as free text, or a DefinedTerm with a formal definition.
+	Keywords []string `json:"keywords,omitempty"`
+	// Set of FileObject and FileSet definitions that describe the raw files of the dataset.
 	Distributions []Distribution `json:"distribution"`
-	RecordSets    []RecordSet    `json:"recordSet"`
-	IsLiveDataset bool           `json:"isLiveDataset,omitempty"`
+	// Set of RecordSet definitions that describe the content of the dataset.
+	RecordSets []RecordSet `json:"recordSet"`
+	// If true, dataset is non-static and may change over time.
+	// Distribution resources may not contain a checksum if they are expected to change.
+	IsLiveDataset bool `json:"isLiveDataset,omitempty"`
 }
 
 // Transform represents a data transformation
