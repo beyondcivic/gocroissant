@@ -7,16 +7,28 @@ import (
 
 // Field represents a field in the Croissant metadata
 type Field struct {
-	ID          string      `json:"@id"`
-	Type        string      `json:"@type"`
-	Name        string      `json:"name"`
-	Description string      `json:"description,omitempty"`
-	DataType    DataType    `json:"dataType"`
-	Source      FieldSource `json:"source,omitempty"`
-	Repeated    bool        `json:"repeated,omitempty"`
-	Examples    interface{} `json:"examples,omitempty"`
-	SubField    []Field     `json:"subField,omitempty"`
-	References  *FieldRef   `json:"references,omitempty"`
+	ID   string `json:"@id"`
+	Type string `json:"@type"`
+	// Name of the field.
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	// Data type of the field identified by the class URI.
+	// Usually either an atomic type (e.g, sc:Integer) or a semantic type (e.g., sc:GeoLocation).
+	DataType DataType `json:"dataType"`
+	// The data source of the field.
+	// Represented as a reference to a FileObject or FileSet's contents.
+	Source FieldSource `json:"source,omitempty"`
+	// If true, field is a list of `dataType` values.
+	Repeated bool `json:"repeated,omitempty"`
+	// Examples of field values.
+	Examples interface{} `json:"examples,omitempty"`
+	// Additional fields defined within this one.
+	SubField []Field `json:"subField,omitempty"`
+	// A special case of SubField.
+	// References one or more Fields in the same RecordSet.
+	ParentField []FieldRefSlice `json:"parentField,omitempty"`
+	// References one or more Fields that are part of a separate RecordSet.
+	References []FieldRefSlice `json:"references,omitempty"`
 }
 
 // FieldSource represents the source information for a field
@@ -51,6 +63,42 @@ type KeyRef struct {
 type FieldRef struct {
 	ID    string  `json:"@id,omitempty"`
 	Field *KeyRef `json:"field,omitempty"`
+}
+
+// Parses ONE or MANY FieldRefs.
+type FieldRefSlice []FieldRef
+
+func (ref *FieldRefSlice) UnmarshalJSON(data []byte) error {
+	// Try unmarshaling as a FieldRef
+	var single FieldRef
+	if err := json.Unmarshal(data, &single); err == nil {
+		*ref = []FieldRef{single}
+
+		return nil
+	}
+	// Try unmarshaling as a []FieldRef
+	var multi []FieldRef
+	if err := json.Unmarshal(data, &multi); err == nil {
+		*ref = multi
+
+		return nil
+	}
+	// Otherwise, error
+	return CroissantError{
+		Message: "FieldRefSlice: cannot unmarshal",
+		Value:   string(data),
+	}
+}
+
+func (ref FieldRefSlice) MarshalJSON() ([]byte, error) {
+	switch len(ref) {
+	case 0:
+		return []byte("{}"), nil
+	case 1:
+		return json.Marshal(ref[0])
+	default:
+		return json.Marshal(ref)
+	}
 }
 
 // DataType represents a data type that can be either a single string or an array of strings
