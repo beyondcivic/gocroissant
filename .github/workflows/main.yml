@@ -51,8 +51,8 @@ jobs:
         run: |
           CGO_ENABLED=1 GOOS=linux GOARCH=amd64 \
           go build -v \
-          -ldflags="-X github.com/beyondcivic/gocroissant/pkg/version.Version=${{ env.BUILD_NUMBER }} -X github.com/beyondcivic/gocroissant/pkg/version.GitHash=${{ github.sha }} -X github.com/beyondcivic/trustrelay-api/pkg/version.BuildTime=$(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
-          -o ./bin/${{ env.EXECUTABLE }} .
+          -ldflags="-X github.com/beyondcivic/gocroissant/pkg/version.Version=${{ env.BUILD_NUMBER }}" \
+          -o ./bin/${{ env.EXECUTABLE }} ./cmd/${{ env.EXECUTABLE }}
       
       - name: Upload artifact
         uses: actions/upload-artifact@v4
