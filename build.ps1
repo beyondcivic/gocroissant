@@ -15,4 +15,4 @@ $env:GOARCH = "amd64"
 
 go build -v `
     -ldflags "-X 'github.com/beyondcivic/gocroissant/pkg/version.Version=$APP_VERSION'" `
-    -o ./bin/gocroissant ./cmd/gocroissant
+    -o ./bin/gocroissant .
