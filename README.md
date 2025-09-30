@@ -1,8 +1,8 @@
 # gocroissant
 
-[![Version](https://img.shields.io/badge/version-v0.2.7-blue)](https://github.com/beyondcivic/gocroissant/releases/tag/v0.2.7)
+[![Version](https://img.shields.io/badge/version-v0.2.8-blue)](https://github.com/beyondcivic/gocroissant/releases/tag/v0.2.8)
 [![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go)](https://golang.org/doc/devel/release.html)
-[![License](https://img.shields.io/badge/license-TBD-red)](LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A Go implementation for working with the [ML Commons Croissant](https://github.com/mlcommons/croissant) metadata format - a standardized way to describe machine learning datasets using JSON-LD.
 
@@ -170,7 +170,7 @@ func InferDataType(value string) string {
 
 ## License
 
-TODO.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Build environment
 
