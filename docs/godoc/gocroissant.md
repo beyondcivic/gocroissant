@@ -4,7 +4,310 @@
 import "github.com/beyondcivic/gocroissant/pkg/croissant"
 ```
 
-croissant.go
+Package croissant provides functionality for working with the ML Commons Croissant metadata format \- a standardized way to describe machine learning datasets using JSON\-LD.
+
+This package simplifies the creation of Croissant\-compatible metadata from CSV data sources by automatically inferring schema types from dataset content, generating complete valid JSON\-LD metadata, providing validation tools to ensure compatibility, and supporting the full Croissant specification.
+
+### Basic Usage
+
+Generate metadata from a CSV file:
+
+```
+outputPath, err := croissant.GenerateMetadata("data.csv", "dataset.jsonld")
+if err != nil {
+	log.Fatalf("Error generating metadata: %v", err)
+}
+fmt.Printf("Metadata saved to: %s\n", outputPath)
+```
+
+### Advanced Generation with Validation
+
+Generate metadata and get the parsed structure for further processing:
+
+```
+metadata, err := croissant.GenerateMetadataWithValidation("data.csv", "dataset.jsonld")
+if err != nil {
+	log.Fatalf("Error generating metadata: %v", err)
+}
+
+// Validate the generated metadata
+options := croissant.DefaultValidationOptions()
+options.StrictMode = true
+validationResult := metadata.ValidateWithOptions(options)
+
+if validationResult.HasErrors() {
+	fmt.Println("Validation issues found:")
+	fmt.Println(validationResult.Report())
+}
+```
+
+### Data Type Inference
+
+The package automatically infers schema.org data types from CSV content:
+
+- Boolean values \(true/false, 1/0\) → sc:Boolean
+- Integer numbers \(123, \-456\) → sc:Integer
+- Floating\-point numbers \(3.14, 2.5e10\) → sc:Float
+- Dates in various formats \(2023\-01\-01, 01/15/2023\) → sc:Date
+- URLs \(https://example.com\) → sc:URL
+- Default to Text for other content → sc:Text
+
+### Validation
+
+Validate existing Croissant metadata:
+
+```
+issues, err := croissant.ValidateFile("metadata.jsonld")
+if err != nil {
+	log.Fatalf("Validation error: %v", err)
+}
+if !issues.HasErrors() {
+	fmt.Println("Validation passed")
+} else {
+	fmt.Println("Validation issues:")
+	fmt.Println(issues.Report())
+}
+```
+
+### Schema Compatibility Checking
+
+Compare two metadata files for schema compatibility:
+
+```
+reference, err := croissant.LoadMetadataFromFile("reference.jsonld")
+if err != nil {
+	log.Fatalf("Error loading reference: %v", err)
+}
+
+candidate, err := croissant.LoadMetadataFromFile("candidate.jsonld")
+if err != nil {
+	log.Fatalf("Error loading candidate: %v", err)
+}
+
+result := croissant.MatchMetadata(*reference, *candidate)
+if result.IsMatch {
+	fmt.Printf("Compatible! %d fields matched\n", len(result.MatchedFields))
+} else {
+	fmt.Printf("Incompatible: %d missing, %d type mismatches\n",
+		len(result.MissingFields), len(result.TypeMismatches))
+}
+```
+
+### JSON\\\-LD Processing
+
+Work directly with JSON\-LD data:
+
+```
+data, err := os.ReadFile("metadata.jsonld")
+if err != nil {
+	log.Fatal(err)
+}
+
+issues, err := croissant.ValidateJSON(data)
+if err != nil {
+	log.Fatalf("Validation error: %v", err)
+}
+
+fmt.Printf("Validation completed with %d errors and %d warnings\n",
+	len(issues.Errors), len(issues.Warnings))
+```
+
+### Validation Options
+
+Customize validation behavior:
+
+```
+options := croissant.ValidationOptions{
+	StrictMode:      true,  // Enable additional warnings
+	CheckDataTypes:  true,  // Validate data type specifications
+	ValidateURLs:    false, // Skip network calls for URL validation
+	CheckFileExists: true,  // Verify referenced files exist
+}
+
+issues, err := croissant.ValidateJSONWithOptions(data, options)
+if err != nil {
+	log.Fatal(err)
+}
+```
+
+Package croissant provides comprehensive functionality for working with the ML Commons Croissant metadata format \- a standardized way to describe machine learning datasets using JSON\-LD.
+
+### Overview
+
+The Croissant metadata format is an open standard designed to improve dataset documentation, searchability, and usage in machine learning workflows. This package simplifies working with Croissant metadata by providing:
+
+- Automatic metadata generation from CSV files with intelligent type inference
+- Comprehensive validation tools with detailed error reporting
+- Schema compatibility checking for dataset evolution
+- Full JSON\-LD processing and validation support
+- Extensible architecture supporting the complete Croissant specification
+
+### Quick Start
+
+Generate metadata from a CSV file:
+
+```
+outputPath, err := croissant.GenerateMetadata("data.csv", "metadata.jsonld")
+if err != nil {
+	log.Fatalf("Error: %v", err)
+}
+fmt.Printf("Metadata generated: %s\n", outputPath)
+```
+
+Validate existing metadata:
+
+```
+issues, err := croissant.ValidateFile("metadata.jsonld")
+if err != nil {
+	log.Fatalf("Validation error: %v", err)
+}
+
+if issues.HasErrors() {
+	fmt.Println("Validation failed:")
+	fmt.Println(issues.Report())
+} else {
+	fmt.Println("✓ Validation passed!")
+}
+```
+
+Compare metadata files for compatibility:
+
+```
+ref, _ := croissant.LoadMetadataFromFile("reference.jsonld")
+cand, _ := croissant.LoadMetadataFromFile("candidate.jsonld")
+
+result := croissant.MatchMetadata(*ref, *cand)
+if result.IsMatch {
+	fmt.Printf("✓ Compatible schemas with %d matched fields\n", len(result.MatchedFields))
+} else {
+	fmt.Printf("✗ Incompatible: %d missing, %d type mismatches\n",
+		len(result.MissingFields), len(result.TypeMismatches))
+}
+```
+
+### Features
+
+\#\# Metadata Generation
+
+The package automatically generates Croissant\-compliant metadata from CSV files:
+
+- Intelligent data type inference \(Boolean, Integer, Float, Date, URL, Text\)
+- SHA\-256 hash calculation for file integrity verification
+- Configurable output paths and validation options
+- Support for environment variable configuration
+
+\#\# Validation System
+
+Comprehensive validation with multiple modes:
+
+- JSON\-LD structure validation using the json\-gold library
+- Croissant specification compliance checking
+- Configurable validation modes \(standard, strict\)
+- Optional file existence and URL accessibility verification
+- Detailed error reporting with contextual information
+
+\#\# Schema Compatibility
+
+Advanced schema comparison for dataset evolution:
+
+- Field\-by\-field compatibility analysis
+- Intelligent type compatibility \(numeric type flexibility\)
+- Support for schema evolution \(additional fields allowed\)
+- Detailed reporting of matches, mismatches, and missing fields
+
+### Data Type Inference
+
+The package automatically maps CSV content to appropriate schema.org types:
+
+```
+Input Pattern              → Detected Type → Schema.org Type
+===========================================================
+true, false, 1, 0         → Boolean       → sc:Boolean
+123, -456                 → Integer       → sc:Integer
+3.14, 2.5e10             → Float         → sc:Float
+2023-01-01, 01/15/2023   → Date          → sc:Date
+https://example.com       → URL           → sc:URL
+Everything else           → Text          → sc:Text
+```
+
+### Validation Options
+
+Customize validation behavior using ValidationOptions:
+
+```
+options := croissant.ValidationOptions{
+	StrictMode:      true,  // Enable additional warnings
+	CheckDataTypes:  true,  // Validate data type specifications
+	ValidateURLs:    false, // Skip network calls for URL validation
+	CheckFileExists: true,  // Verify referenced files exist
+}
+
+issues, err := croissant.ValidateJSONWithOptions(data, options)
+```
+
+### Schema Compatibility Rules
+
+When comparing metadata files, the following rules apply:
+
+- All fields in the reference must exist in the candidate
+- Field data types must be compatible \(exact or compatible numeric types\)
+- Additional fields in the candidate are allowed \(backward compatibility\)
+- Compatible numeric types: sc:Number accepts sc:Float and sc:Integer
+
+### Error Handling
+
+All functions follow Go error handling conventions. Common error scenarios:
+
+- File I/O errors \(file not found, permission denied\)
+- JSON parsing errors \(invalid JSON syntax\)
+- JSON\-LD validation errors \(invalid JSON\-LD structure\)
+- Croissant validation errors \(specification non\-compliance\)
+- CSV parsing errors \(invalid structure or encoding\)
+
+### Performance Considerations
+
+- Metadata objects can be cached to avoid repeated file parsing
+- Large CSV files are processed incrementally for memory efficiency
+- URL validation is optional to avoid network latency
+- File existence checks can be disabled for performance
+
+### Examples
+
+See the examples directory for comprehensive usage examples:
+
+- Basic metadata generation and validation
+- Advanced validation with custom options
+- Schema compatibility checking
+- Error handling patterns
+
+### Related Tools
+
+This package includes a command\-line tool \(gocroissant\) that provides:
+
+- generate: Convert CSV files to Croissant metadata
+- validate: Validate existing metadata files
+- match: Compare metadata files for compatibility
+- info: Analyze CSV file structure
+- version: Display version information
+
+### Specification Compliance
+
+This implementation supports:
+
+- Croissant specification version 1.0
+- JSON\-LD 1.1 processing
+- Schema.org vocabulary
+- Full Croissant metadata structure
+
+### License
+
+MIT License \- see LICENSE file for details.
+
+### Related Projects
+
+- ML Commons Croissant: https://github.com/mlcommons/croissant
+- Croissant Editor: Web\-based metadata editor
+- Python Croissant: Python implementation
 
 issues.go
 
@@ -73,6 +376,7 @@ validation.go
 - [type Extract](<#Extract>)
 - [type ExtractNode](<#ExtractNode>)
 - [type Field](<#Field>)
+- [type FieldMismatch](<#FieldMismatch>)
 - [type FieldNode](<#FieldNode>)
   - [func \(f \*FieldNode\) Validate\(issues \*Issues\)](<#FieldNode.Validate>)
 - [type FieldRef](<#FieldRef>)
@@ -103,7 +407,10 @@ validation.go
   - [func \(j \*JSONLDProcessor\) ParseJSONLD\(data \[\]byte\) \(map\[string\]interface\{\}, error\)](<#JSONLDProcessor.ParseJSONLD>)
   - [func \(j \*JSONLDProcessor\) ValidateJSONLD\(data \[\]byte\) error](<#JSONLDProcessor.ValidateJSONLD>)
 - [type KeyRef](<#KeyRef>)
+- [type MatchResult](<#MatchResult>)
+  - [func MatchMetadata\(reference Metadata, candidate Metadata\) \*MatchResult](<#MatchMetadata>)
 - [type Metadata](<#Metadata>)
+  - [func LoadMetadataFromFile\(filePath string\) \(\*Metadata, error\)](<#LoadMetadataFromFile>)
 - [type MetadataNode](<#MetadataNode>)
   - [func FromMetadata\(metadata Metadata\) \*MetadataNode](<#FromMetadata>)
   - [func NewMetadataNode\(\) \*MetadataNode](<#NewMetadataNode>)
@@ -175,7 +482,7 @@ func ExtractCroissantProperties(expanded map[string]interface{}) map[string]inte
 ExtractCroissantProperties extracts common Croissant properties from expanded JSON\-LD
 
 <a name="GenerateMetadata"></a>
-## func [GenerateMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L265>)
+## func [GenerateMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L380>)
 
 ```go
 func GenerateMetadata(csvPath string, outputPath string) (string, error)
@@ -247,7 +554,7 @@ func GetPropertyValue(property interface{}) string
 GetPropertyValue extracts a simple string value from a JSON\-LD property
 
 <a name="InferDataType"></a>
-## func [InferDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L17>)
+## func [InferDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L132>)
 
 ```go
 func InferDataType(value string) string
@@ -256,7 +563,7 @@ func InferDataType(value string) string
 InferDataType infers the schema.org data type from a value
 
 <a name="InferSemanticDataType"></a>
-## func [InferSemanticDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L107>)
+## func [InferSemanticDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L222>)
 
 ```go
 func InferSemanticDataType(fieldName, value string, context map[string]interface{}) []string
@@ -274,7 +581,7 @@ func IsCSVFile(filePath string) bool
 IsCSVFile checks if a file appears to be a CSV file based on extension
 
 <a name="IsValidDataType"></a>
-## func [IsValidDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L71>)
+## func [IsValidDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L186>)
 
 ```go
 func IsValidDataType(dataType string) bool
@@ -458,7 +765,7 @@ type Context struct {
 ```
 
 <a name="CreateDefaultContext"></a>
-### func [CreateDefaultContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L216>)
+### func [CreateDefaultContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L331>)
 
 ```go
 func CreateDefaultContext() Context
@@ -692,6 +999,24 @@ type Field struct {
     Examples    interface{} `json:"examples,omitempty"`
     SubField    []Field     `json:"subField,omitempty"`
     References  *FieldRef   `json:"references,omitempty"`
+}
+```
+
+<a name="FieldMismatch"></a>
+## type [FieldMismatch](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/match.go#L54-L63>)
+
+FieldMismatch represents a field that exists in both metadata files but has incompatible data types. This indicates a schema compatibility issue that prevents the candidate from being used as a drop\-in replacement for the reference.
+
+```go
+type FieldMismatch struct {
+    // FieldName is the name of the field that has a type mismatch.
+    FieldName string
+
+    // ReferenceType is the data type expected by the reference metadata.
+    ReferenceType string
+
+    // CandidateType is the data type found in the candidate metadata.
+    CandidateType string
 }
 ```
 
@@ -1007,6 +1332,116 @@ type KeyRef struct {
 }
 ```
 
+<a name="MatchResult"></a>
+## type [MatchResult](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/match.go#L29-L49>)
+
+MatchResult represents the result of comparing two Croissant metadata files for schema compatibility. It provides detailed information about field matches, mismatches, and additional fields.
+
+The comparison checks whether a candidate metadata file is compatible with a reference metadata file. Compatibility means:
+
+- All fields from the reference must exist in the candidate
+- Field data types must be compatible \(exact match or compatible numeric types\)
+- The candidate may have additional fields \(this doesn't affect compatibility\)
+
+Example usage:
+
+```
+ref, _ := croissant.LoadMetadataFromFile("reference.jsonld")
+cand, _ := croissant.LoadMetadataFromFile("candidate.jsonld")
+result := croissant.MatchMetadata(*ref, *cand)
+
+if result.IsMatch {
+	fmt.Printf("Compatible! %d fields matched\n", len(result.MatchedFields))
+} else {
+	fmt.Printf("Issues: %d missing, %d type mismatches\n",
+		len(result.MissingFields), len(result.TypeMismatches))
+}
+```
+
+```go
+type MatchResult struct {
+    // IsMatch indicates whether the candidate is compatible with the reference.
+    // True if all reference fields exist in candidate with compatible types.
+    IsMatch bool
+
+    // MissingFields lists field names that exist in reference but not in candidate.
+    // These represent compatibility violations.
+    MissingFields []string
+
+    // TypeMismatches lists fields that exist in both files but have incompatible data types.
+    // These represent compatibility violations.
+    TypeMismatches []FieldMismatch
+
+    // ExtraFields lists field names that exist in candidate but not in reference.
+    // These do not affect compatibility but may be useful for information.
+    ExtraFields []string
+
+    // MatchedFields lists field names that exist in both files with compatible types.
+    // These represent successful matches.
+    MatchedFields []string
+}
+```
+
+<a name="MatchMetadata"></a>
+### func [MatchMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/match.go#L114>)
+
+```go
+func MatchMetadata(reference Metadata, candidate Metadata) *MatchResult
+```
+
+MatchMetadata compares two Croissant metadata objects to check if the candidate is compatible with the reference. The candidate can have additional fields, but all reference fields must exist in the candidate with matching data types.
+
+Compatibility Rules:
+
+- All fields in the reference must exist in the candidate
+- Field data types must be compatible \(see type compatibility below\)
+- Additional fields in the candidate are allowed and don't affect compatibility
+
+Type Compatibility:
+
+- Exact type matches \(sc:Text = sc:Text\)
+- Numeric type compatibility \(sc:Number accepts sc:Float, sc:Integer\)
+- Schema.org prefix normalization \(sc:Text = https://schema.org/Text\)
+
+The function returns a MatchResult containing detailed information about:
+
+- Whether the schemas are compatible \(IsMatch\)
+- Successfully matched fields \(MatchedFields\)
+- Missing required fields \(MissingFields\)
+- Type mismatches \(TypeMismatches\)
+- Additional fields in candidate \(ExtraFields\)
+
+Example:
+
+```
+reference, err := croissant.LoadMetadataFromFile("reference.jsonld")
+if err != nil {
+	log.Fatal(err)
+}
+
+candidate, err := croissant.LoadMetadataFromFile("candidate.jsonld")
+if err != nil {
+	log.Fatal(err)
+}
+
+result := croissant.MatchMetadata(*reference, *candidate)
+
+if result.IsMatch {
+	fmt.Printf("✓ Compatible schemas with %d matched fields\n", len(result.MatchedFields))
+	if len(result.ExtraFields) > 0 {
+		fmt.Printf("  Candidate has %d additional fields\n", len(result.ExtraFields))
+	}
+} else {
+	fmt.Printf("✗ Incompatible schemas:\n")
+	if len(result.MissingFields) > 0 {
+		fmt.Printf("  Missing %d required fields\n", len(result.MissingFields))
+	}
+	if len(result.TypeMismatches) > 0 {
+		fmt.Printf("  %d type mismatches found\n", len(result.TypeMismatches))
+	}
+}
+```
+
 <a name="Metadata"></a>
 ## type [Metadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L260-L277>)
 
@@ -1032,6 +1467,48 @@ type Metadata struct {
     IsLiveDataset bool           `json:"isLiveDataset,omitempty"`
 }
 ```
+
+<a name="LoadMetadataFromFile"></a>
+### func [LoadMetadataFromFile](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/match.go#L271>)
+
+```go
+func LoadMetadataFromFile(filePath string) (*Metadata, error)
+```
+
+LoadMetadataFromFile loads and parses a Croissant metadata file from disk. It validates the JSON\-LD structure and parses it into a Metadata object.
+
+The function performs the following steps:
+
+1. Reads the file from the specified path
+2. Validates that the content is valid JSON\-LD using the json\-gold library
+3. Parses the JSON\-LD into a Croissant Metadata structure
+4. Returns the parsed metadata or an error if any step fails
+
+Supported file formats:
+
+- JSON\-LD files \(.jsonld, .json\)
+- Must conform to Croissant metadata specification
+- Must be valid JSON\-LD documents
+
+Example:
+
+```
+metadata, err := croissant.LoadMetadataFromFile("dataset.jsonld")
+if err != nil {
+	log.Fatalf("Failed to load metadata: %v", err)
+}
+
+fmt.Printf("Loaded dataset: %s\n", metadata.Name)
+fmt.Printf("Record sets: %d\n", len(metadata.RecordSets))
+fmt.Printf("Distributions: %d\n", len(metadata.Distributions))
+```
+
+Common errors:
+
+- File not found or permission denied
+- Invalid JSON syntax
+- Invalid JSON\-LD structure
+- Non\-compliant Croissant metadata format
 
 <a name="MetadataNode"></a>
 ## type [MetadataNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L7-L18>)
@@ -1093,7 +1570,7 @@ type MetadataWithValidation struct {
 ```
 
 <a name="GenerateMetadataWithValidation"></a>
-### func [GenerateMetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L280>)
+### func [GenerateMetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L395>)
 
 ```go
 func GenerateMetadataWithValidation(csvPath string, outputPath string) (*MetadataWithValidation, error)
@@ -1198,7 +1675,7 @@ type RecordSet struct {
 ```
 
 <a name="CreateEnumerationRecordSet"></a>
-### func [CreateEnumerationRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L153>)
+### func [CreateEnumerationRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L268>)
 
 ```go
 func CreateEnumerationRecordSet(id, name string, values []string, urls []string) RecordSet
@@ -1207,7 +1684,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data
 
 <a name="CreateSplitRecordSet"></a>
-### func [CreateSplitRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L201>)
+### func [CreateSplitRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L316>)
 
 ```go
 func CreateSplitRecordSet() RecordSet
