@@ -49,7 +49,7 @@ import (
 	"time"
 )
 
-// CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data
+// CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data.
 func CreateEnumerationRecordSet(id, name string, values []string, urls []string) RecordSet {
 	fields := []Field{
 		{
@@ -97,7 +97,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 	return recordSet
 }
 
-// CreateSplitRecordSet creates a standard ML split RecordSet
+// CreateSplitRecordSet creates a standard ML split RecordSet.
 func CreateSplitRecordSet() RecordSet {
 	recordSet := CreateEnumerationRecordSet(
 		"splits",
@@ -112,7 +112,7 @@ func CreateSplitRecordSet() RecordSet {
 	return recordSet
 }
 
-// CreateDefaultContext creates the ML Commons Croissant 1.0 compliant context
+// CreateDefaultContext creates the ML Commons Croissant 1.0 compliant context.
 func CreateDefaultContext() Context {
 	return Context{
 		Language:   "en",
@@ -161,7 +161,7 @@ func CreateDefaultContext() Context {
 	}
 }
 
-// GenerateMetadata generates Croissant metadata from a CSV file (simple API)
+// GenerateMetadata generates Croissant metadata from a CSV file (simple API).
 func GenerateMetadata(csvPath string, outputPath string) (string, error) {
 	metadata, err := GenerateMetadataWithValidation(csvPath, outputPath)
 	if err != nil {
@@ -176,7 +176,7 @@ func GenerateMetadata(csvPath string, outputPath string) (string, error) {
 	return outputPath, nil
 }
 
-// GenerateMetadataWithValidation generates Croissant metadata with validation from a CSV file
+// GenerateMetadataWithValidation generates Croissant metadata with validation from a CSV file.
 func GenerateMetadataWithValidation(csvPath string, outputPath string) (*MetadataWithValidation, error) {
 	// Get file information
 	fileName := filepath.Base(csvPath)
@@ -294,7 +294,7 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 	return metadataWithValidation, nil
 }
 
-// cleanFieldName cleans field names to be valid identifiers
+// cleanFieldName cleans field names to be valid identifiers.
 func cleanFieldName(name string) string {
 	// Replace spaces and special characters with underscores
 	reg := regexp.MustCompile(`[^a-zA-Z0-9_]`)

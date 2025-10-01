@@ -10,7 +10,7 @@ import (
 )
 
 // Supported value data types:
-// Schema.org data types
+// Schema.org data types.
 const VT_scText string = "sc:Text"
 const VT_scBool string = "sc:Boolean"
 const VT_scInt string = "sc:Integer"
@@ -23,13 +23,13 @@ const VT_scEnum string = "sc:Enumeration"
 const VT_scGeoShape string = "sc:GeoShape"
 const VT_scGeoCoord string = "sc:GeoCoordinates"
 
-// Croissant-specific types
+// Croissant-specific types:
 const VT_crLabel string = "cr:Label"
 const VT_crSplit string = "cr:Split"
 const VT_crBBox string = "cr:BoundingBox"
 const VT_crSegMask string = "cr:SegmentationMask"
 
-// Croissant Split types
+// Croissant Split types:
 const VT_crSplitTrain string = "cr:TrainingSplit"
 const VT_crSplitVal string = "cr:ValidationSplit"
 const VT_crSplitTest string = "cr:TestSplit"
@@ -38,7 +38,6 @@ const VT_crSplitTest string = "cr:TestSplit"
 const VT_wdPrefix string = "wd:Q"
 
 // InferDataType infers the schema.org data type from a value.
-// Returns in
 func InferDataType(value string) string {
 	// Trim whitespace
 	value = strings.TrimSpace(value)
@@ -92,7 +91,7 @@ func InferDataType(value string) string {
 	return VT_scText
 }
 
-// IsValidDataType checks if a dataType is valid according to Croissant specification
+// IsValidDataType checks if a dataType is valid according to Croissant specification.
 func IsValidDataType(dataType string) bool {
 	validTypes := map[string]bool{
 		// Schema.org types
@@ -128,7 +127,7 @@ func IsValidDataType(dataType string) bool {
 	return validTypes[dataType]
 }
 
-// InferSemanticDataType attempts to infer semantic data types for ML datasets
+// InferSemanticDataType attempts to infer semantic data types for ML datasets.
 func InferSemanticDataType(fieldName, value string, context map[string]interface{}) []string {
 	fieldNameLower := strings.ToLower(fieldName)
 
