@@ -15,7 +15,7 @@ import (
 
 // CalculateSHA256 calculates the SHA-256 hash of a file
 func CalculateSHA256(filePath string) (string, error) {
-	file, err := os.Open(filePath)
+	file, err := os.Open(filepath.Clean(filePath))
 	if err != nil {
 		return "", CroissantError{Message: "failed to open file: %w", Value: err}
 	}
@@ -31,7 +31,7 @@ func CalculateSHA256(filePath string) (string, error) {
 
 // GetCSVColumns reads the column names and first row from a CSV file
 func GetCSVColumns(csvPath string) ([]string, []string, error) {
-	file, err := os.Open(csvPath)
+	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
 		return nil, nil, CroissantError{Message: "failed to open CSV file: %w", Value: err}
 	}
@@ -67,7 +67,7 @@ func GetCSVColumns(csvPath string) ([]string, []string, error) {
 
 // GetCSVColumnsAndSampleRows reads column names and multiple sample rows for better type inference
 func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]string, error) {
-	file, err := os.Open(csvPath)
+	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
 		return nil, nil, CroissantError{Message: "failed to open CSV file: %w", Value: err}
 	}
@@ -133,7 +133,7 @@ func ValidateOutputPath(outputPath string) error {
 
 	// Check if we can write to the file (create a temporary file to test)
 	tempFile := outputPath + ".tmp"
-	file, err := os.Create(tempFile)
+	file, err := os.Create(filepath.Clean(tempFile))
 	if err != nil {
 		return CroissantError{
 			Message: fmt.Sprintf("cannot write to path %s", outputPath),
@@ -146,7 +146,7 @@ func ValidateOutputPath(outputPath string) error {
 
 // DetectCSVDelimiter attempts to detect the CSV delimiter
 func DetectCSVDelimiter(csvPath string) (rune, error) {
-	file, err := os.Open(csvPath)
+	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
 		return ',', CroissantError{Message: "failed to open CSV file: %w", Value: err}
 	}
@@ -184,7 +184,7 @@ func DetectCSVDelimiter(csvPath string) (rune, error) {
 
 // ParseCSVWithOptions parses a CSV file with custom options
 func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]string, [][]string, error) {
-	file, err := os.Open(csvPath)
+	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
 		return nil, nil, CroissantError{Message: "failed to open CSV file: %w", Value: err}
 	}
@@ -258,7 +258,7 @@ func GetFileStats(filePath string) (map[string]interface{}, error) {
 
 // CountCSVRows counts the total number of rows in a CSV file (including header)
 func CountCSVRows(csvPath string) (int, error) {
-	file, err := os.Open(csvPath)
+	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
 		return 0, CroissantError{
 			Message: "failed to open CSV file",
@@ -290,7 +290,7 @@ func CountCSVRows(csvPath string) (int, error) {
 
 // ValidateCSVStructure performs basic validation on CSV file structure
 func ValidateCSVStructure(csvPath string) error {
-	file, err := os.Open(csvPath)
+	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
 		return CroissantError{
 			Message: "failed to open CSV file",

@@ -179,7 +179,7 @@ func Init() {
 			fmt.Printf("Validating Croissant metadata file '%s'...\n", jsonldPath)
 
 			// Read and parse the file manually to use validation options
-			data, err := os.ReadFile(jsonldPath)
+			data, err := os.ReadFile(filepath.Clean(jsonldPath))
 			if err != nil {
 				fmt.Printf("Error reading file: %v\n", err)
 				os.Exit(1)

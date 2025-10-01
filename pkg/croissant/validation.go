@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -29,7 +30,7 @@ func DefaultValidationOptions() ValidationOptions {
 
 // ValidateFile validates a Croissant metadata file and returns issues
 func ValidateFile(filePath string) (*Issues, error) {
-	data, err := os.ReadFile(filePath)
+	data, err := os.ReadFile(filepath.Clean(filePath))
 	if err != nil {
 		return nil, CroissantError{Message: "failed to read file: %w", Value: err}
 	}
