@@ -4,6 +4,7 @@ package croissant
 import (
 	"net/url"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -160,10 +161,8 @@ func InferSemanticDataType(fieldName, value string, context map[string]interface
 	if context != nil {
 		if enumValues, exists := context["enumValues"]; exists {
 			if enumSlice, ok := enumValues.([]string); ok {
-				for _, enumVal := range enumSlice {
-					if value == enumVal {
-						return []string{VT_scEnum, VT_scText}
-					}
+				if slices.Contains(enumSlice, value) {
+					return []string{VT_scEnum, VT_scText}
 				}
 			}
 		}
