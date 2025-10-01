@@ -218,7 +218,7 @@ func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]stri
 	} else {
 		// Generate default headers
 		if len(records) > 0 {
-			for i := 0; i < len(records[0]); i++ {
+			for i := range records[0] {
 				headers = append(headers, fmt.Sprintf("column_%d", i+1))
 			}
 		}
