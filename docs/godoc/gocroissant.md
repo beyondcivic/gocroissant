@@ -455,7 +455,7 @@ func (n *BaseNode) SetParent(parent Node)
 
 
 <a name="Context"></a>
-## type [Context](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L257-L293>)
+## type [Context](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L246-L282>)
 
 Context represents the complete JSON\-LD context for Croissant 1.0
 
@@ -532,7 +532,7 @@ func (e CroissantError) Error() string
 
 
 <a name="DataContext"></a>
-## type [DataContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L296-L299>)
+## type [DataContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L285-L288>)
 
 DataContext represents the data field in the context
 
@@ -544,7 +544,7 @@ type DataContext struct {
 ```
 
 <a name="DataType"></a>
-## type [DataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L105-L110>)
+## type [DataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L94-L99>)
 
 DataType represents a data type that can be either a single string or an array of strings
 
@@ -558,7 +558,7 @@ type DataType struct {
 ```
 
 <a name="NewArrayDataType"></a>
-### func [NewArrayDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L378>)
+### func [NewArrayDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L367>)
 
 ```go
 func NewArrayDataType(dataTypes ...string) DataType
@@ -567,7 +567,7 @@ func NewArrayDataType(dataTypes ...string) DataType
 NewArrayDataType creates a DataType with multiple types
 
 <a name="NewNullableSingleDataType"></a>
-### func [NewNullableSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L364>)
+### func [NewNullableSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L353>)
 
 ```go
 func NewNullableSingleDataType(dataType string) *DataType
@@ -576,7 +576,7 @@ func NewNullableSingleDataType(dataType string) *DataType
 NewSingleDataType creates a DataType with a single type
 
 <a name="NewSingleDataType"></a>
-### func [NewSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L371>)
+### func [NewSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L360>)
 
 ```go
 func NewSingleDataType(dataType string) DataType
@@ -585,7 +585,7 @@ func NewSingleDataType(dataType string) DataType
 NewSingleDataType creates a DataType with a single type
 
 <a name="DataType.GetFirstType"></a>
-### func \(DataType\) [GetFirstType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L219>)
+### func \(DataType\) [GetFirstType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L208>)
 
 ```go
 func (d DataType) GetFirstType() string
@@ -594,7 +594,7 @@ func (d DataType) GetFirstType() string
 GetFirstType returns the first data type \(useful for backward compatibility\)
 
 <a name="DataType.GetTypes"></a>
-### func \(DataType\) [GetTypes](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L208>)
+### func \(DataType\) [GetTypes](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L197>)
 
 ```go
 func (d DataType) GetTypes() []string
@@ -603,7 +603,7 @@ func (d DataType) GetTypes() []string
 GetTypes returns all data types \(single or array\)
 
 <a name="DataType.IsArray"></a>
-### func \(DataType\) [IsArray](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L203>)
+### func \(DataType\) [IsArray](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L192>)
 
 ```go
 func (d DataType) IsArray() bool
@@ -612,7 +612,7 @@ func (d DataType) IsArray() bool
 IsArray returns true if this is an array of data types
 
 <a name="DataType.MarshalJSON"></a>
-### func \(DataType\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L172>)
+### func \(DataType\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L161>)
 
 ```go
 func (d DataType) MarshalJSON() ([]byte, error)
@@ -621,7 +621,7 @@ func (d DataType) MarshalJSON() ([]byte, error)
 MarshalJSON implements custom JSON marshaling for DataType
 
 <a name="DataType.UnmarshalJSON"></a>
-### func \(\*DataType\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L183>)
+### func \(\*DataType\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L172>)
 
 ```go
 func (d *DataType) UnmarshalJSON(data []byte) error
@@ -630,7 +630,7 @@ func (d *DataType) UnmarshalJSON(data []byte) error
 UnmarshalJSON implements custom JSON unmarshaling for DataType
 
 <a name="DataTypeContext"></a>
-## type [DataTypeContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L302-L305>)
+## type [DataTypeContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L291-L294>)
 
 DataTypeContext represents the dataType field in the context
 
@@ -642,7 +642,7 @@ type DataTypeContext struct {
 ```
 
 <a name="Distribution"></a>
-## type [Distribution](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L230-L242>)
+## type [Distribution](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L219-L231>)
 
 Distribution represents a file in the Croissant metadata
 
@@ -689,7 +689,7 @@ func (d *DistributionNode) Validate(issues *Issues)
 Validate validates the distribution node
 
 <a name="Extract"></a>
-## type [Extract](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L44-L50>)
+## type [Extract](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L33-L39>)
 
 Extract represents the extraction information for a field source
 
@@ -718,34 +718,23 @@ type ExtractNode struct {
 ```
 
 <a name="Field"></a>
-## type [Field](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L9-L32>)
+## type [Field](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L9-L21>)
 
 Field represents a field in the Croissant metadata
 
 ```go
 type Field struct {
-    ID   string `json:"@id"`
-    Type string `json:"@type"`
-    // Name of the field.
-    Name        string `json:"name"`
-    Description string `json:"description,omitempty"`
-    // Data type of the field identified by the class URI.
-    // Usually either an atomic type (e.g, sc:Integer) or a semantic type (e.g., sc:GeoLocation).
-    DataType DataType `json:"dataType"`
-    // The data source of the field.
-    // Represented as a reference to a FileObject or FileSet's contents.
-    Source FieldSource `json:"source,omitempty"`
-    // If true, field is a list of `dataType` values.
-    Repeated bool `json:"repeated,omitempty"`
-    // Examples of field values.
-    Examples interface{} `json:"examples,omitempty"`
-    // Additional fields defined within this one.
-    SubField []Field `json:"subField,omitempty"`
-    // A special case of SubField.
-    // References one or more Fields in the same RecordSet.
+    ID          string          `json:"@id"`
+    Type        string          `json:"@type"`
+    Name        string          `json:"name"`
+    Description string          `json:"description,omitempty"`
+    DataType    DataType        `json:"dataType"`
+    Source      FieldSource     `json:"source,omitempty"`
+    Repeated    bool            `json:"repeated,omitempty"`
+    Examples    interface{}     `json:"examples,omitempty"`
+    SubField    []Field         `json:"subField,omitempty"`
     ParentField []FieldRefSlice `json:"parentField,omitempty"`
-    // References one or more Fields that are part of a separate RecordSet.
-    References []FieldRefSlice `json:"references,omitempty"`
+    References  []FieldRefSlice `json:"references,omitempty"`
 }
 ```
 
@@ -778,7 +767,7 @@ func (f *FieldNode) Validate(issues *Issues)
 Validate validates the field node
 
 <a name="FieldRef"></a>
-## type [FieldRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L63-L66>)
+## type [FieldRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L52-L55>)
 
 FieldRef represents a reference to another field
 
@@ -790,7 +779,7 @@ type FieldRef struct {
 ```
 
 <a name="FieldRefSlice"></a>
-## type [FieldRefSlice](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L69>)
+## type [FieldRefSlice](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L58>)
 
 Parses ONE or MANY FieldRefs.
 
@@ -799,7 +788,7 @@ type FieldRefSlice []FieldRef
 ```
 
 <a name="FieldRefSlice.MarshalJSON"></a>
-### func \(FieldRefSlice\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L93>)
+### func \(FieldRefSlice\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L82>)
 
 ```go
 func (ref FieldRefSlice) MarshalJSON() ([]byte, error)
@@ -808,7 +797,7 @@ func (ref FieldRefSlice) MarshalJSON() ([]byte, error)
 
 
 <a name="FieldRefSlice.UnmarshalJSON"></a>
-### func \(\*FieldRefSlice\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L71>)
+### func \(\*FieldRefSlice\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L60>)
 
 ```go
 func (ref *FieldRefSlice) UnmarshalJSON(data []byte) error
@@ -817,7 +806,7 @@ func (ref *FieldRefSlice) UnmarshalJSON(data []byte) error
 
 
 <a name="FieldSource"></a>
-## type [FieldSource](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L35-L41>)
+## type [FieldSource](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L24-L30>)
 
 FieldSource represents the source information for a field
 
@@ -832,7 +821,7 @@ type FieldSource struct {
 ```
 
 <a name="FieldSource.ValidateSource"></a>
-### func \(FieldSource\) [ValidateSource](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L385>)
+### func \(FieldSource\) [ValidateSource](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L374>)
 
 ```go
 func (fs FieldSource) ValidateSource() bool
@@ -841,7 +830,7 @@ func (fs FieldSource) ValidateSource() bool
 ValidateSource validates the source configuration
 
 <a name="FileObject"></a>
-## type [FileObject](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L53-L55>)
+## type [FileObject](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L42-L44>)
 
 FileObject represents a file object reference
 
@@ -1078,7 +1067,7 @@ func (j *JSONLDProcessor) ValidateJSONLD(data []byte) error
 ValidateJSONLD validates that the document is valid JSON\-LD
 
 <a name="KeyRef"></a>
-## type [KeyRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L58-L60>)
+## type [KeyRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L47-L49>)
 
 KeyRef represents a key reference in a composite key
 
@@ -1089,7 +1078,7 @@ type KeyRef struct {
 ```
 
 <a name="Metadata"></a>
-## type [Metadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L308-L325>)
+## type [Metadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L297-L314>)
 
 Metadata represents the complete Croissant metadata
 
@@ -1261,7 +1250,7 @@ type Node interface {
 ```
 
 <a name="RecordSet"></a>
-## type [RecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L245-L254>)
+## type [RecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L234-L243>)
 
 RecordSet represents a record set in the Croissant metadata
 
@@ -1297,7 +1286,7 @@ func CreateSplitRecordSet() RecordSet
 CreateSplitRecordSet creates a standard ML split RecordSet
 
 <a name="RecordSetKey"></a>
-## type [RecordSetKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L113-L118>)
+## type [RecordSetKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L102-L107>)
 
 RecordSetKey represents a record set key that can be either a single key or composite key
 
@@ -1311,7 +1300,7 @@ type RecordSetKey struct {
 ```
 
 <a name="NewCompositeKey"></a>
-### func [NewCompositeKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L353>)
+### func [NewCompositeKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L342>)
 
 ```go
 func NewCompositeKey(keyIDs ...string) *RecordSetKey
@@ -1320,7 +1309,7 @@ func NewCompositeKey(keyIDs ...string) *RecordSetKey
 NewCompositeKey creates a RecordSetKey with multiple key references
 
 <a name="NewSingleKey"></a>
-### func [NewSingleKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L346>)
+### func [NewSingleKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L335>)
 
 ```go
 func NewSingleKey(keyID string) *RecordSetKey
@@ -1329,7 +1318,7 @@ func NewSingleKey(keyID string) *RecordSetKey
 NewSingleKey creates a RecordSetKey with a single key reference
 
 <a name="RecordSetKey.GetKeyIDs"></a>
-### func \(RecordSetKey\) [GetKeyIDs](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L157>)
+### func \(RecordSetKey\) [GetKeyIDs](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L146>)
 
 ```go
 func (k RecordSetKey) GetKeyIDs() []string
@@ -1338,7 +1327,7 @@ func (k RecordSetKey) GetKeyIDs() []string
 GetKeyIDs returns all key IDs \(single or composite\)
 
 <a name="RecordSetKey.IsComposite"></a>
-### func \(RecordSetKey\) [IsComposite](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L152>)
+### func \(RecordSetKey\) [IsComposite](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L141>)
 
 ```go
 func (k RecordSetKey) IsComposite() bool
@@ -1347,7 +1336,7 @@ func (k RecordSetKey) IsComposite() bool
 IsComposite returns true if this is a composite key
 
 <a name="RecordSetKey.MarshalJSON"></a>
-### func \(RecordSetKey\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L121>)
+### func \(RecordSetKey\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L110>)
 
 ```go
 func (k RecordSetKey) MarshalJSON() ([]byte, error)
@@ -1356,7 +1345,7 @@ func (k RecordSetKey) MarshalJSON() ([]byte, error)
 MarshalJSON implements custom JSON marshaling for RecordSetKey
 
 <a name="RecordSetKey.UnmarshalJSON"></a>
-### func \(\*RecordSetKey\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L132>)
+### func \(\*RecordSetKey\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L121>)
 
 ```go
 func (k *RecordSetKey) UnmarshalJSON(data []byte) error
@@ -1391,7 +1380,7 @@ func (r *RecordSetNode) Validate(issues *Issues)
 Validate validates the record set node
 
 <a name="Source"></a>
-## type [Source](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L338-L343>)
+## type [Source](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L327-L332>)
 
 Source represents a more complete source definition
 
@@ -1429,7 +1418,7 @@ func (s *SourceNode) ValidateSource() bool
 ValidateSource validates the source node
 
 <a name="Transform"></a>
-## type [Transform](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L328-L335>)
+## type [Transform](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L317-L324>)
 
 Transform represents a data transformation
 
