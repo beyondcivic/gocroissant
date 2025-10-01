@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-// CalculateSHA256 calculates the SHA-256 hash of a file
+// CalculateSHA256 calculates the SHA-256 hash of a file.
 func CalculateSHA256(filePath string) (string, error) {
 	file, err := os.Open(filepath.Clean(filePath))
 	if err != nil {
@@ -29,7 +29,7 @@ func CalculateSHA256(filePath string) (string, error) {
 	return hex.EncodeToString(hash.Sum(nil)), nil
 }
 
-// GetCSVColumns reads the column names and first row from a CSV file
+// GetCSVColumns reads the column names and first row from a CSV file.
 func GetCSVColumns(csvPath string) ([]string, []string, error) {
 	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
@@ -65,7 +65,7 @@ func GetCSVColumns(csvPath string) ([]string, []string, error) {
 	return headers, firstRow, nil
 }
 
-// GetCSVColumnsAndSampleRows reads column names and multiple sample rows for better type inference
+// GetCSVColumnsAndSampleRows reads column names and multiple sample rows for better type inference.
 func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]string, error) {
 	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
@@ -114,7 +114,7 @@ func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]stri
 	return headers, sampleRows, nil
 }
 
-// ValidateOutputPath validates if the given path is a valid file path
+// ValidateOutputPath validates if the given path is a valid file path.
 func ValidateOutputPath(outputPath string) error {
 	if outputPath == "" {
 		return CroissantError{Message: "output path cannot be empty"}
@@ -144,7 +144,7 @@ func ValidateOutputPath(outputPath string) error {
 	return os.Remove(tempFile) // Clean up the temporary file
 }
 
-// DetectCSVDelimiter attempts to detect the CSV delimiter
+// DetectCSVDelimiter attempts to detect the CSV delimiter.
 func DetectCSVDelimiter(csvPath string) (rune, error) {
 	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
@@ -182,7 +182,7 @@ func DetectCSVDelimiter(csvPath string) (rune, error) {
 	return bestDelimiter, nil
 }
 
-// ParseCSVWithOptions parses a CSV file with custom options
+// ParseCSVWithOptions parses a CSV file with custom options.
 func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]string, [][]string, error) {
 	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
@@ -236,7 +236,7 @@ func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]stri
 	return headers, rows, nil
 }
 
-// GetFileStats returns basic statistics about a file
+// GetFileStats returns basic statistics about a file.
 func GetFileStats(filePath string) (map[string]interface{}, error) {
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
@@ -256,7 +256,7 @@ func GetFileStats(filePath string) (map[string]interface{}, error) {
 	return stats, nil
 }
 
-// CountCSVRows counts the total number of rows in a CSV file (including header)
+// CountCSVRows counts the total number of rows in a CSV file (including header).
 func CountCSVRows(csvPath string) (int, error) {
 	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
@@ -288,7 +288,7 @@ func CountCSVRows(csvPath string) (int, error) {
 	return rowCount, nil
 }
 
-// ValidateCSVStructure performs basic validation on CSV file structure
+// ValidateCSVStructure performs basic validation on CSV file structure.
 func ValidateCSVStructure(csvPath string) error {
 	file, err := os.Open(filepath.Clean(csvPath))
 	if err != nil {
@@ -341,7 +341,7 @@ func ValidateCSVStructure(csvPath string) error {
 	return nil
 }
 
-// GetCSVColumnTypes analyzes a CSV file and returns inferred data types for each column
+// GetCSVColumnTypes analyzes a CSV file and returns inferred data types for each column.
 func GetCSVColumnTypes(csvPath string, sampleSize int) ([]string, []string, error) {
 	headers, rows, err := GetCSVColumnsAndSampleRows(csvPath, sampleSize)
 	if err != nil {
@@ -387,7 +387,7 @@ func GetCSVColumnTypes(csvPath string, sampleSize int) ([]string, []string, erro
 			}
 		}
 
-		// If less than 70% of samples match the most common type, default to Text
+		// If less than 70% of samples match the most common type, default to Text.
 		if float64(maxCount)/float64(totalSamples) < 0.7 {
 			columnTypes[i] = VT_scText
 		} else {
@@ -398,13 +398,13 @@ func GetCSVColumnTypes(csvPath string, sampleSize int) ([]string, []string, erro
 	return headers, columnTypes, nil
 }
 
-// IsCSVFile checks if a file appears to be a CSV file based on extension
+// IsCSVFile checks if a file appears to be a CSV file based on extension.
 func IsCSVFile(filePath string) bool {
 	ext := strings.ToLower(filepath.Ext(filePath))
 	return ext == ".csv" || ext == ".tsv" || ext == ".txt"
 }
 
-// SanitizeFileName removes or replaces invalid characters in filenames
+// SanitizeFileName removes or replaces invalid characters in filenames.
 func SanitizeFileName(fileName string) string {
 	// Replace invalid characters with underscores
 	invalid := []string{"/", "\\", ":", "*", "?", "\"", "<", ">", "|"}

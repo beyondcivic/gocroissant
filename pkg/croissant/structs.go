@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 )
 
-// Field represents a field in the Croissant metadata
+// Field represents a field in the Croissant metadata.
 type Field struct {
 	ID   string `json:"@id"`
 	Type string `json:"@type"`
@@ -31,7 +31,7 @@ type Field struct {
 	References []FieldRefSlice `json:"references,omitempty"`
 }
 
-// FieldSource represents the source information for a field
+// FieldSource represents the source information for a field.
 type FieldSource struct {
 	Extract    *Extract    `json:"extract,omitempty"`
 	FileObject *FileObject `json:"fileObject,omitempty"`
@@ -40,7 +40,7 @@ type FieldSource struct {
 	Format     string      `json:"format,omitempty"`
 }
 
-// Extract represents the extraction information for a field source
+// Extract represents the extraction information for a field source.
 type Extract struct {
 	// Extraction method
 	FileProperty string `json:"fileProperty,omitempty"`
@@ -52,17 +52,17 @@ type Extract struct {
 	Separator string `json:"separator,omitempty"`
 }
 
-// FileObject represents a file object reference
+// FileObject represents a file object reference.
 type FileObject struct {
 	ID string `json:"@id"`
 }
 
-// KeyRef represents a key reference in a composite key
+// KeyRef represents a key reference in a composite key.
 type KeyRef struct {
 	ID string `json:"@id"`
 }
 
-// FieldRef represents a reference to another field
+// FieldRef represents a reference to another field.
 type FieldRef struct {
 	ID    string  `json:"@id,omitempty"`
 	Field *KeyRef `json:"field,omitempty"`
@@ -104,7 +104,7 @@ func (ref FieldRefSlice) MarshalJSON() ([]byte, error) {
 	}
 }
 
-// DataType represents a data type that can be either a single string or an array of strings
+// DataType represents a data type that can be either a single string or an array of strings.
 type DataType struct {
 	// Single dataType case: just a string value
 	SingleType *string `json:"-"`
@@ -112,7 +112,7 @@ type DataType struct {
 	ArrayType []string `json:"-"`
 }
 
-// RecordSetKey represents a record set key that can be either a single key or composite key
+// RecordSetKey represents a record set key that can be either a single key or composite key.
 type RecordSetKey struct {
 	// Single key case: just an ID reference
 	SingleKey *KeyRef `json:"-"`
@@ -120,7 +120,7 @@ type RecordSetKey struct {
 	CompositeKey []KeyRef `json:"-"`
 }
 
-// MarshalJSON implements custom JSON marshaling for RecordSetKey
+// MarshalJSON implements custom JSON marshaling for RecordSetKey.
 func (k RecordSetKey) MarshalJSON() ([]byte, error) {
 	if k.SingleKey != nil {
 		return json.Marshal(k.SingleKey)
@@ -131,7 +131,7 @@ func (k RecordSetKey) MarshalJSON() ([]byte, error) {
 	return []byte("null"), nil
 }
 
-// UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey
+// UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey.
 func (k *RecordSetKey) UnmarshalJSON(data []byte) error {
 	// Try to unmarshal as a single key first
 	var singleKey KeyRef
@@ -151,12 +151,12 @@ func (k *RecordSetKey) UnmarshalJSON(data []byte) error {
 	return CroissantError{Message: "key must be either a single key object or an array of key objects"}
 }
 
-// IsComposite returns true if this is a composite key
+// IsComposite returns true if this is a composite key.
 func (k RecordSetKey) IsComposite() bool {
 	return len(k.CompositeKey) > 0
 }
 
-// GetKeyIDs returns all key IDs (single or composite)
+// GetKeyIDs returns all key IDs (single or composite).
 func (k RecordSetKey) GetKeyIDs() []string {
 	if k.SingleKey != nil {
 		return []string{k.SingleKey.ID}
@@ -171,7 +171,7 @@ func (k RecordSetKey) GetKeyIDs() []string {
 	return nil
 }
 
-// MarshalJSON implements custom JSON marshaling for DataType
+// MarshalJSON implements custom JSON marshaling for DataType.
 func (d DataType) MarshalJSON() ([]byte, error) {
 	if d.SingleType != nil {
 		return json.Marshal(*d.SingleType)
@@ -182,7 +182,7 @@ func (d DataType) MarshalJSON() ([]byte, error) {
 	return []byte("null"), nil
 }
 
-// UnmarshalJSON implements custom JSON unmarshaling for DataType
+// UnmarshalJSON implements custom JSON unmarshaling for DataType.
 func (d *DataType) UnmarshalJSON(data []byte) error {
 	// Try to unmarshal as a single string first
 	var singleType string
@@ -202,12 +202,12 @@ func (d *DataType) UnmarshalJSON(data []byte) error {
 	return CroissantError{Message: "dataType must be either a string or an array of strings"}
 }
 
-// IsArray returns true if this is an array of data types
+// IsArray returns true if this is an array of data types.
 func (d DataType) IsArray() bool {
 	return len(d.ArrayType) > 0
 }
 
-// GetTypes returns all data types (single or array)
+// GetTypes returns all data types (single or array).
 func (d DataType) GetTypes() []string {
 	if d.SingleType != nil {
 		return []string{*d.SingleType}
@@ -218,7 +218,7 @@ func (d DataType) GetTypes() []string {
 	return nil
 }
 
-// GetFirstType returns the first data type (useful for backward compatibility)
+// GetFirstType returns the first data type (useful for backward compatibility).
 func (d DataType) GetFirstType() string {
 	if d.SingleType != nil {
 		return *d.SingleType
@@ -229,7 +229,7 @@ func (d DataType) GetFirstType() string {
 	return ""
 }
 
-// Distribution represents a file in the Croissant metadata
+// Distribution represents a file in the Croissant metadata.
 type Distribution struct {
 	ID   string `json:"@id"`
 	Type string `json:"@type"`
@@ -256,7 +256,7 @@ type Distribution struct {
 	Excludes string `json:"excludes,omitempty"`
 }
 
-// RecordSet represents a record set in the Croissant metadata
+// RecordSet represents a record set in the Croissant metadata.
 type RecordSet struct {
 	ID          string                   `json:"@id"`
 	Type        string                   `json:"@type"`
@@ -268,7 +268,7 @@ type RecordSet struct {
 	Data        []map[string]interface{} `json:"data,omitempty"`
 }
 
-// Context represents the complete JSON-LD context for Croissant 1.0
+// Context represents the complete JSON-LD context for Croissant 1.0.
 type Context struct {
 	Language      string          `json:"@language"`
 	Vocab         string          `json:"@vocab"`
@@ -307,13 +307,13 @@ type Context struct {
 	Transform     string          `json:"transform"`
 }
 
-// DataContext represents the data field in the context
+// DataContext represents the data field in the context.
 type DataContext struct {
 	ID   string `json:"@id"`
 	Type string `json:"@type"`
 }
 
-// DataTypeContext represents the dataType field in the context
+// DataTypeContext represents the dataType field in the context.
 type DataTypeContext struct {
 	ID   string `json:"@id"`
 	Type string `json:"@type"`
@@ -360,7 +360,7 @@ type Metadata struct {
 	IsLiveDataset bool `json:"isLiveDataset,omitempty"`
 }
 
-// Transform represents a data transformation
+// Transform represents a data transformation.
 type Transform struct {
 	Type      string `json:"@type"`
 	Regex     string `json:"regex,omitempty"`
@@ -370,7 +370,7 @@ type Transform struct {
 	Separator string `json:"separator,omitempty"`
 }
 
-// Source represents a more complete source definition
+// Source represents a more complete source definition.
 type Source struct {
 	Extract    *Extract    `json:"extract,omitempty"`
 	FileObject *FileObject `json:"fileObject,omitempty"`
@@ -378,14 +378,14 @@ type Source struct {
 	Transform  []Transform `json:"transform,omitempty"`
 }
 
-// NewSingleKey creates a RecordSetKey with a single key reference
+// NewSingleKey creates a RecordSetKey with a single key reference.
 func NewSingleKey(keyID string) *RecordSetKey {
 	return &RecordSetKey{
 		SingleKey: &KeyRef{ID: keyID},
 	}
 }
 
-// NewCompositeKey creates a RecordSetKey with multiple key references
+// NewCompositeKey creates a RecordSetKey with multiple key references.
 func NewCompositeKey(keyIDs ...string) *RecordSetKey {
 	keys := make([]KeyRef, len(keyIDs))
 	for i, id := range keyIDs {
@@ -396,28 +396,28 @@ func NewCompositeKey(keyIDs ...string) *RecordSetKey {
 	}
 }
 
-// NewSingleDataType creates a DataType with a single type
+// NewSingleDataType creates a DataType with a single type.
 func NewNullableSingleDataType(dataType string) *DataType {
 	return &DataType{
 		SingleType: &dataType,
 	}
 }
 
-// NewSingleDataType creates a DataType with a single type
+// NewSingleDataType creates a DataType with a single type.
 func NewSingleDataType(dataType string) DataType {
 	return DataType{
 		SingleType: &dataType,
 	}
 }
 
-// NewArrayDataType creates a DataType with multiple types
+// NewArrayDataType creates a DataType with multiple types.
 func NewArrayDataType(dataTypes ...string) DataType {
 	return DataType{
 		ArrayType: dataTypes,
 	}
 }
 
-// ValidateSource validates the source configuration
+// ValidateSource validates the source configuration.
 func (fs FieldSource) ValidateSource() bool {
 	// If no source is configured, it's invalid unless it's a parent field with subfields
 	hasFileObject := fs.FileObject.ID != "" || fs.FileSet.ID != ""

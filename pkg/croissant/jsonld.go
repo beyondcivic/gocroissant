@@ -8,13 +8,13 @@ import (
 	"github.com/piprate/json-gold/ld"
 )
 
-// JSONLDProcessor handles JSON-LD processing using json-gold library
+// JSONLDProcessor handles JSON-LD processing using json-gold library.
 type JSONLDProcessor struct {
 	processor *ld.JsonLdProcessor
 	options   *ld.JsonLdOptions
 }
 
-// NewJSONLDProcessor creates a new JSON-LD processor
+// NewJSONLDProcessor creates a new JSON-LD processor.
 func NewJSONLDProcessor() *JSONLDProcessor {
 	return &JSONLDProcessor{
 		processor: ld.NewJsonLdProcessor(),
@@ -22,7 +22,7 @@ func NewJSONLDProcessor() *JSONLDProcessor {
 	}
 }
 
-// ParseJSONLD parses and expands JSON-LD document to a normalized form
+// ParseJSONLD parses and expands JSON-LD document to a normalized form.
 func (j *JSONLDProcessor) ParseJSONLD(data []byte) (map[string]interface{}, error) {
 	// First, parse as regular JSON to get a map
 	var jsonDoc interface{}
@@ -49,7 +49,7 @@ func (j *JSONLDProcessor) ParseJSONLD(data []byte) (map[string]interface{}, erro
 	return nil, CroissantError{Message: "unexpected expanded JSON-LD structure"}
 }
 
-// CompactJSONLD compacts an expanded JSON-LD document with the given context
+// CompactJSONLD compacts an expanded JSON-LD document with the given context.
 func (j *JSONLDProcessor) CompactJSONLD(expanded interface{}, context map[string]interface{}) (map[string]interface{}, error) {
 	compacted, err := j.processor.Compact(expanded, context, j.options)
 	if err != nil {
@@ -60,7 +60,7 @@ func (j *JSONLDProcessor) CompactJSONLD(expanded interface{}, context map[string
 	return compacted, nil
 }
 
-// ValidateJSONLD validates that the document is valid JSON-LD
+// ValidateJSONLD validates that the document is valid JSON-LD.
 func (j *JSONLDProcessor) ValidateJSONLD(data []byte) error {
 	var jsonDoc interface{}
 	if err := json.Unmarshal(data, &jsonDoc); err != nil {
@@ -76,7 +76,7 @@ func (j *JSONLDProcessor) ValidateJSONLD(data []byte) error {
 	return nil
 }
 
-// ParseCroissantMetadata parses Croissant JSON-LD metadata and converts it to our Metadata struct
+// ParseCroissantMetadata parses Croissant JSON-LD metadata and converts it to our Metadata struct.
 func (j *JSONLDProcessor) ParseCroissantMetadata(data []byte) (*Metadata, error) {
 	// First validate that it's valid JSON-LD
 	if err := j.ValidateJSONLD(data); err != nil {
@@ -93,7 +93,7 @@ func (j *JSONLDProcessor) ParseCroissantMetadata(data []byte) (*Metadata, error)
 	return &metadata, nil
 }
 
-// GetExpandedProperty retrieves a property from expanded JSON-LD using its full IRI
+// GetExpandedProperty retrieves a property from expanded JSON-LD using its full IRI.
 func GetExpandedProperty(expanded map[string]interface{}, property string) interface{} {
 	// Try direct property access first
 	if val, exists := expanded[property]; exists {
@@ -117,7 +117,7 @@ func GetExpandedProperty(expanded map[string]interface{}, property string) inter
 	return nil
 }
 
-// GetPropertyValue extracts a simple string value from a JSON-LD property
+// GetPropertyValue extracts a simple string value from a JSON-LD property.
 func GetPropertyValue(property interface{}) string {
 	if property == nil {
 		return ""
@@ -151,7 +151,7 @@ func GetPropertyValue(property interface{}) string {
 	return ""
 }
 
-// GetPropertyArray extracts an array of values from a JSON-LD property
+// GetPropertyArray extracts an array of values from a JSON-LD property.
 func GetPropertyArray(property interface{}) []interface{} {
 	if property == nil {
 		return nil
@@ -165,7 +165,7 @@ func GetPropertyArray(property interface{}) []interface{} {
 	return []interface{}{property}
 }
 
-// ExtractCroissantProperties extracts common Croissant properties from expanded JSON-LD
+// ExtractCroissantProperties extracts common Croissant properties from expanded JSON-LD.
 func ExtractCroissantProperties(expanded map[string]interface{}) map[string]interface{} {
 	properties := make(map[string]interface{})
 

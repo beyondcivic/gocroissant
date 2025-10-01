@@ -45,7 +45,7 @@ if len(issues) == 0 {
 }
 ```
 
-datatypes.go
+datatypes.go Describes supported data types for values.
 
 issues.go
 
@@ -191,7 +191,7 @@ validation.go
 const VT_crBBox string = "cr:BoundingBox"
 ```
 
-<a name="VT_crLabel"></a>Croissant\-specific types
+<a name="VT_crLabel"></a>Croissant\-specific types.
 
 ```go
 const VT_crLabel string = "cr:Label"
@@ -215,7 +215,7 @@ const VT_crSplit string = "cr:Split"
 const VT_crSplitTest string = "cr:TestSplit"
 ```
 
-<a name="VT_crSplitTrain"></a>Croissant Split types
+<a name="VT_crSplitTrain"></a>Croissant Split types.
 
 ```go
 const VT_crSplitTrain string = "cr:TrainingSplit"
@@ -275,7 +275,7 @@ const VT_scInt string = "sc:Integer"
 const VT_scNum string = "sc:Number"
 ```
 
-<a name="VT_scText"></a>Supported value data types: Schema.org data types
+<a name="VT_scText"></a>Schema.org data types.
 
 ```go
 const VT_scText string = "sc:Text"
@@ -293,7 +293,7 @@ const VT_scURL string = "sc:URL"
 const VT_scVideo string = "sc:VideoObject"
 ```
 
-<a name="VT_wdPrefix"></a>Wikidata entities \(wd:Q...\)
+<a name="VT_wdPrefix"></a>Wikidata entities \(wd:Q...\).
 
 ```go
 const VT_wdPrefix string = "wd:Q"
@@ -306,7 +306,7 @@ const VT_wdPrefix string = "wd:Q"
 func CalculateSHA256(filePath string) (string, error)
 ```
 
-CalculateSHA256 calculates the SHA\-256 hash of a file
+CalculateSHA256 calculates the SHA\-256 hash of a file.
 
 <a name="CountCSVRows"></a>
 ## func [CountCSVRows](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L260>)
@@ -315,7 +315,7 @@ CalculateSHA256 calculates the SHA\-256 hash of a file
 func CountCSVRows(csvPath string) (int, error)
 ```
 
-CountCSVRows counts the total number of rows in a CSV file \(including header\)
+CountCSVRows counts the total number of rows in a CSV file \(including header\).
 
 <a name="DetectCSVDelimiter"></a>
 ## func [DetectCSVDelimiter](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L148>)
@@ -324,7 +324,7 @@ CountCSVRows counts the total number of rows in a CSV file \(including header\)
 func DetectCSVDelimiter(csvPath string) (rune, error)
 ```
 
-DetectCSVDelimiter attempts to detect the CSV delimiter
+DetectCSVDelimiter attempts to detect the CSV delimiter.
 
 <a name="ExtractCroissantProperties"></a>
 ## func [ExtractCroissantProperties](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/jsonld.go#L169>)
@@ -333,7 +333,7 @@ DetectCSVDelimiter attempts to detect the CSV delimiter
 func ExtractCroissantProperties(expanded map[string]interface{}) map[string]interface{}
 ```
 
-ExtractCroissantProperties extracts common Croissant properties from expanded JSON\-LD
+ExtractCroissantProperties extracts common Croissant properties from expanded JSON\-LD.
 
 <a name="GenerateMetadata"></a>
 ## func [GenerateMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L165>)
@@ -342,7 +342,7 @@ ExtractCroissantProperties extracts common Croissant properties from expanded JS
 func GenerateMetadata(csvPath string, outputPath string) (string, error)
 ```
 
-GenerateMetadata generates Croissant metadata from a CSV file \(simple API\)
+GenerateMetadata generates Croissant metadata from a CSV file \(simple API\).
 
 <a name="GetCSVColumnTypes"></a>
 ## func [GetCSVColumnTypes](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L345>)
@@ -351,7 +351,7 @@ GenerateMetadata generates Croissant metadata from a CSV file \(simple API\)
 func GetCSVColumnTypes(csvPath string, sampleSize int) ([]string, []string, error)
 ```
 
-GetCSVColumnTypes analyzes a CSV file and returns inferred data types for each column
+GetCSVColumnTypes analyzes a CSV file and returns inferred data types for each column.
 
 <a name="GetCSVColumns"></a>
 ## func [GetCSVColumns](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L33>)
@@ -360,7 +360,7 @@ GetCSVColumnTypes analyzes a CSV file and returns inferred data types for each c
 func GetCSVColumns(csvPath string) ([]string, []string, error)
 ```
 
-GetCSVColumns reads the column names and first row from a CSV file
+GetCSVColumns reads the column names and first row from a CSV file.
 
 <a name="GetCSVColumnsAndSampleRows"></a>
 ## func [GetCSVColumnsAndSampleRows](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L69>)
@@ -369,7 +369,7 @@ GetCSVColumns reads the column names and first row from a CSV file
 func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]string, error)
 ```
 
-GetCSVColumnsAndSampleRows reads column names and multiple sample rows for better type inference
+GetCSVColumnsAndSampleRows reads column names and multiple sample rows for better type inference.
 
 <a name="GetExpandedProperty"></a>
 ## func [GetExpandedProperty](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/jsonld.go#L97>)
@@ -378,7 +378,7 @@ GetCSVColumnsAndSampleRows reads column names and multiple sample rows for bette
 func GetExpandedProperty(expanded map[string]interface{}, property string) interface{}
 ```
 
-GetExpandedProperty retrieves a property from expanded JSON\-LD using its full IRI
+GetExpandedProperty retrieves a property from expanded JSON\-LD using its full IRI.
 
 <a name="GetFileStats"></a>
 ## func [GetFileStats](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L240>)
@@ -387,7 +387,7 @@ GetExpandedProperty retrieves a property from expanded JSON\-LD using its full I
 func GetFileStats(filePath string) (map[string]interface{}, error)
 ```
 
-GetFileStats returns basic statistics about a file
+GetFileStats returns basic statistics about a file.
 
 <a name="GetPropertyArray"></a>
 ## func [GetPropertyArray](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/jsonld.go#L155>)
@@ -396,7 +396,7 @@ GetFileStats returns basic statistics about a file
 func GetPropertyArray(property interface{}) []interface{}
 ```
 
-GetPropertyArray extracts an array of values from a JSON\-LD property
+GetPropertyArray extracts an array of values from a JSON\-LD property.
 
 <a name="GetPropertyValue"></a>
 ## func [GetPropertyValue](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/jsonld.go#L121>)
@@ -405,7 +405,7 @@ GetPropertyArray extracts an array of values from a JSON\-LD property
 func GetPropertyValue(property interface{}) string
 ```
 
-GetPropertyValue extracts a simple string value from a JSON\-LD property
+GetPropertyValue extracts a simple string value from a JSON\-LD property.
 
 <a name="InferDataType"></a>
 ## func [InferDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/datatypes.go#L42>)
@@ -414,7 +414,7 @@ GetPropertyValue extracts a simple string value from a JSON\-LD property
 func InferDataType(value string) string
 ```
 
-InferDataType infers the schema.org data type from a value. Returns in
+InferDataType infers the schema.org data type from a value.
 
 <a name="InferSemanticDataType"></a>
 ## func [InferSemanticDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/datatypes.go#L132>)
@@ -423,7 +423,7 @@ InferDataType infers the schema.org data type from a value. Returns in
 func InferSemanticDataType(fieldName, value string, context map[string]interface{}) []string
 ```
 
-InferSemanticDataType attempts to infer semantic data types for ML datasets
+InferSemanticDataType attempts to infer semantic data types for ML datasets.
 
 <a name="IsCSVFile"></a>
 ## func [IsCSVFile](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L402>)
@@ -432,7 +432,7 @@ InferSemanticDataType attempts to infer semantic data types for ML datasets
 func IsCSVFile(filePath string) bool
 ```
 
-IsCSVFile checks if a file appears to be a CSV file based on extension
+IsCSVFile checks if a file appears to be a CSV file based on extension.
 
 <a name="IsValidDataType"></a>
 ## func [IsValidDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/datatypes.go#L96>)
@@ -441,7 +441,7 @@ IsCSVFile checks if a file appears to be a CSV file based on extension
 func IsValidDataType(dataType string) bool
 ```
 
-IsValidDataType checks if a dataType is valid according to Croissant specification
+IsValidDataType checks if a dataType is valid according to Croissant specification.
 
 <a name="ParseCSVWithOptions"></a>
 ## func [ParseCSVWithOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L186>)
@@ -450,7 +450,7 @@ IsValidDataType checks if a dataType is valid according to Croissant specificati
 func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]string, [][]string, error)
 ```
 
-ParseCSVWithOptions parses a CSV file with custom options
+ParseCSVWithOptions parses a CSV file with custom options.
 
 <a name="SanitizeFileName"></a>
 ## func [SanitizeFileName](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L408>)
@@ -459,7 +459,7 @@ ParseCSVWithOptions parses a CSV file with custom options
 func SanitizeFileName(fileName string) string
 ```
 
-SanitizeFileName removes or replaces invalid characters in filenames
+SanitizeFileName removes or replaces invalid characters in filenames.
 
 <a name="ValidateCSVStructure"></a>
 ## func [ValidateCSVStructure](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L292>)
@@ -468,43 +468,43 @@ SanitizeFileName removes or replaces invalid characters in filenames
 func ValidateCSVStructure(csvPath string) error
 ```
 
-ValidateCSVStructure performs basic validation on CSV file structure
+ValidateCSVStructure performs basic validation on CSV file structure.
 
 <a name="ValidateCrossReferences"></a>
-## func [ValidateCrossReferences](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L323>)
+## func [ValidateCrossReferences](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L324>)
 
 ```go
 func ValidateCrossReferences(node *MetadataNode, issues *Issues)
 ```
 
-ValidateCrossReferences validates that all references are valid
+ValidateCrossReferences validates that all references are valid.
 
 <a name="ValidateDistributionNode"></a>
-## func [ValidateDistributionNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L149>)
+## func [ValidateDistributionNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L150>)
 
 ```go
 func ValidateDistributionNode(dist *DistributionNode, issues *Issues, options ValidationOptions)
 ```
 
-ValidateDistributionNode validates a distribution node
+ValidateDistributionNode validates a distribution node.
 
 <a name="ValidateFieldNode"></a>
-## func [ValidateFieldNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L251>)
+## func [ValidateFieldNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L252>)
 
 ```go
 func ValidateFieldNode(field *FieldNode, issues *Issues, options ValidationOptions)
 ```
 
-ValidateFieldNode validates a field node
+ValidateFieldNode validates a field node.
 
 <a name="ValidateMetadataNode"></a>
-## func [ValidateMetadataNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L95>)
+## func [ValidateMetadataNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L96>)
 
 ```go
 func ValidateMetadataNode(node *MetadataNode, issues *Issues, options ValidationOptions)
 ```
 
-ValidateMetadataNode performs comprehensive validation of a metadata node
+ValidateMetadataNode performs comprehensive validation of a metadata node.
 
 <a name="ValidateOutputPath"></a>
 ## func [ValidateOutputPath](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/utils.go#L118>)
@@ -513,21 +513,21 @@ ValidateMetadataNode performs comprehensive validation of a metadata node
 func ValidateOutputPath(outputPath string) error
 ```
 
-ValidateOutputPath validates if the given path is a valid file path
+ValidateOutputPath validates if the given path is a valid file path.
 
 <a name="ValidateRecordSetNode"></a>
-## func [ValidateRecordSetNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L191>)
+## func [ValidateRecordSetNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L192>)
 
 ```go
 func ValidateRecordSetNode(rs *RecordSetNode, issues *Issues, options ValidationOptions)
 ```
 
-ValidateRecordSetNode validates a record set node
+ValidateRecordSetNode validates a record set node.
 
 <a name="BaseNode"></a>
 ## type [BaseNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/node.go#L14-L18>)
 
-BaseNode implements common functionality for all nodes
+BaseNode implements common functionality for all nodes.
 
 ```go
 type BaseNode struct {
@@ -576,7 +576,7 @@ func (n *BaseNode) SetParent(parent Node)
 <a name="Context"></a>
 ## type [Context](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L272-L308>)
 
-Context represents the complete JSON\-LD context for Croissant 1.0
+Context represents the complete JSON\-LD context for Croissant 1.0.
 
 ```go
 type Context struct {
@@ -625,7 +625,7 @@ type Context struct {
 func CreateDefaultContext() Context
 ```
 
-CreateDefaultContext creates the ML Commons Croissant 1.0 compliant context
+CreateDefaultContext creates the ML Commons Croissant 1.0 compliant context.
 
 <a name="CroissantError"></a>
 ## type [CroissantError](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/error.go#L5-L10>)
@@ -653,7 +653,7 @@ func (e CroissantError) Error() string
 <a name="DataContext"></a>
 ## type [DataContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L311-L314>)
 
-DataContext represents the data field in the context
+DataContext represents the data field in the context.
 
 ```go
 type DataContext struct {
@@ -665,7 +665,7 @@ type DataContext struct {
 <a name="DataType"></a>
 ## type [DataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L108-L113>)
 
-DataType represents a data type that can be either a single string or an array of strings
+DataType represents a data type that can be either a single string or an array of strings.
 
 ```go
 type DataType struct {
@@ -683,7 +683,7 @@ type DataType struct {
 func NewArrayDataType(dataTypes ...string) DataType
 ```
 
-NewArrayDataType creates a DataType with multiple types
+NewArrayDataType creates a DataType with multiple types.
 
 <a name="NewNullableSingleDataType"></a>
 ### func [NewNullableSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L400>)
@@ -692,7 +692,7 @@ NewArrayDataType creates a DataType with multiple types
 func NewNullableSingleDataType(dataType string) *DataType
 ```
 
-NewSingleDataType creates a DataType with a single type
+NewSingleDataType creates a DataType with a single type.
 
 <a name="NewSingleDataType"></a>
 ### func [NewSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L407>)
@@ -701,7 +701,7 @@ NewSingleDataType creates a DataType with a single type
 func NewSingleDataType(dataType string) DataType
 ```
 
-NewSingleDataType creates a DataType with a single type
+NewSingleDataType creates a DataType with a single type.
 
 <a name="DataType.GetFirstType"></a>
 ### func \(DataType\) [GetFirstType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L222>)
@@ -710,7 +710,7 @@ NewSingleDataType creates a DataType with a single type
 func (d DataType) GetFirstType() string
 ```
 
-GetFirstType returns the first data type \(useful for backward compatibility\)
+GetFirstType returns the first data type \(useful for backward compatibility\).
 
 <a name="DataType.GetTypes"></a>
 ### func \(DataType\) [GetTypes](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L211>)
@@ -719,7 +719,7 @@ GetFirstType returns the first data type \(useful for backward compatibility\)
 func (d DataType) GetTypes() []string
 ```
 
-GetTypes returns all data types \(single or array\)
+GetTypes returns all data types \(single or array\).
 
 <a name="DataType.IsArray"></a>
 ### func \(DataType\) [IsArray](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L206>)
@@ -728,7 +728,7 @@ GetTypes returns all data types \(single or array\)
 func (d DataType) IsArray() bool
 ```
 
-IsArray returns true if this is an array of data types
+IsArray returns true if this is an array of data types.
 
 <a name="DataType.MarshalJSON"></a>
 ### func \(DataType\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L175>)
@@ -737,7 +737,7 @@ IsArray returns true if this is an array of data types
 func (d DataType) MarshalJSON() ([]byte, error)
 ```
 
-MarshalJSON implements custom JSON marshaling for DataType
+MarshalJSON implements custom JSON marshaling for DataType.
 
 <a name="DataType.UnmarshalJSON"></a>
 ### func \(\*DataType\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L186>)
@@ -746,12 +746,12 @@ MarshalJSON implements custom JSON marshaling for DataType
 func (d *DataType) UnmarshalJSON(data []byte) error
 ```
 
-UnmarshalJSON implements custom JSON unmarshaling for DataType
+UnmarshalJSON implements custom JSON unmarshaling for DataType.
 
 <a name="DataTypeContext"></a>
 ## type [DataTypeContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L317-L320>)
 
-DataTypeContext represents the dataType field in the context
+DataTypeContext represents the dataType field in the context.
 
 ```go
 type DataTypeContext struct {
@@ -763,7 +763,7 @@ type DataTypeContext struct {
 <a name="Distribution"></a>
 ## type [Distribution](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L233-L257>)
 
-Distribution represents a file in the Croissant metadata
+Distribution represents a file in the Croissant metadata.
 
 ```go
 type Distribution struct {
@@ -796,7 +796,7 @@ type Distribution struct {
 <a name="DistributionNode"></a>
 ## type [DistributionNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L173-L181>)
 
-DistributionNode represents a file distribution
+DistributionNode represents a file distribution.
 
 ```go
 type DistributionNode struct {
@@ -817,12 +817,12 @@ type DistributionNode struct {
 func (d *DistributionNode) Validate(issues *Issues)
 ```
 
-Validate validates the distribution node
+Validate validates the distribution node.
 
 <a name="Extract"></a>
 ## type [Extract](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L44-L53>)
 
-Extract represents the extraction information for a field source
+Extract represents the extraction information for a field source.
 
 ```go
 type Extract struct {
@@ -840,7 +840,7 @@ type Extract struct {
 <a name="ExtractNode"></a>
 ## type [ExtractNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L417-L422>)
 
-ExtractNode represents extraction details
+ExtractNode represents extraction details.
 
 ```go
 type ExtractNode struct {
@@ -854,7 +854,7 @@ type ExtractNode struct {
 <a name="Field"></a>
 ## type [Field](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L9-L32>)
 
-Field represents a field in the Croissant metadata
+Field represents a field in the Croissant metadata.
 
 ```go
 type Field struct {
@@ -886,7 +886,7 @@ type Field struct {
 <a name="FieldNode"></a>
 ## type [FieldNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L342-L352>)
 
-FieldNode represents a field
+FieldNode represents a field.
 
 ```go
 type FieldNode struct {
@@ -909,12 +909,12 @@ type FieldNode struct {
 func (f *FieldNode) Validate(issues *Issues)
 ```
 
-Validate validates the field node
+Validate validates the field node.
 
 <a name="FieldRef"></a>
 ## type [FieldRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L66-L69>)
 
-FieldRef represents a reference to another field
+FieldRef represents a reference to another field.
 
 ```go
 type FieldRef struct {
@@ -953,7 +953,7 @@ func (ref *FieldRefSlice) UnmarshalJSON(data []byte) error
 <a name="FieldSource"></a>
 ## type [FieldSource](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L35-L41>)
 
-FieldSource represents the source information for a field
+FieldSource represents the source information for a field.
 
 ```go
 type FieldSource struct {
@@ -972,12 +972,12 @@ type FieldSource struct {
 func (fs FieldSource) ValidateSource() bool
 ```
 
-ValidateSource validates the source configuration
+ValidateSource validates the source configuration.
 
 <a name="FileObject"></a>
 ## type [FileObject](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L56-L58>)
 
-FileObject represents a file object reference
+FileObject represents a file object reference.
 
 ```go
 type FileObject struct {
@@ -988,7 +988,7 @@ type FileObject struct {
 <a name="FileObjectRef"></a>
 ## type [FileObjectRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L425-L427>)
 
-FileObjectRef represents a reference to a file object
+FileObjectRef represents a reference to a file object.
 
 ```go
 type FileObjectRef struct {
@@ -999,7 +999,7 @@ type FileObjectRef struct {
 <a name="Issue"></a>
 ## type [Issue](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L19-L23>)
 
-Issue represents a single validation issue
+Issue represents a single validation issue.
 
 ```go
 type Issue struct {
@@ -1012,7 +1012,7 @@ type Issue struct {
 <a name="IssueType"></a>
 ## type [IssueType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L11>)
 
-IssueType represents the type of issue \(error or warning\)
+IssueType represents the type of issue \(error or warning\).
 
 ```go
 type IssueType int
@@ -1030,7 +1030,7 @@ const (
 <a name="Issues"></a>
 ## type [Issues](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L26-L29>)
 
-Issues represents a collection of validation issues
+Issues represents a collection of validation issues.
 
 ```go
 type Issues struct {
@@ -1045,52 +1045,52 @@ type Issues struct {
 func NewIssues() *Issues
 ```
 
-NewIssues creates a new Issues instance
+NewIssues creates a new Issues instance.
 
 <a name="ValidateFile"></a>
-### func [ValidateFile](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L31>)
+### func [ValidateFile](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L32>)
 
 ```go
 func ValidateFile(filePath string) (*Issues, error)
 ```
 
-ValidateFile validates a Croissant metadata file and returns issues
+ValidateFile validates a Croissant metadata file and returns issues.
 
 <a name="ValidateJSON"></a>
-### func [ValidateJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L41>)
+### func [ValidateJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L42>)
 
 ```go
 func ValidateJSON(data []byte) (*Issues, error)
 ```
 
-ValidateJSON validates Croissant metadata in JSON\-LD format and returns issues
+ValidateJSON validates Croissant metadata in JSON\-LD format and returns issues.
 
 <a name="ValidateJSONWithOptions"></a>
-### func [ValidateJSONWithOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L60>)
+### func [ValidateJSONWithOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L61>)
 
 ```go
 func ValidateJSONWithOptions(data []byte, options ValidationOptions) (*Issues, error)
 ```
 
-ValidateJSONWithOptions validates Croissant metadata in JSON\-LD format with options and returns issues
+ValidateJSONWithOptions validates Croissant metadata in JSON\-LD format with options and returns issues.
 
 <a name="ValidateMetadata"></a>
-### func [ValidateMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L79>)
+### func [ValidateMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L80>)
 
 ```go
 func ValidateMetadata(metadata Metadata) *Issues
 ```
 
-ValidateMetadata validates a Metadata struct and returns issues
+ValidateMetadata validates a Metadata struct and returns issues.
 
 <a name="ValidateMetadataWithOptions"></a>
-### func [ValidateMetadataWithOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L84>)
+### func [ValidateMetadataWithOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L85>)
 
 ```go
 func ValidateMetadataWithOptions(metadata Metadata, options ValidationOptions) *Issues
 ```
 
-ValidateMetadataWithOptions validates a Metadata struct with specific options
+ValidateMetadataWithOptions validates a Metadata struct with specific options.
 
 <a name="Issues.AddError"></a>
 ### func \(\*Issues\) [AddError](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L40>)
@@ -1099,7 +1099,7 @@ ValidateMetadataWithOptions validates a Metadata struct with specific options
 func (i *Issues) AddError(message string, node ...Node)
 ```
 
-AddError adds a new error to the issues collection
+AddError adds a new error to the issues collection.
 
 <a name="Issues.AddWarning"></a>
 ### func \(\*Issues\) [AddWarning](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L52>)
@@ -1108,7 +1108,7 @@ AddError adds a new error to the issues collection
 func (i *Issues) AddWarning(message string, node ...Node)
 ```
 
-AddWarning adds a new warning to the issues collection
+AddWarning adds a new warning to the issues collection.
 
 <a name="Issues.ErrorCount"></a>
 ### func \(\*Issues\) [ErrorCount](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L74>)
@@ -1117,7 +1117,7 @@ AddWarning adds a new warning to the issues collection
 func (i *Issues) ErrorCount() int
 ```
 
-ErrorCount returns the number of errors
+ErrorCount returns the number of errors.
 
 <a name="Issues.HasErrors"></a>
 ### func \(\*Issues\) [HasErrors](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L64>)
@@ -1126,7 +1126,7 @@ ErrorCount returns the number of errors
 func (i *Issues) HasErrors() bool
 ```
 
-HasErrors returns true if there are any errors
+HasErrors returns true if there are any errors.
 
 <a name="Issues.HasWarnings"></a>
 ### func \(\*Issues\) [HasWarnings](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L69>)
@@ -1135,7 +1135,7 @@ HasErrors returns true if there are any errors
 func (i *Issues) HasWarnings() bool
 ```
 
-HasWarnings returns true if there are any warnings
+HasWarnings returns true if there are any warnings.
 
 <a name="Issues.Report"></a>
 ### func \(\*Issues\) [Report](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L84>)
@@ -1144,7 +1144,7 @@ HasWarnings returns true if there are any warnings
 func (i *Issues) Report() string
 ```
 
-Report generates a human\-readable report of all issues
+Report generates a human\-readable report of all issues.
 
 <a name="Issues.WarningCount"></a>
 ### func \(\*Issues\) [WarningCount](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/issues.go#L79>)
@@ -1153,12 +1153,12 @@ Report generates a human\-readable report of all issues
 func (i *Issues) WarningCount() int
 ```
 
-WarningCount returns the number of warnings
+WarningCount returns the number of warnings.
 
 <a name="JSONLDProcessor"></a>
 ## type [JSONLDProcessor](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/jsonld.go#L12-L15>)
 
-JSONLDProcessor handles JSON\-LD processing using json\-gold library
+JSONLDProcessor handles JSON\-LD processing using json\-gold library.
 
 ```go
 type JSONLDProcessor struct {
@@ -1173,7 +1173,7 @@ type JSONLDProcessor struct {
 func NewJSONLDProcessor() *JSONLDProcessor
 ```
 
-NewJSONLDProcessor creates a new JSON\-LD processor
+NewJSONLDProcessor creates a new JSON\-LD processor.
 
 <a name="JSONLDProcessor.CompactJSONLD"></a>
 ### func \(\*JSONLDProcessor\) [CompactJSONLD](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/jsonld.go#L53>)
@@ -1182,7 +1182,7 @@ NewJSONLDProcessor creates a new JSON\-LD processor
 func (j *JSONLDProcessor) CompactJSONLD(expanded interface{}, context map[string]interface{}) (map[string]interface{}, error)
 ```
 
-CompactJSONLD compacts an expanded JSON\-LD document with the given context
+CompactJSONLD compacts an expanded JSON\-LD document with the given context.
 
 <a name="JSONLDProcessor.ParseCroissantMetadata"></a>
 ### func \(\*JSONLDProcessor\) [ParseCroissantMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/jsonld.go#L80>)
@@ -1191,7 +1191,7 @@ CompactJSONLD compacts an expanded JSON\-LD document with the given context
 func (j *JSONLDProcessor) ParseCroissantMetadata(data []byte) (*Metadata, error)
 ```
 
-ParseCroissantMetadata parses Croissant JSON\-LD metadata and converts it to our Metadata struct
+ParseCroissantMetadata parses Croissant JSON\-LD metadata and converts it to our Metadata struct.
 
 <a name="JSONLDProcessor.ParseJSONLD"></a>
 ### func \(\*JSONLDProcessor\) [ParseJSONLD](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/jsonld.go#L26>)
@@ -1200,7 +1200,7 @@ ParseCroissantMetadata parses Croissant JSON\-LD metadata and converts it to our
 func (j *JSONLDProcessor) ParseJSONLD(data []byte) (map[string]interface{}, error)
 ```
 
-ParseJSONLD parses and expands JSON\-LD document to a normalized form
+ParseJSONLD parses and expands JSON\-LD document to a normalized form.
 
 <a name="JSONLDProcessor.ValidateJSONLD"></a>
 ### func \(\*JSONLDProcessor\) [ValidateJSONLD](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/jsonld.go#L64>)
@@ -1209,12 +1209,12 @@ ParseJSONLD parses and expands JSON\-LD document to a normalized form
 func (j *JSONLDProcessor) ValidateJSONLD(data []byte) error
 ```
 
-ValidateJSONLD validates that the document is valid JSON\-LD
+ValidateJSONLD validates that the document is valid JSON\-LD.
 
 <a name="KeyRef"></a>
 ## type [KeyRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L61-L63>)
 
-KeyRef represents a key reference in a composite key
+KeyRef represents a key reference in a composite key.
 
 ```go
 type KeyRef struct {
@@ -1272,7 +1272,7 @@ type Metadata struct {
 <a name="MetadataNode"></a>
 ## type [MetadataNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L7-L18>)
 
-MetadataNode represents a Croissant metadata document
+MetadataNode represents a Croissant metadata document.
 
 ```go
 type MetadataNode struct {
@@ -1296,7 +1296,7 @@ type MetadataNode struct {
 func FromMetadata(metadata Metadata) *MetadataNode
 ```
 
-FromMetadata converts a Metadata struct to a MetadataNode
+FromMetadata converts a Metadata struct to a MetadataNode.
 
 <a name="NewMetadataNode"></a>
 ### func [NewMetadataNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L21>)
@@ -1305,7 +1305,7 @@ FromMetadata converts a Metadata struct to a MetadataNode
 func NewMetadataNode() *MetadataNode
 ```
 
-NewMetadataNode creates a new MetadataNode
+NewMetadataNode creates a new MetadataNode.
 
 <a name="MetadataNode.Validate"></a>
 ### func \(\*MetadataNode\) [Validate](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L35>)
@@ -1314,12 +1314,12 @@ NewMetadataNode creates a new MetadataNode
 func (m *MetadataNode) Validate(issues *Issues)
 ```
 
-Validate validates the metadata node
+Validate validates the metadata node.
 
 <a name="MetadataWithValidation"></a>
-## type [MetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L369-L373>)
+## type [MetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L370-L374>)
 
-AddValidationToMetadata adds validation functionality to the Metadata struct
+AddValidationToMetadata adds validation functionality to the Metadata struct.
 
 ```go
 type MetadataWithValidation struct {
@@ -1335,75 +1335,75 @@ type MetadataWithValidation struct {
 func GenerateMetadataWithValidation(csvPath string, outputPath string) (*MetadataWithValidation, error)
 ```
 
-GenerateMetadataWithValidation generates Croissant metadata with validation from a CSV file
+GenerateMetadataWithValidation generates Croissant metadata with validation from a CSV file.
 
 <a name="NewMetadataWithValidation"></a>
-### func [NewMetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L376>)
+### func [NewMetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L377>)
 
 ```go
 func NewMetadataWithValidation(metadata Metadata) *MetadataWithValidation
 ```
 
-NewMetadataWithValidation creates a new MetadataWithValidation instance
+NewMetadataWithValidation creates a new MetadataWithValidation instance.
 
 <a name="MetadataWithValidation.GetIssues"></a>
-### func \(\*MetadataWithValidation\) [GetIssues](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L419>)
+### func \(\*MetadataWithValidation\) [GetIssues](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L420>)
 
 ```go
 func (m *MetadataWithValidation) GetIssues() *Issues
 ```
 
-GetIssues returns the validation issues
+GetIssues returns the validation issues.
 
 <a name="MetadataWithValidation.HasErrors"></a>
-### func \(\*MetadataWithValidation\) [HasErrors](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L403>)
+### func \(\*MetadataWithValidation\) [HasErrors](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L404>)
 
 ```go
 func (m *MetadataWithValidation) HasErrors() bool
 ```
 
-HasErrors returns true if there are validation errors
+HasErrors returns true if there are validation errors.
 
 <a name="MetadataWithValidation.HasWarnings"></a>
-### func \(\*MetadataWithValidation\) [HasWarnings](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L411>)
+### func \(\*MetadataWithValidation\) [HasWarnings](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L412>)
 
 ```go
 func (m *MetadataWithValidation) HasWarnings() bool
 ```
 
-HasWarnings returns true if there are validation warnings
+HasWarnings returns true if there are validation warnings.
 
 <a name="MetadataWithValidation.Report"></a>
-### func \(\*MetadataWithValidation\) [Report](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L395>)
+### func \(\*MetadataWithValidation\) [Report](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L396>)
 
 ```go
 func (m *MetadataWithValidation) Report() string
 ```
 
-Report returns a string report of validation issues
+Report returns a string report of validation issues.
 
 <a name="MetadataWithValidation.Validate"></a>
-### func \(\*MetadataWithValidation\) [Validate](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L384>)
+### func \(\*MetadataWithValidation\) [Validate](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L385>)
 
 ```go
 func (m *MetadataWithValidation) Validate()
 ```
 
-Validate runs validation on the metadata
+Validate runs validation on the metadata.
 
 <a name="MetadataWithValidation.ValidateWithOptions"></a>
-### func \(\*MetadataWithValidation\) [ValidateWithOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L389>)
+### func \(\*MetadataWithValidation\) [ValidateWithOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L390>)
 
 ```go
 func (m *MetadataWithValidation) ValidateWithOptions(options ValidationOptions)
 ```
 
-ValidateWithOptions runs validation with specific options
+ValidateWithOptions runs validation with specific options.
 
 <a name="Node"></a>
 ## type [Node](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/node.go#L5-L11>)
 
-Node represents a node in the Croissant metadata structure
+Node represents a node in the Croissant metadata structure.
 
 ```go
 type Node interface {
@@ -1418,7 +1418,7 @@ type Node interface {
 <a name="RecordSet"></a>
 ## type [RecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L260-L269>)
 
-RecordSet represents a record set in the Croissant metadata
+RecordSet represents a record set in the Croissant metadata.
 
 ```go
 type RecordSet struct {
@@ -1440,7 +1440,7 @@ type RecordSet struct {
 func CreateEnumerationRecordSet(id, name string, values []string, urls []string) RecordSet
 ```
 
-CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data
+CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data.
 
 <a name="CreateSplitRecordSet"></a>
 ### func [CreateSplitRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L101>)
@@ -1449,12 +1449,12 @@ CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data
 func CreateSplitRecordSet() RecordSet
 ```
 
-CreateSplitRecordSet creates a standard ML split RecordSet
+CreateSplitRecordSet creates a standard ML split RecordSet.
 
 <a name="RecordSetKey"></a>
 ## type [RecordSetKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L116-L121>)
 
-RecordSetKey represents a record set key that can be either a single key or composite key
+RecordSetKey represents a record set key that can be either a single key or composite key.
 
 ```go
 type RecordSetKey struct {
@@ -1472,7 +1472,7 @@ type RecordSetKey struct {
 func NewCompositeKey(keyIDs ...string) *RecordSetKey
 ```
 
-NewCompositeKey creates a RecordSetKey with multiple key references
+NewCompositeKey creates a RecordSetKey with multiple key references.
 
 <a name="NewSingleKey"></a>
 ### func [NewSingleKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L382>)
@@ -1481,7 +1481,7 @@ NewCompositeKey creates a RecordSetKey with multiple key references
 func NewSingleKey(keyID string) *RecordSetKey
 ```
 
-NewSingleKey creates a RecordSetKey with a single key reference
+NewSingleKey creates a RecordSetKey with a single key reference.
 
 <a name="RecordSetKey.GetKeyIDs"></a>
 ### func \(RecordSetKey\) [GetKeyIDs](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L160>)
@@ -1490,7 +1490,7 @@ NewSingleKey creates a RecordSetKey with a single key reference
 func (k RecordSetKey) GetKeyIDs() []string
 ```
 
-GetKeyIDs returns all key IDs \(single or composite\)
+GetKeyIDs returns all key IDs \(single or composite\).
 
 <a name="RecordSetKey.IsComposite"></a>
 ### func \(RecordSetKey\) [IsComposite](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L155>)
@@ -1499,7 +1499,7 @@ GetKeyIDs returns all key IDs \(single or composite\)
 func (k RecordSetKey) IsComposite() bool
 ```
 
-IsComposite returns true if this is a composite key
+IsComposite returns true if this is a composite key.
 
 <a name="RecordSetKey.MarshalJSON"></a>
 ### func \(RecordSetKey\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L124>)
@@ -1508,7 +1508,7 @@ IsComposite returns true if this is a composite key
 func (k RecordSetKey) MarshalJSON() ([]byte, error)
 ```
 
-MarshalJSON implements custom JSON marshaling for RecordSetKey
+MarshalJSON implements custom JSON marshaling for RecordSetKey.
 
 <a name="RecordSetKey.UnmarshalJSON"></a>
 ### func \(\*RecordSetKey\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L135>)
@@ -1517,12 +1517,12 @@ MarshalJSON implements custom JSON marshaling for RecordSetKey
 func (k *RecordSetKey) UnmarshalJSON(data []byte) error
 ```
 
-UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey
+UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey.
 
 <a name="RecordSetNode"></a>
 ## type [RecordSetNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L207-L215>)
 
-RecordSetNode represents a record set
+RecordSetNode represents a record set.
 
 ```go
 type RecordSetNode struct {
@@ -1543,12 +1543,12 @@ type RecordSetNode struct {
 func (r *RecordSetNode) Validate(issues *Issues)
 ```
 
-Validate validates the record set node
+Validate validates the record set node.
 
 <a name="Source"></a>
 ## type [Source](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L374-L379>)
 
-Source represents a more complete source definition
+Source represents a more complete source definition.
 
 ```go
 type Source struct {
@@ -1562,7 +1562,7 @@ type Source struct {
 <a name="SourceNode"></a>
 ## type [SourceNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L399-L405>)
 
-SourceNode represents a source
+SourceNode represents a source.
 
 ```go
 type SourceNode struct {
@@ -1581,12 +1581,12 @@ type SourceNode struct {
 func (s *SourceNode) ValidateSource() bool
 ```
 
-ValidateSource validates the source node
+ValidateSource validates the source node.
 
 <a name="Transform"></a>
 ## type [Transform](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L364-L371>)
 
-Transform represents a data transformation
+Transform represents a data transformation.
 
 ```go
 type Transform struct {
@@ -1600,9 +1600,9 @@ type Transform struct {
 ```
 
 <a name="ValidationOptions"></a>
-## type [ValidationOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L13-L18>)
+## type [ValidationOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L14-L19>)
 
-ValidationOptions represents options for validation
+ValidationOptions represents options for validation.
 
 ```go
 type ValidationOptions struct {
@@ -1614,10 +1614,10 @@ type ValidationOptions struct {
 ```
 
 <a name="DefaultValidationOptions"></a>
-### func [DefaultValidationOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L21>)
+### func [DefaultValidationOptions](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L22>)
 
 ```go
 func DefaultValidationOptions() ValidationOptions
 ```
 
-DefaultValidationOptions returns default validation options
+DefaultValidationOptions returns default validation options.
