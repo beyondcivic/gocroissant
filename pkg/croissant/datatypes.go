@@ -9,28 +9,57 @@ import (
 	"time"
 )
 
-// InferDataType infers the schema.org data type from a value
+// Supported value data types:
+// Schema.org data types
+const VT_scText string = "sc:Text"
+const VT_scBool string = "sc:Boolean"
+const VT_scInt string = "sc:Integer"
+const VT_scNum string = "sc:Number"
+const VT_scDateT string = "sc:DateTime"
+const VT_scURL string = "sc:URL"
+const VT_scImage string = "sc:ImageObject"
+const VT_scVideo string = "sc:VideoObject"
+const VT_scEnum string = "sc:Enumeration"
+const VT_scGeoShape string = "sc:GeoShape"
+const VT_scGeoCoord string = "sc:GeoCoordinates"
+
+// Croissant-specific types
+const VT_crLabel string = "cr:Label"
+const VT_crSplit string = "cr:Split"
+const VT_crBBox string = "cr:BoundingBox"
+const VT_crSegMask string = "cr:SegmentationMask"
+
+// Croissant Split types
+const VT_crSplitTrain string = "cr:TrainingSplit"
+const VT_crSplitVal string = "cr:ValidationSplit"
+const VT_crSplitTest string = "cr:TestSplit"
+
+// Wikidata entities (wd:Q...)
+const VT_wdPrefix string = "wd:Q"
+
+// InferDataType infers the schema.org data type from a value.
+// Returns in
 func InferDataType(value string) string {
 	// Trim whitespace
 	value = strings.TrimSpace(value)
 	if value == "" {
-		return "sc:Text"
+		return VT_scText
 	}
 
 	// Try to parse as boolean
 	lowerVal := strings.ToLower(value)
 	if lowerVal == "true" || lowerVal == "false" {
-		return "sc:Boolean"
+		return VT_scBool
 	}
 
 	// Try to parse as integer
 	if _, err := strconv.ParseInt(value, 10, 64); err == nil {
-		return "sc:Integer"
+		return VT_scInt
 	}
 
 	// Try to parse as float
 	if _, err := strconv.ParseFloat(value, 64); err == nil {
-		return "sc:Number"
+		return VT_scNum
 	}
 
 	// Try to parse as date (various formats)
@@ -44,55 +73,55 @@ func InferDataType(value string) string {
 	}
 	for _, format := range dateFormats {
 		if _, err := time.Parse(format, value); err == nil {
-			return "sc:DateTime"
+			return VT_scDateT
 		}
 	}
 
 	// Try to parse as URL
 	if _, err := url.ParseRequestURI(value); err == nil && (strings.HasPrefix(value, "http://") || strings.HasPrefix(value, "https://")) {
-		return "sc:URL"
+		return VT_scURL
 	}
 
 	// Try to detect email
 	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if emailRegex.MatchString(value) {
-		return "sc:Text" // Email is still text but we could add a custom type if needed
+		return VT_scText // Email is still text but we could add a custom type if needed
 	}
 
 	// Default to Text
-	return "sc:Text"
+	return VT_scText
 }
 
 // IsValidDataType checks if a dataType is valid according to Croissant specification
 func IsValidDataType(dataType string) bool {
 	validTypes := map[string]bool{
 		// Schema.org types
-		"sc:Text":           true,
-		"sc:Boolean":        true,
-		"sc:Integer":        true,
-		"sc:Number":         true,
-		"sc:DateTime":       true,
-		"sc:URL":            true,
-		"sc:ImageObject":    true,
-		"sc:VideoObject":    true,
-		"sc:Enumeration":    true,
-		"sc:GeoShape":       true,
-		"sc:GeoCoordinates": true,
+		VT_scText:     true,
+		VT_scBool:     true,
+		VT_scInt:      true,
+		VT_scNum:      true,
+		VT_scDateT:    true,
+		VT_scURL:      true,
+		VT_scImage:    true,
+		VT_scVideo:    true,
+		VT_scEnum:     true,
+		VT_scGeoShape: true,
+		VT_scGeoCoord: true,
 
 		// Croissant-specific types
-		"cr:Label":            true,
-		"cr:Split":            true,
-		"cr:BoundingBox":      true,
-		"cr:SegmentationMask": true,
+		VT_crLabel:   true,
+		VT_crSplit:   true,
+		VT_crBBox:    true,
+		VT_crSegMask: true,
 
 		// Croissant Split types
-		"cr:TrainingSplit":   true,
-		"cr:ValidationSplit": true,
-		"cr:TestSplit":       true,
+		VT_crSplitTrain: true,
+		VT_crSplitVal:   true,
+		VT_crSplitTest:  true,
 	}
 
 	// Also accept Wikidata entities (wd:Q...)
-	if strings.HasPrefix(dataType, "wd:Q") {
+	if strings.HasPrefix(dataType, VT_wdPrefix) {
 		return true
 	}
 
@@ -108,7 +137,7 @@ func InferSemanticDataType(fieldName, value string, context map[string]interface
 		splitValues := []string{"train", "training", "val", "validation", "test", "testing"}
 		for _, splitVal := range splitValues {
 			if strings.Contains(strings.ToLower(value), splitVal) {
-				return []string{"cr:Split", "sc:Text"}
+				return []string{VT_crSplit, VT_scText}
 			}
 		}
 	}
@@ -118,14 +147,14 @@ func InferSemanticDataType(fieldName, value string, context map[string]interface
 	for _, labelField := range labelFields {
 		if strings.Contains(fieldNameLower, labelField) {
 			baseType := InferDataType(value)
-			return []string{baseType, "cr:Label"}
+			return []string{baseType, VT_crLabel}
 		}
 	}
 
 	// Check for bounding box patterns (arrays of 4 numbers)
 	if strings.Contains(fieldNameLower, "bbox") || strings.Contains(fieldNameLower, "box") {
 		// This would need more sophisticated parsing for actual bounding box detection
-		return []string{"cr:BoundingBox"}
+		return []string{VT_crBBox}
 	}
 
 	// Check for enumeration patterns
@@ -134,7 +163,7 @@ func InferSemanticDataType(fieldName, value string, context map[string]interface
 			if enumSlice, ok := enumValues.([]string); ok {
 				for _, enumVal := range enumSlice {
 					if value == enumVal {
-						return []string{"sc:Enumeration", "sc:Text"}
+						return []string{VT_scEnum, VT_scText}
 					}
 				}
 			}

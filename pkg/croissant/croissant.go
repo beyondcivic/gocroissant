@@ -56,7 +56,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 			ID:       fmt.Sprintf("%s/name", id),
 			Type:     "cr:Field",
 			Name:     fmt.Sprintf("%s/name", id),
-			DataType: NewSingleDataType("sc:Text"),
+			DataType: NewSingleDataType(VT_scText),
 		},
 	}
 
@@ -66,7 +66,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 			ID:       fmt.Sprintf("%s/url", id),
 			Type:     "cr:Field",
 			Name:     fmt.Sprintf("%s/url", id),
-			DataType: NewSingleDataType("sc:URL"),
+			DataType: NewSingleDataType(VT_scURL),
 		}
 		fields = append(fields, urlField)
 	}
@@ -88,7 +88,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 		Type:        "cr:RecordSet",
 		Name:        name,
 		Description: fmt.Sprintf("Enumeration values for %s", name),
-		DataType:    NewNullableSingleDataType("sc:Enumeration"),
+		DataType:    NewNullableSingleDataType(VT_scEnum),
 		Fields:      fields,
 		Key:         NewSingleKey(fmt.Sprintf("%s/name", id)),
 		Data:        data,
@@ -202,7 +202,7 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 	fields := make([]Field, 0, len(headers))
 	for i, header := range headers {
 		fieldID := fmt.Sprintf("main/%s", cleanFieldName(header))
-		dataType := "sc:Text" // Default
+		dataType := VT_scText // Default
 
 		// Infer data type from first row if available
 		if firstRow != nil && i < len(firstRow) {

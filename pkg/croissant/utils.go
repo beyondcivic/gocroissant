@@ -352,7 +352,7 @@ func GetCSVColumnTypes(csvPath string, sampleSize int) ([]string, []string, erro
 		// No data rows, default all to Text
 		types := make([]string, len(headers))
 		for i := range types {
-			types[i] = "sc:Text"
+			types[i] = VT_scText
 		}
 		return headers, types, nil
 	}
@@ -373,13 +373,13 @@ func GetCSVColumnTypes(csvPath string, sampleSize int) ([]string, []string, erro
 		}
 
 		if totalSamples == 0 {
-			columnTypes[i] = "sc:Text"
+			columnTypes[i] = VT_scText
 			continue
 		}
 
 		// Find the most common type
 		maxCount := 0
-		mostCommonType := "sc:Text"
+		mostCommonType := VT_scText
 		for dataType, count := range typeCounts {
 			if count > maxCount {
 				maxCount = count
@@ -389,7 +389,7 @@ func GetCSVColumnTypes(csvPath string, sampleSize int) ([]string, []string, erro
 
 		// If less than 70% of samples match the most common type, default to Text
 		if float64(maxCount)/float64(totalSamples) < 0.7 {
-			columnTypes[i] = "sc:Text"
+			columnTypes[i] = VT_scText
 		} else {
 			columnTypes[i] = mostCommonType
 		}

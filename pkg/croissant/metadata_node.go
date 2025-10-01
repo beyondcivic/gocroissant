@@ -248,12 +248,12 @@ func (r *RecordSetNode) validateDataType(issues *Issues) {
 	firstType := r.DataType.GetFirstType()
 
 	// Validate enumeration RecordSets
-	if firstType == "sc:Enumeration" {
+	if firstType == VT_scEnum {
 		r.validateEnumeration(issues)
 	}
 
 	// Validate split RecordSets
-	if firstType == "cr:Split" {
+	if firstType == VT_crSplit {
 		r.validateSplit(issues)
 	}
 }
@@ -381,7 +381,7 @@ func (f *FieldNode) Validate(issues *Issues) {
 		if parent := f.GetParent(); parent != nil {
 			if recordSet, ok := parent.(*RecordSetNode); ok {
 				// If it's an enumeration with inline data, skip source validation
-				if recordSet.DataType.GetFirstType() == "sc:Enumeration" && len(recordSet.Data) > 0 {
+				if recordSet.DataType.GetFirstType() == VT_scEnum && len(recordSet.Data) > 0 {
 					// Skip validation for enumeration fields with inline data
 				} else {
 					issues.AddError(fmt.Sprintf("Node \"%s\" is a field and has no source. Please, use http://mlcommons.org/croissant/source to specify the source.", f.ID), f)
