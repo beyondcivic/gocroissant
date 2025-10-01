@@ -139,16 +139,16 @@ func convertFieldToNode(field Field, parent Node) *FieldNode {
 		Description: field.Description,
 		DataType:    field.DataType,
 		Source: SourceNode{
-			Extract: ExtractNode{
+			Extract: &ExtractNode{
 				Column:       field.Source.Extract.Column,
 				JSONPath:     field.Source.Extract.JSONPath,
 				Regex:        field.Source.Extract.Regex,
 				FileProperty: field.Source.Extract.FileProperty,
 			},
-			FileObject: FileObjectRef{
+			FileObject: &FileObjectRef{
 				ID: field.Source.FileObject.ID,
 			},
-			FileSet: FileObjectRef{
+			FileSet: &FileObjectRef{
 				ID: field.Source.FileSet.ID,
 			},
 			Transform: field.Source.Transform,
@@ -397,11 +397,11 @@ func (f *FieldNode) Validate(issues *Issues) {
 
 // SourceNode represents a source.
 type SourceNode struct {
-	Extract    ExtractNode   `json:"extract,omitempty"`
-	FileObject FileObjectRef `json:"fileObject,omitempty"`
-	FileSet    FileObjectRef `json:"fileSet,omitempty"`
-	Transform  *Transform    `json:"transform,omitempty"`
-	Format     string        `json:"format,omitempty"`
+	Extract    *ExtractNode   `json:"extract,omitempty"`
+	FileObject *FileObjectRef `json:"fileObject,omitempty"`
+	FileSet    *FileObjectRef `json:"fileSet,omitempty"`
+	Transform  *Transform     `json:"transform,omitempty"`
+	Format     string         `json:"format,omitempty"`
 }
 
 // ValidateSource validates the source node.

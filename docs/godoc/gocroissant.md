@@ -1566,11 +1566,11 @@ SourceNode represents a source.
 
 ```go
 type SourceNode struct {
-    Extract    ExtractNode   `json:"extract,omitempty"`
-    FileObject FileObjectRef `json:"fileObject,omitempty"`
-    FileSet    FileObjectRef `json:"fileSet,omitempty"`
-    Transform  *Transform    `json:"transform,omitempty"`
-    Format     string        `json:"format,omitempty"`
+    Extract    *ExtractNode   `json:"extract,omitempty"`
+    FileObject *FileObjectRef `json:"fileObject,omitempty"`
+    FileSet    *FileObjectRef `json:"fileSet,omitempty"`
+    Transform  *Transform     `json:"transform,omitempty"`
+    Format     string         `json:"format,omitempty"`
 }
 ```
 
