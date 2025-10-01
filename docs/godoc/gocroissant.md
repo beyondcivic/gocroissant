@@ -227,6 +227,12 @@ const VT_crSplitTrain string = "cr:TrainingSplit"
 const VT_crSplitVal string = "cr:ValidationSplit"
 ```
 
+<a name="VT_scBool"></a>
+
+```go
+const VT_scBool string = "sc:Boolean"
+```
+
 <a name="VT_scDateT"></a>
 
 ```go
@@ -257,6 +263,12 @@ const VT_scGeoShape string = "sc:GeoShape"
 const VT_scImage string = "sc:ImageObject"
 ```
 
+<a name="VT_scInt"></a>
+
+```go
+const VT_scInt string = "sc:Integer"
+```
+
 <a name="VT_scNum"></a>
 
 ```go
@@ -285,18 +297,6 @@ const VT_scVideo string = "sc:VideoObject"
 
 ```go
 const VT_wdPrefix string = "wd:Q"
-```
-
-<a name="VVT_scBool"></a>
-
-```go
-const VVT_scBool string = "sc:Boolean"
-```
-
-<a name="VVT_scInt"></a>
-
-```go
-const VVT_scInt string = "sc:Integer"
 ```
 
 <a name="CalculateSHA256"></a>
