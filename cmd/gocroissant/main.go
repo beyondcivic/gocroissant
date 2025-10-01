@@ -1,5 +1,35 @@
-// main.go
-package main
+// Package cmd provides the command-line interface for gocroissant.
+//
+// Gocroissant is a Go implementation for working with the ML Commons Croissant
+// metadata format - a standardized way to describe machine learning datasets using JSON-LD.
+//
+// The command-line tool provides functionality to:
+//   - Generate Croissant metadata from CSV files
+//   - Validate existing Croissant metadata files
+//   - Display version information
+//
+// # Usage Examples
+//
+// Generate metadata with default output path:
+//
+//	gocroissant generate data.csv
+//
+// Generate metadata with custom output path:
+//
+//	gocroissant generate data.csv -o output.json
+//
+// Generate and validate metadata:
+//
+//	gocroissant generate data.csv -o metadata.jsonld -v
+//
+// Validate existing metadata:
+//
+//	gocroissant validate metadata.json
+//
+// Show version information:
+//
+//	gocroissant version
+package cmd
 
 import (
 	"fmt"
@@ -13,18 +43,19 @@ import (
 	"github.com/spf13/viper"
 )
 
-func main() {
+var RootCmd = &cobra.Command{
+	Use:   "gocroissant",
+	Short: "Croissant metadata tools",
+	Long: `A Go implementation for working with the ML Commons Croissant metadata format.
+Croissant is a standardized way to describe machine learning datasets using JSON-LD.`,
+	Version: version.Version,
+}
+
+func Init() {
+
 	// Initialize viper for configuration
 	viper.SetEnvPrefix("CROISSANT")
 	viper.AutomaticEnv()
-
-	var rootCmd = &cobra.Command{
-		Use:   "gocroissant",
-		Short: "Croissant metadata tools",
-		Long: `A Go implementation for working with the ML Commons Croissant metadata format.
-Croissant is a standardized way to describe machine learning datasets using JSON-LD.`,
-		Version: version.Version,
-	}
 
 	// Version command
 	var versionCmd = &cobra.Command{
@@ -39,14 +70,14 @@ Croissant is a standardized way to describe machine learning datasets using JSON
 			fmt.Printf("  Go version %s, GOOS %s, GOARCH %s\n", stamp.InfoGoVersion, stamp.InfoGOOS, stamp.InfoGOARCH)
 		},
 	}
-	rootCmd.AddCommand(versionCmd)
+	RootCmd.AddCommand(versionCmd)
 
 	// Generate command
 	var generateCmd = &cobra.Command{
 		Use:   "generate [csvPath]",
 		Short: "Generate Croissant metadata from a CSV file",
 		Long: `Generate Croissant metadata from a CSV file, automatically inferring data types 
-and creating a structured JSON-LD output that complies with the ML Commons Croissant specification.`,
+		and creating a structured JSON-LD output that complies with the ML Commons Croissant specification.`,
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			csvPath := args[0]
@@ -118,14 +149,14 @@ and creating a structured JSON-LD output that complies with the ML Commons Crois
 	generateCmd.Flags().BoolP("validate", "v", false, "Validate the generated metadata and print issues")
 	generateCmd.Flags().Bool("strict", false, "Enable strict validation mode")
 	generateCmd.Flags().Bool("check-files", false, "Check if referenced files exist")
-	rootCmd.AddCommand(generateCmd)
+	RootCmd.AddCommand(generateCmd)
 
 	// Validate command
 	var validateCmd = &cobra.Command{
 		Use:   "validate [jsonldPath]",
 		Short: "Validate an existing Croissant metadata file",
 		Long: `Validate an existing Croissant metadata JSON-LD file and report any issues found.
-This command checks compliance with the ML Commons Croissant specification.`,
+		This command checks compliance with the ML Commons Croissant specification.`,
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			jsonldPath := args[0]
@@ -175,7 +206,7 @@ This command checks compliance with the ML Commons Croissant specification.`,
 	validateCmd.Flags().Bool("strict", false, "Enable strict validation mode")
 	validateCmd.Flags().Bool("check-files", false, "Check if referenced files exist")
 	validateCmd.Flags().Bool("check-urls", false, "Validate URLs by making HTTP requests")
-	rootCmd.AddCommand(validateCmd)
+	RootCmd.AddCommand(validateCmd)
 
 	// Info command - analyze CSV files
 	var infoCmd = &cobra.Command{
@@ -237,10 +268,12 @@ This command checks compliance with the ML Commons Croissant specification.`,
 		},
 	}
 	infoCmd.Flags().Int("sample-size", 10, "Number of rows to sample for type inference")
-	rootCmd.AddCommand(infoCmd)
+	RootCmd.AddCommand(infoCmd)
+}
 
+func Execute() {
 	// Execute the command
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
