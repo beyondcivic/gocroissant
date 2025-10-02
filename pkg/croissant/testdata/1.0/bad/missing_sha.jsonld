@@ -1,0 +1,178 @@
+{
+    "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "citeAs": "cr:citeAs",
+        "column": "cr:column",
+        "conformsTo": "dct:conformsTo",
+        "cr": "http://mlcommons.org/croissant/",
+        "dct": "http://purl.org/dc/terms/",
+        "data": {
+            "@id": "cr:data",
+            "@type": "@json"
+        },
+        "dataType": {
+            "@id": "cr:dataType",
+            "@type": "@vocab"
+        },
+        "examples": {
+            "@id": "cr:examples",
+            "@type": "@json"
+        },
+        "extract": "cr:extract",
+        "field": "cr:field",
+        "fileObject": "cr:fileObject",
+        "fileProperty": "cr:fileProperty",
+        "fileSet": "cr:fileSet",
+        "format": "cr:format",
+        "includes": "cr:includes",
+        "isLiveDataset": "cr:isLiveDataset",
+        "jsonPath": "cr:jsonPath",
+        "key": "cr:key",
+        "md5": "cr:md5",
+        "parentField": "cr:parentField",
+        "path": "cr:path",
+        "recordSet": "cr:recordSet",
+        "references": "cr:references",
+        "regex": "cr:regex",
+        "repeated": "cr:repeated",
+        "replace": "cr:replace",
+        "sc": "https://schema.org/",
+        "separator": "cr:separator",
+        "source": "cr:source",
+        "subField": "cr:subField",
+        "transform": "cr:transform"
+    },
+    "@type": "sc:Dataset",
+    "name": "Swiss Water Quality Monitoring Dataset",
+    "description": "Environmental monitoring data from major Swiss rivers including water flow rates, precipitation, and turbidity measurements collected across Limmat, Rhine, Reuss, Aare, and Rhône rivers from April 2025.",
+    "conformsTo": "http://mlcommons.org/croissant/1.0",
+    "citeAs": "Swiss Water Quality Monitoring Dataset (2025). Environmental measurements from Swiss river systems.",
+    "creator": {
+        "@type": "Organization",
+        "name": "Swiss Water Monitoring Authority"
+    },
+    "datePublished": "2025-04-15",
+    "version": "1.0.0",
+    "license": "CC-BY-4.0",
+    "keywords": [
+        "water quality",
+        "environmental monitoring",
+        "swiss rivers",
+        "turbidity",
+        "precipitation"
+    ],
+    "url": "https://example.com/water-monitoring-dataset",
+    "distribution": [
+        {
+            "@id": "water_monitoring_data.csv",
+            "@type": "cr:FileObject",
+            "name": "water_monitoring_data.csv",
+            "description": "CSV file containing water monitoring measurements",
+            "contentSize": "1024",
+            "contentUrl": "water_monitoring_data.csv",
+            "encodingFormat": "text/csv",
+            "sha256": "placeholder-hash-calculate-from-actual-file"
+        }
+    ],
+    "recordSet": [
+        {
+            "@id": "water_measurements",
+            "@type": "cr:RecordSet",
+            "name": "water_measurements",
+            "description": "Water quality and flow measurements from Swiss rivers",
+            "field": [
+                {
+                    "@id": "water_measurements/transaction_id",
+                    "@type": "cr:Field",
+                    "name": "transaction_id",
+                    "description": "Unique identifier for each measurement transaction",
+                    "dataType": "sc:Integer",
+                    "source": {
+                        "fileObject": {
+                            "@id": "water_monitoring_data.csv"
+                        },
+                        "extract": {
+                            "column": "transaction_id"
+                        }
+                    }
+                },
+                {
+                    "@id": "water_measurements/timestamp",
+                    "@type": "cr:Field",
+                    "name": "timestamp",
+                    "description": "Date and time when the measurement was taken (YYYY-MM-DD HH:MM:SS)",
+                    "dataType": "sc:DateTime",
+                    "source": {
+                        "fileObject": {
+                            "@id": "water_monitoring_data.csv"
+                        },
+                        "extract": {
+                            "column": "timestamp"
+                        }
+                    }
+                },
+                {
+                    "@id": "water_measurements/location",
+                    "@type": "cr:Field",
+                    "name": "location",
+                    "description": "Name of the Swiss river where measurement was taken",
+                    "dataType": "sc:Text",
+                    "source": {
+                        "fileObject": {
+                            "@id": "water_monitoring_data.csv"
+                        },
+                        "extract": {
+                            "column": "location"
+                        }
+                    }
+                },
+                {
+                    "@id": "water_measurements/water_flow_rate",
+                    "@type": "cr:Field",
+                    "name": "water_flow_rate",
+                    "description": "Water flow rate measurement in cubic meters per second",
+                    "dataType": "sc:Float",
+                    "source": {
+                        "fileObject": {
+                            "@id": "water_monitoring_data.csv"
+                        },
+                        "extract": {
+                            "column": "water_flow_rate"
+                        }
+                    }
+                },
+                {
+                    "@id": "water_measurements/precipitation",
+                    "@type": "cr:Field",
+                    "name": "precipitation",
+                    "description": "Precipitation measurement in millimeters",
+                    "dataType": "sc:Float",
+                    "source": {
+                        "fileObject": {
+                            "@id": "water_monitoring_data.csv"
+                        },
+                        "extract": {
+                            "column": "precipitation"
+                        }
+                    }
+                },
+                {
+                    "@id": "water_measurements/turbidity",
+                    "@type": "cr:Field",
+                    "name": "turbidity",
+                    "description": "Water turbidity measurement in NTU (Nephelometric Turbidity Units)",
+                    "dataType": "sc:Integer",
+                    "source": {
+                        "fileObject": {
+                            "@id": "water_monitoring_data.csv"
+                        },
+                        "extract": {
+                            "column": "turbidity"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

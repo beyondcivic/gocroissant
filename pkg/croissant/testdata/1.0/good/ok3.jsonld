@@ -1,0 +1,142 @@
+{
+  "@context": {
+    "@language": "en",
+    "@vocab": "https://schema.org/",
+    "citeAs": "cr:citeAs",
+    "column": "cr:column",
+    "conformsTo": "dct:conformsTo",
+    "cr": "http://mlcommons.org/croissant/",
+    "dct": "http://purl.org/dc/terms/",
+    "data": {
+      "@id": "cr:data",
+      "@type": "@json"
+    },
+    "dataType": {
+      "@id": "cr:dataType",
+      "@type": "@vocab"
+    },
+    "extract": "cr:extract",
+    "field": "cr:field",
+    "fileObject": "cr:fileObject",
+    "fileProperty": "cr:fileProperty",
+    "sc": "https://schema.org/",
+    "source": "cr:source"
+  },
+  "@type": "sc:Dataset",
+  "name": "data_dataset",
+  "description": "Dataset created from data.csv",
+  "conformsTo": "http://mlcommons.org/croissant/1.0",
+  "datePublished": "2025-05-14",
+  "version": "1.0.0",
+  "distribution": [
+    {
+      "@id": "data.csv",
+      "@type": "cr:FileObject",
+      "name": "data.csv",
+      "contentSize": "892 B",
+      "contentUrl": "data.csv",
+      "encodingFormat": "text/csv",
+      "sha256": "e34c89d62c0d2b39c8663a18f53c054adc6930436dac9ec5a1a837fd9e83ce60"
+    }
+  ],
+  "recordSet": [
+    {
+      "@id": "main",
+      "@type": "cr:RecordSet",
+      "name": "main",
+      "description": "Records from data.csv",
+      "field": [
+        {
+          "@id": "main/transaction_id",
+          "@type": "cr:Field",
+          "name": "transaction_id",
+          "description": "Field for transaction_id",
+          "dataType": "sc:Integer",
+          "source": {
+            "extract": {
+              "column": "transaction_id"
+            },
+            "fileObject": {
+              "@id": "data.csv"
+            }
+          }
+        },
+        {
+          "@id": "main/timestamp",
+          "@type": "cr:Field",
+          "name": "timestamp",
+          "description": "Field for timestamp",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "column": "timestamp"
+            },
+            "fileObject": {
+              "@id": "data.csv"
+            }
+          }
+        },
+        {
+          "@id": "main/location",
+          "@type": "cr:Field",
+          "name": "location",
+          "description": "Field for location",
+          "dataType": "sc:Text",
+          "source": {
+            "extract": {
+              "column": "location"
+            },
+            "fileObject": {
+              "@id": "data.csv"
+            }
+          }
+        },
+        {
+          "@id": "main/water_flow_rate",
+          "@type": "cr:Field",
+          "name": "water_flow_rate",
+          "description": "Field for water_flow_rate",
+          "dataType": "sc:Float",
+          "source": {
+            "extract": {
+              "column": "water_flow_rate"
+            },
+            "fileObject": {
+              "@id": "data.csv"
+            }
+          }
+        },
+        {
+          "@id": "main/precipitation",
+          "@type": "cr:Field",
+          "name": "precipitation",
+          "description": "Field for precipitation",
+          "dataType": "sc:Float",
+          "source": {
+            "extract": {
+              "column": "precipitation"
+            },
+            "fileObject": {
+              "@id": "data.csv"
+            }
+          }
+        },
+        {
+          "@id": "main/turbidity",
+          "@type": "cr:Field",
+          "name": "turbidity",
+          "description": "Field for turbidity",
+          "dataType": "sc:Integer",
+          "source": {
+            "extract": {
+              "column": "turbidity"
+            },
+            "fileObject": {
+              "@id": "data.csv"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
