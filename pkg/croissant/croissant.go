@@ -480,7 +480,7 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 		// Marshal metadata to JSON-LD with proper indentation
 		metadataJSON, err := json.MarshalIndent(metadata, "", "  ")
 		if err != nil {
-			return nil, CroissantError{Message: "failed to marshal JSON-LD: %w", Value: err}
+			return nil, CroissantError{Message: "failed to marshal JSON-LD", Value: err}
 		}
 
 		// Validate that the generated JSON is valid JSON-LD

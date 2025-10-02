@@ -271,20 +271,20 @@ func getDataTypeString(dt DataType) string {
 func LoadMetadataFromFile(filePath string) (*Metadata, error) {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
-		return nil, CroissantError{Message: "failed to read file: %w", Value: err}
+		return nil, CroissantError{Message: "failed to read file", Value: err}
 	}
 
 	processor := NewJSONLDProcessor()
 
 	// Validate JSON-LD structure
 	if err := processor.ValidateJSONLD(data); err != nil {
-		return nil, CroissantError{Message: "invalid JSON-LD document: %w", Value: err}
+		return nil, CroissantError{Message: "invalid JSON-LD document", Value: err}
 	}
 
 	// Parse the metadata
 	metadata, err := processor.ParseCroissantMetadata(data)
 	if err != nil {
-		return nil, CroissantError{Message: "failed to parse Croissant metadata: %w", Value: err}
+		return nil, CroissantError{Message: "failed to parse Croissant metadata", Value: err}
 	}
 
 	return metadata, nil
