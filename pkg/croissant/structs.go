@@ -7,17 +7,17 @@ import (
 
 // Field represents a field in the Croissant metadata
 type Field struct {
-	ID          string          `json:"@id"`
-	Type        string          `json:"@type"`
-	Name        string          `json:"name"`
-	Description string          `json:"description,omitempty"`
-	DataType    DataType        `json:"dataType"`
-	Source      FieldSource     `json:"source,omitempty"`
-	Repeated    bool            `json:"repeated,omitempty"`
-	Examples    interface{}     `json:"examples,omitempty"`
-	SubField    []Field         `json:"subField,omitempty"`
-	ParentField []FieldRefSlice `json:"parentField,omitempty"`
-	References  []FieldRefSlice `json:"references,omitempty"`
+	ID          string        `json:"@id"`
+	Type        string        `json:"@type"`
+	Name        string        `json:"name"`
+	Description string        `json:"description,omitempty"`
+	DataType    DataType      `json:"dataType"`
+	Source      FieldSource   `json:"source,omitempty"`
+	Repeated    bool          `json:"repeated,omitempty"`
+	Examples    interface{}   `json:"examples,omitempty"`
+	SubField    []Field       `json:"subField,omitempty"`
+	ParentField FieldRefSlice `json:"parentField,omitempty"`
+	References  FieldRefSlice `json:"references,omitempty"`
 }
 
 // FieldSource represents the source information for a field
@@ -57,8 +57,25 @@ type FieldRef struct {
 // Parses ONE or MANY FieldRefs.
 type FieldRefSlice []FieldRef
 
+// In some test files, references are nested under a "field" property.
+// In cases of reformatting, the property will be omitted.
+//
+// Accepts:
+//   - "references": { "@id": "..." }
+//   - "references": { [{"@id": "..."}, {"@id": "..."}...] }
+//   - "references": { field: {"@id": "..."} }
 func (ref *FieldRefSlice) UnmarshalJSON(data []byte) error {
-	// Try unmarshaling as a FieldRef
+	// Try unmarshaling as a NestedFieldRef first
+	type NestedFieldRef struct {
+		Field *FieldRef `json:"field,omitempty"`
+	}
+	var singleNested NestedFieldRef
+	if err := json.Unmarshal(data, &singleNested); err == nil {
+		*ref = []FieldRef{*singleNested.Field}
+
+		return nil
+	}
+
 	var single FieldRef
 	if err := json.Unmarshal(data, &single); err == nil {
 		*ref = []FieldRef{single}
@@ -86,7 +103,7 @@ func (ref FieldRefSlice) MarshalJSON() ([]byte, error) {
 	case 1:
 		return json.Marshal(ref[0])
 	default:
-		return json.Marshal(ref)
+		return json.Marshal([]FieldRef(ref))
 	}
 }
 
@@ -120,7 +137,7 @@ func (key *RecordSetKey) UnmarshalJSON(data []byte) error {
 
 	// Try to unmarshal as an array of keys
 	var compositeKey []KeyRef
-	if err := json.Unmarshal(data, &compositeKey); err == nil && len(compositeKey) > 0 {
+	if err := json.Unmarshal(data, &compositeKey); err == nil {
 		*key = compositeKey
 		return nil
 	}
