@@ -17,6 +17,7 @@ Croissant is a standardized way to describe machine learning datasets using JSON
 
 * [gocroissant generate](gocroissant_generate.md)	 - Generate Croissant metadata from a CSV file
 * [gocroissant info](gocroissant_info.md)	 - Display information about a CSV file
+* [gocroissant match](gocroissant_match.md)	 - Compare two Croissant metadata files for compatibility
 * [gocroissant validate](gocroissant_validate.md)	 - Validate an existing Croissant metadata file
 * [gocroissant version](gocroissant_version.md)	 - Print the version information
 

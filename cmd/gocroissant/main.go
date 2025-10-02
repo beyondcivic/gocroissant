@@ -4,11 +4,13 @@
 // metadata format - a standardized way to describe machine learning datasets using JSON-LD.
 //
 // The command-line tool provides functionality to:
-//   - Generate Croissant metadata from CSV files
-//   - Validate existing Croissant metadata files
-//   - Display version information
+//   - Generate Croissant metadata from CSV files with automatic type inference
+//   - Validate existing Croissant metadata files for specification compliance
+//   - Compare metadata files for schema compatibility
+//   - Analyze CSV file structure and display column information
+//   - Display version and build information
 //
-// # Usage Examples
+// # Command Reference
 //
 // Generate metadata with default output path:
 //
@@ -16,19 +18,57 @@
 //
 // Generate metadata with custom output path:
 //
-//	gocroissant generate data.csv -o output.json
+//	gocroissant generate data.csv -o output.jsonld
 //
 // Generate and validate metadata:
 //
-//	gocroissant generate data.csv -o metadata.jsonld -v
+//	gocroissant generate data.csv -o metadata.jsonld --validate
 //
 // Validate existing metadata:
 //
-//	gocroissant validate metadata.json
+//	gocroissant validate metadata.jsonld
+//
+// Compare two metadata files for compatibility:
+//
+//	gocroissant match reference.jsonld candidate.jsonld
+//
+// Analyze CSV file structure:
+//
+//	gocroissant info data.csv --sample-size 20
 //
 // Show version information:
 //
 //	gocroissant version
+//
+// # Features
+//
+// Metadata Generation:
+//   - Automatic data type inference from CSV content
+//   - SHA-256 hash calculation for file verification
+//   - Configurable output paths and validation options
+//   - Support for environment variable configuration
+//
+// Validation:
+//   - JSON-LD structure validation
+//   - Croissant specification compliance checking
+//   - Configurable validation modes (standard, strict)
+//   - Optional file existence and URL accessibility checking
+//
+// Schema Comparison:
+//   - Field-by-field compatibility analysis
+//   - Intelligent type compatibility (numeric type flexibility)
+//   - Support for schema evolution (additional fields allowed)
+//   - Detailed reporting of matches, mismatches, and missing fields
+//
+// File Analysis:
+//
+//   - CSV structure validation and statistics
+//
+//   - Column type inference with configurable sample sizes
+//
+//   - File size and row count analysis
+//
+//     gocroissant version
 package cmd
 
 import (
@@ -269,6 +309,115 @@ func Init() {
 	}
 	infoCmd.Flags().Int("sample-size", 10, "Number of rows to sample for type inference")
 	RootCmd.AddCommand(infoCmd)
+
+	// Match command - compare two Croissant metadata files
+	var matchCmd = &cobra.Command{
+		Use:   "match [reference] [candidate]",
+		Short: "Compare two Croissant metadata files for compatibility",
+		Long: `Compare two Croissant metadata JSON-LD files to check if the candidate is compatible 
+		with the reference. The candidate can have additional fields, but all reference fields 
+		must exist in the candidate with matching data types and names.`,
+		Args: cobra.ExactArgs(2),
+		Run: func(cmd *cobra.Command, args []string) {
+			referencePath := args[0]
+			candidatePath := args[1]
+			verbose, _ := cmd.Flags().GetBool("verbose")
+
+			// Validate input files
+			if !fileExists(referencePath) {
+				fmt.Printf("Error: Reference file '%s' does not exist.\n", referencePath)
+				os.Exit(1)
+			}
+
+			if !fileExists(candidatePath) {
+				fmt.Printf("Error: Candidate file '%s' does not exist.\n", candidatePath)
+				os.Exit(1)
+			}
+
+			fmt.Printf("Comparing metadata files...\n")
+			fmt.Printf("Reference: %s\n", referencePath)
+			fmt.Printf("Candidate: %s\n", candidatePath)
+			fmt.Println()
+
+			// Load reference metadata
+			referenceMetadata, err := croissant.LoadMetadataFromFile(referencePath)
+			if err != nil {
+				fmt.Printf("Error loading reference metadata: %v\n", err)
+				os.Exit(1)
+			}
+
+			// Load candidate metadata
+			candidateMetadata, err := croissant.LoadMetadataFromFile(candidatePath)
+			if err != nil {
+				fmt.Printf("Error loading candidate metadata: %v\n", err)
+				os.Exit(1)
+			}
+
+			// Perform the match
+			result := croissant.MatchMetadata(*referenceMetadata, *candidateMetadata)
+
+			// Display results
+			if result.IsMatch {
+				fmt.Printf("✓ Compatibility check PASSED\n")
+				fmt.Printf("The candidate metadata is compatible with the reference.\n")
+			} else {
+				fmt.Printf("✗ Compatibility check FAILED\n")
+				fmt.Printf("The candidate metadata is NOT compatible with the reference.\n")
+			}
+
+			fmt.Println()
+
+			// Display detailed results
+			if len(result.MatchedFields) > 0 {
+				fmt.Printf("Matched fields (%d):\n", len(result.MatchedFields))
+				for _, field := range result.MatchedFields {
+					fmt.Printf("  ✓ %s\n", field)
+				}
+				fmt.Println()
+			}
+
+			if len(result.MissingFields) > 0 {
+				fmt.Printf("Missing fields (%d):\n", len(result.MissingFields))
+				for _, field := range result.MissingFields {
+					fmt.Printf("  ✗ %s (required by reference but not found in candidate)\n", field)
+				}
+				fmt.Println()
+			}
+
+			if len(result.TypeMismatches) > 0 {
+				fmt.Printf("Type mismatches (%d):\n", len(result.TypeMismatches))
+				for _, mismatch := range result.TypeMismatches {
+					fmt.Printf("  ✗ %s: reference expects '%s', candidate has '%s'\n",
+						mismatch.FieldName, mismatch.ReferenceType, mismatch.CandidateType)
+				}
+				fmt.Println()
+			}
+
+			if len(result.ExtraFields) > 0 && verbose {
+				fmt.Printf("Extra fields in candidate (%d):\n", len(result.ExtraFields))
+				for _, field := range result.ExtraFields {
+					fmt.Printf("  + %s (additional field in candidate)\n", field)
+				}
+				fmt.Println()
+			} else if len(result.ExtraFields) > 0 {
+				fmt.Printf("Candidate has %d additional field(s) (use --verbose to see details)\n", len(result.ExtraFields))
+				fmt.Println()
+			}
+
+			// Summary
+			fmt.Printf("Summary:\n")
+			fmt.Printf("  Matched: %d\n", len(result.MatchedFields))
+			fmt.Printf("  Missing: %d\n", len(result.MissingFields))
+			fmt.Printf("  Type mismatches: %d\n", len(result.TypeMismatches))
+			fmt.Printf("  Extra fields: %d\n", len(result.ExtraFields))
+
+			if !result.IsMatch {
+				os.Exit(1)
+			}
+		},
+	}
+	matchCmd.Flags().BoolP("verbose", "v", false, "Show detailed information including extra fields in candidate")
+	RootCmd.AddCommand(matchCmd)
 }
 
 func Execute() {

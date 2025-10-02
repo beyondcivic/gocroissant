@@ -16,26 +16,103 @@
 //	}
 //	fmt.Printf("Metadata saved to: %s\n", outputPath)
 //
+// # Advanced Generation with Validation
+//
+// Generate metadata and get the parsed structure for further processing:
+//
+//	metadata, err := croissant.GenerateMetadataWithValidation("data.csv", "dataset.jsonld")
+//	if err != nil {
+//		log.Fatalf("Error generating metadata: %v", err)
+//	}
+//
+//	// Validate the generated metadata
+//	options := croissant.DefaultValidationOptions()
+//	options.StrictMode = true
+//	validationResult := metadata.ValidateWithOptions(options)
+//
+//	if validationResult.HasErrors() {
+//		fmt.Println("Validation issues found:")
+//		fmt.Println(validationResult.Report())
+//	}
+//
 // # Data Type Inference
 //
 // The package automatically infers schema.org data types from CSV content:
-//   - Boolean values (true/false)
-//   - Integer numbers
-//   - Floating-point numbers
-//   - Dates in various formats
-//   - URLs
-//   - Default to Text for other content
+//   - Boolean values (true/false, 1/0) → sc:Boolean
+//   - Integer numbers (123, -456) → sc:Integer
+//   - Floating-point numbers (3.14, 2.5e10) → sc:Float
+//   - Dates in various formats (2023-01-01, 01/15/2023) → sc:Date
+//   - URLs (https://example.com) → sc:URL
+//   - Default to Text for other content → sc:Text
 //
 // # Validation
 //
 // Validate existing Croissant metadata:
 //
-//	issues, err := croissant.ValidateMetadata("metadata.jsonld")
+//	issues, err := croissant.ValidateFile("metadata.jsonld")
 //	if err != nil {
 //		log.Fatalf("Validation error: %v", err)
 //	}
-//	if len(issues) == 0 {
+//	if !issues.HasErrors() {
 //		fmt.Println("Validation passed")
+//	} else {
+//		fmt.Println("Validation issues:")
+//		fmt.Println(issues.Report())
+//	}
+//
+// # Schema Compatibility Checking
+//
+// Compare two metadata files for schema compatibility:
+//
+//	reference, err := croissant.LoadMetadataFromFile("reference.jsonld")
+//	if err != nil {
+//		log.Fatalf("Error loading reference: %v", err)
+//	}
+//
+//	candidate, err := croissant.LoadMetadataFromFile("candidate.jsonld")
+//	if err != nil {
+//		log.Fatalf("Error loading candidate: %v", err)
+//	}
+//
+//	result := croissant.MatchMetadata(*reference, *candidate)
+//	if result.IsMatch {
+//		fmt.Printf("Compatible! %d fields matched\n", len(result.MatchedFields))
+//	} else {
+//		fmt.Printf("Incompatible: %d missing, %d type mismatches\n",
+//			len(result.MissingFields), len(result.TypeMismatches))
+//	}
+//
+// # JSON-LD Processing
+//
+// Work directly with JSON-LD data:
+//
+//	data, err := os.ReadFile("metadata.jsonld")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	issues, err := croissant.ValidateJSON(data)
+//	if err != nil {
+//		log.Fatalf("Validation error: %v", err)
+//	}
+//
+//	fmt.Printf("Validation completed with %d errors and %d warnings\n",
+//		len(issues.Errors), len(issues.Warnings))
+//
+// # Validation Options
+//
+// Customize validation behavior:
+//
+//	options := croissant.ValidationOptions{
+//		StrictMode:      true,  // Enable additional warnings
+//		CheckDataTypes:  true,  // Validate data type specifications
+//		ValidateURLs:    false, // Skip network calls for URL validation
+//		CheckFileExists: true,  // Verify referenced files exist
+//	}
+//
+//	issues, err := croissant.ValidateJSONWithOptions(data, options)
+//	if err != nil {
+//		log.Fatal(err)
 //	}
 package croissant
 
