@@ -305,7 +305,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 		Description: fmt.Sprintf("Enumeration values for %s", name),
 		DataType:    NewNullableSingleDataType("sc:Enumeration"),
 		Fields:      fields,
-		Key:         NewSingleKey(fmt.Sprintf("%s/name", id)),
+		Key:         NewRecordSetKey(fmt.Sprintf("%s/name", id)),
 		Data:        data,
 	}
 
