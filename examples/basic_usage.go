@@ -30,7 +30,7 @@ func main() {
 	advancedValidationExample()
 }
 
-// generateMetadataExample shows how to generate metadata from a CSV file
+// generateMetadataExample shows how to generate metadata from a CSV file.
 func generateMetadataExample() {
 	// Generate metadata with automatic type inference
 	outputPath, err := croissant.GenerateMetadata("sample_csv/data.csv", "generated_metadata.jsonld")
@@ -51,7 +51,7 @@ func generateMetadataExample() {
 	fmt.Printf("  Distributions: %d\n", len(metadata.Distributions))
 }
 
-// validateMetadataExample demonstrates metadata validation
+// validateMetadataExample demonstrates metadata validation.
 func validateMetadataExample() {
 	// Basic validation
 	issues, err := croissant.ValidateFile("samples_jsonld/ok1.jsonld")
@@ -72,7 +72,7 @@ func validateMetadataExample() {
 	}
 }
 
-// compareMetadataExample shows how to compare two metadata files
+// compareMetadataExample shows how to compare two metadata files.
 func compareMetadataExample() {
 	// Load reference metadata
 	reference, err := croissant.LoadMetadataFromFile("samples_jsonld/ok1.jsonld")
@@ -119,7 +119,7 @@ func compareMetadataExample() {
 	}
 }
 
-// advancedValidationExample shows validation with custom options
+// advancedValidationExample shows validation with custom options.
 func advancedValidationExample() {
 	// Read file content
 	data, err := os.ReadFile("samples_jsonld/ok1.jsonld")

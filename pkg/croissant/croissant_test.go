@@ -77,7 +77,7 @@ func TestInferSemanticDataType(t *testing.T) {
 	}
 }
 
-// TestCleanFieldName
+// TestCleanFieldName.
 func TestCleanFieldName(t *testing.T) {
 	cases := []struct {
 		in, want string

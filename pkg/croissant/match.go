@@ -169,7 +169,7 @@ func MatchMetadata(reference Metadata, candidate Metadata) *MatchResult {
 	return result
 }
 
-// areDataTypesCompatible checks if two DataType objects are compatible
+// areDataTypesCompatible checks if two DataType objects are compatible.
 func areDataTypesCompatible(ref DataType, cand DataType) bool {
 	refTypes := ref.GetTypes()
 	candTypes := cand.GetTypes()
@@ -195,7 +195,7 @@ func areDataTypesCompatible(ref DataType, cand DataType) bool {
 	return false
 }
 
-// isCompatibleNumericType checks if two numeric types are compatible
+// isCompatibleNumericType checks if two numeric types are compatible.
 func isCompatibleNumericType(refType, candType string) bool {
 	// Define type compatibility mappings
 	numericTypes := map[string][]string{
@@ -216,7 +216,7 @@ func isCompatibleNumericType(refType, candType string) bool {
 	return false
 }
 
-// normalizeDataType normalizes data type strings for comparison
+// normalizeDataType normalizes data type strings for comparison.
 func normalizeDataType(dataType string) string {
 	// Remove common prefixes and normalize to lowercase
 	dataType = strings.ToLower(dataType)
@@ -226,7 +226,7 @@ func normalizeDataType(dataType string) string {
 	return dataType
 }
 
-// getDataTypeString returns a string representation of a DataType
+// getDataTypeString returns a string representation of a DataType.
 func getDataTypeString(dt DataType) string {
 	types := dt.GetTypes()
 	if len(types) == 0 {

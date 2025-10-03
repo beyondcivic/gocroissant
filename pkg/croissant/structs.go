@@ -114,10 +114,10 @@ func (ref FieldRefSlice) MarshalJSON() ([]byte, error) {
 // It is represented internally as a list.
 type DataType []string
 
-// RecordSetKey represents a record set key that can be either a single key or composite key
+// RecordSetKey represents a record set key that can be either a single key or composite key.
 type RecordSetKey []KeyRef
 
-// MarshalJSON implements custom JSON marshaling for RecordSetKey
+// MarshalJSON implements custom JSON marshaling for RecordSetKey.
 func (key RecordSetKey) MarshalJSON() ([]byte, error) {
 	switch len(key) {
 	case 0:
@@ -129,7 +129,7 @@ func (key RecordSetKey) MarshalJSON() ([]byte, error) {
 	}
 }
 
-// UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey
+// UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey.
 func (key *RecordSetKey) UnmarshalJSON(data []byte) error {
 	// Try to unmarshal as a single key first
 	var singleKey KeyRef
@@ -368,7 +368,7 @@ type Source struct {
 	Transform  []Transform `json:"transform,omitempty"`
 }
 
-// NewRecordSetKey creates a RecordSetKey with a single key reference
+// NewRecordSetKey creates a RecordSetKey with a single key reference.
 func NewRecordSetKey(keyID string) *RecordSetKey {
 	return &RecordSetKey{
 		KeyRef{ID: keyID},

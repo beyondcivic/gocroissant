@@ -126,7 +126,7 @@ import (
 	"time"
 )
 
-// CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data
+// CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data.
 func CreateEnumerationRecordSet(id, name string, values []string, urls []string) RecordSet {
 	fields := []Field{
 		{
