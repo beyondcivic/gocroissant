@@ -485,7 +485,7 @@ func ExtractCroissantProperties(expanded map[string]interface{}) map[string]inte
 ExtractCroissantProperties extracts common Croissant properties from expanded JSON\-LD
 
 <a name="GenerateMetadata"></a>
-## func [GenerateMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L380>)
+## func [GenerateMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L381>)
 
 ```go
 func GenerateMetadata(csvPath string, outputPath string) (string, error)
@@ -566,7 +566,7 @@ func InferDataType(value string) string
 InferDataType infers the schema.org data type from a value
 
 <a name="InferSemanticDataType"></a>
-## func [InferSemanticDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L222>)
+## func [InferSemanticDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L223>)
 
 ```go
 func InferSemanticDataType(fieldName, value string, context map[string]interface{}) []string
@@ -768,7 +768,7 @@ type Context struct {
 ```
 
 <a name="CreateDefaultContext"></a>
-### func [CreateDefaultContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L331>)
+### func [CreateDefaultContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L332>)
 
 ```go
 func CreateDefaultContext() Context
@@ -1602,7 +1602,7 @@ type MetadataWithValidation struct {
 ```
 
 <a name="GenerateMetadataWithValidation"></a>
-### func [GenerateMetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L395>)
+### func [GenerateMetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L396>)
 
 ```go
 func GenerateMetadataWithValidation(csvPath string, outputPath string) (*MetadataWithValidation, error)
@@ -1707,7 +1707,7 @@ type RecordSet struct {
 ```
 
 <a name="CreateEnumerationRecordSet"></a>
-### func [CreateEnumerationRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L268>)
+### func [CreateEnumerationRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L269>)
 
 ```go
 func CreateEnumerationRecordSet(id, name string, values []string, urls []string) RecordSet
@@ -1716,7 +1716,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data
 
 <a name="CreateSplitRecordSet"></a>
-### func [CreateSplitRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L316>)
+### func [CreateSplitRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L317>)
 
 ```go
 func CreateSplitRecordSet() RecordSet
