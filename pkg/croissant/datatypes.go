@@ -16,6 +16,7 @@ const VT_scText string = "sc:Text"
 const VT_scBool string = "sc:Boolean"
 const VT_scInt string = "sc:Integer"
 const VT_scNum string = "sc:Number"
+const VT_scFloat string = "sc:Float"
 const VT_scDateT string = "sc:DateTime"
 const VT_scURL string = "sc:URL"
 const VT_scImage string = "sc:ImageObject"
@@ -100,6 +101,7 @@ func IsValidDataType(dataType string) bool {
 		VT_scBool:     true,
 		VT_scInt:      true,
 		VT_scNum:      true,
+		VT_scFloat:    true,
 		VT_scDateT:    true,
 		VT_scURL:      true,
 		VT_scImage:    true,
