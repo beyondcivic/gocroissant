@@ -190,6 +190,7 @@ func IsValidDataType(dataType string) bool {
 		"sc:Boolean":        true,
 		"sc:Integer":        true,
 		"sc:Number":         true,
+		"sc:Float":          true, // Infers to sc:Number
 		"sc:DateTime":       true,
 		"sc:URL":            true,
 		"sc:ImageObject":    true,
