@@ -341,14 +341,14 @@ func (r *RecordSetNode) validateKey(issues *Issues) {
 // FieldNode represents a field
 type FieldNode struct {
 	BaseNode
-	Type        string       `json:"@type"`
-	Description string       `json:"description,omitempty"`
-	DataType    DataType     `json:"dataType,omitempty"`
-	Source      SourceNode   `json:"source,omitempty"`
-	Repeated    bool         `json:"repeated,omitempty"`
-	Examples    interface{}  `json:"examples,omitempty"`
-	SubField    []*FieldNode `json:"subField,omitempty"`
-	References  *FieldRef    `json:"references,omitempty"`
+	Type        string        `json:"@type"`
+	Description string        `json:"description,omitempty"`
+	DataType    DataType      `json:"dataType,omitempty"`
+	Source      SourceNode    `json:"source,omitempty"`
+	Repeated    bool          `json:"repeated,omitempty"`
+	Examples    interface{}   `json:"examples,omitempty"`
+	SubField    []*FieldNode  `json:"subField,omitempty"`
+	References  FieldRefSlice `json:"references,omitempty"`
 }
 
 // Validate validates the field node

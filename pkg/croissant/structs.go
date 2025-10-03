@@ -7,16 +7,17 @@ import (
 
 // Field represents a field in the Croissant metadata
 type Field struct {
-	ID          string      `json:"@id"`
-	Type        string      `json:"@type"`
-	Name        string      `json:"name"`
-	Description string      `json:"description,omitempty"`
-	DataType    DataType    `json:"dataType"`
-	Source      FieldSource `json:"source,omitempty"`
-	Repeated    bool        `json:"repeated,omitempty"`
-	Examples    interface{} `json:"examples,omitempty"`
-	SubField    []Field     `json:"subField,omitempty"`
-	References  *FieldRef   `json:"references,omitempty"`
+	ID          string        `json:"@id"`
+	Type        string        `json:"@type"`
+	Name        string        `json:"name"`
+	Description string        `json:"description,omitempty"`
+	DataType    DataType      `json:"dataType"`
+	Source      FieldSource   `json:"source,omitempty"`
+	Repeated    bool          `json:"repeated,omitempty"`
+	Examples    interface{}   `json:"examples,omitempty"`
+	SubField    []Field       `json:"subField,omitempty"`
+	ParentField FieldRefSlice `json:"parentField,omitempty"`
+	References  FieldRefSlice `json:"references,omitempty"`
 }
 
 // FieldSource represents the source information for a field
@@ -53,46 +54,91 @@ type FieldRef struct {
 	Field *KeyRef `json:"field,omitempty"`
 }
 
-// DataType represents a data type that can be either a single string or an array of strings
-type DataType struct {
-	// Single dataType case: just a string value
-	SingleType *string `json:"-"`
-	// Array dataType case: array of string values
-	ArrayType []string `json:"-"`
+// Parses ONE or MANY FieldRefs.
+type FieldRefSlice []FieldRef
+
+// In some test files, references are nested under a "field" property.
+// In cases of reformatting, the property will be omitted.
+//
+// Accepts:
+//   - "references": { "@id": "..." }
+//   - "references": { [{"@id": "..."}, {"@id": "..."}...] }
+//   - "references": { field: {"@id": "..."} }
+func (ref *FieldRefSlice) UnmarshalJSON(data []byte) error {
+	// Try unmarshaling as a NestedFieldRef first
+	type NestedFieldRef struct {
+		Field *FieldRef `json:"field,omitempty"`
+	}
+	var singleNested NestedFieldRef
+	if err := json.Unmarshal(data, &singleNested); err == nil {
+		*ref = []FieldRef{*singleNested.Field}
+
+		return nil
+	}
+
+	var single FieldRef
+	if err := json.Unmarshal(data, &single); err == nil {
+		*ref = []FieldRef{single}
+
+		return nil
+	}
+	// Try unmarshaling as a []FieldRef
+	var multi []FieldRef
+	if err := json.Unmarshal(data, &multi); err == nil {
+		*ref = multi
+
+		return nil
+	}
+	// Otherwise, error
+	return CroissantError{
+		Message: "FieldRefSlice: cannot unmarshal",
+		Value:   string(data),
+	}
 }
+
+func (ref FieldRefSlice) MarshalJSON() ([]byte, error) {
+	switch len(ref) {
+	case 0:
+		return []byte("{}"), nil
+	case 1:
+		return json.Marshal(ref[0])
+	default:
+		return json.Marshal([]FieldRef(ref))
+	}
+}
+
+// DataType represents a data type that can be either a single string or an array of strings.
+// It is represented internally as a list.
+type DataType []string
 
 // RecordSetKey represents a record set key that can be either a single key or composite key
-type RecordSetKey struct {
-	// Single key case: just an ID reference
-	SingleKey *KeyRef `json:"-"`
-	// Composite key case: array of ID references
-	CompositeKey []KeyRef `json:"-"`
-}
+type RecordSetKey []KeyRef
 
 // MarshalJSON implements custom JSON marshaling for RecordSetKey
-func (k RecordSetKey) MarshalJSON() ([]byte, error) {
-	if k.SingleKey != nil {
-		return json.Marshal(k.SingleKey)
+func (key RecordSetKey) MarshalJSON() ([]byte, error) {
+	switch len(key) {
+	case 0:
+		return []byte("{}"), nil
+	case 1:
+		return json.Marshal(key[0])
+	default:
+		return json.Marshal(key)
 	}
-	if k.CompositeKey != nil {
-		return json.Marshal(k.CompositeKey)
-	}
-	return []byte("null"), nil
 }
 
 // UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey
-func (k *RecordSetKey) UnmarshalJSON(data []byte) error {
+func (key *RecordSetKey) UnmarshalJSON(data []byte) error {
 	// Try to unmarshal as a single key first
 	var singleKey KeyRef
 	if err := json.Unmarshal(data, &singleKey); err == nil && singleKey.ID != "" {
-		k.SingleKey = &singleKey
+		*key = []KeyRef{singleKey}
 		return nil
 	}
 
 	// Try to unmarshal as an array of keys
 	var compositeKey []KeyRef
-	if err := json.Unmarshal(data, &compositeKey); err == nil && len(compositeKey) > 0 {
-		k.CompositeKey = compositeKey
+	if err := json.Unmarshal(data, &compositeKey); err == nil {
+		*key = compositeKey
 		return nil
 	}
 
@@ -102,33 +148,31 @@ func (k *RecordSetKey) UnmarshalJSON(data []byte) error {
 
 // IsComposite returns true if this is a composite key
 func (k RecordSetKey) IsComposite() bool {
-	return len(k.CompositeKey) > 0
+	return len(k) > 1
 }
 
 // GetKeyIDs returns all key IDs (single or composite)
 func (k RecordSetKey) GetKeyIDs() []string {
-	if k.SingleKey != nil {
-		return []string{k.SingleKey.ID}
+	if k == nil {
+		return nil
 	}
-	if k.CompositeKey != nil {
-		ids := make([]string, len(k.CompositeKey))
-		for i, key := range k.CompositeKey {
-			ids[i] = key.ID
-		}
-		return ids
+	ids := make([]string, len(k))
+	for i, key := range k {
+		ids[i] = key.ID
 	}
-	return nil
+	return ids
 }
 
 // MarshalJSON implements custom JSON marshaling for DataType
 func (d DataType) MarshalJSON() ([]byte, error) {
-	if d.SingleType != nil {
-		return json.Marshal(*d.SingleType)
+	switch len(d) {
+	case 0:
+		return []byte("{}"), nil
+	case 1:
+		return json.Marshal(d[0])
+	default:
+		return json.Marshal(d)
 	}
-	if d.ArrayType != nil {
-		return json.Marshal(d.ArrayType)
-	}
-	return []byte("null"), nil
 }
 
 // UnmarshalJSON implements custom JSON unmarshaling for DataType
@@ -136,14 +180,16 @@ func (d *DataType) UnmarshalJSON(data []byte) error {
 	// Try to unmarshal as a single string first
 	var singleType string
 	if err := json.Unmarshal(data, &singleType); err == nil && singleType != "" {
-		d.SingleType = &singleType
+		*d = []string{singleType}
+
 		return nil
 	}
 
 	// Try to unmarshal as an array of strings
 	var arrayType []string
 	if err := json.Unmarshal(data, &arrayType); err == nil && len(arrayType) > 0 {
-		d.ArrayType = arrayType
+		*d = arrayType
+
 		return nil
 	}
 
@@ -153,28 +199,20 @@ func (d *DataType) UnmarshalJSON(data []byte) error {
 
 // IsArray returns true if this is an array of data types
 func (d DataType) IsArray() bool {
-	return len(d.ArrayType) > 0
+	return len(d) > 1
 }
 
 // GetTypes returns all data types (single or array)
 func (d DataType) GetTypes() []string {
-	if d.SingleType != nil {
-		return []string{*d.SingleType}
-	}
-	if d.ArrayType != nil {
-		return d.ArrayType
-	}
-	return nil
+	return d
 }
 
 // GetFirstType returns the first data type (useful for backward compatibility)
 func (d DataType) GetFirstType() string {
-	if d.SingleType != nil {
-		return *d.SingleType
+	if len(d) > 0 {
+		return d[0]
 	}
-	if len(d.ArrayType) > 0 {
-		return d.ArrayType[0]
-	}
+
 	return ""
 }
 
@@ -294,43 +332,35 @@ type Source struct {
 	Transform  []Transform `json:"transform,omitempty"`
 }
 
-// NewSingleKey creates a RecordSetKey with a single key reference
-func NewSingleKey(keyID string) *RecordSetKey {
+// NewRecordSetKey creates a RecordSetKey with a single key reference
+func NewRecordSetKey(keyID string) *RecordSetKey {
 	return &RecordSetKey{
-		SingleKey: &KeyRef{ID: keyID},
+		KeyRef{ID: keyID},
 	}
 }
 
 // NewCompositeKey creates a RecordSetKey with multiple key references
 func NewCompositeKey(keyIDs ...string) *RecordSetKey {
-	keys := make([]KeyRef, len(keyIDs))
+	keys := make(RecordSetKey, len(keyIDs))
 	for i, id := range keyIDs {
 		keys[i] = KeyRef{ID: id}
 	}
-	return &RecordSetKey{
-		CompositeKey: keys,
-	}
+	return &keys
 }
 
 // NewSingleDataType creates a DataType with a single type
 func NewNullableSingleDataType(dataType string) *DataType {
-	return &DataType{
-		SingleType: &dataType,
-	}
+	return &DataType{dataType}
 }
 
 // NewSingleDataType creates a DataType with a single type
 func NewSingleDataType(dataType string) DataType {
-	return DataType{
-		SingleType: &dataType,
-	}
+	return DataType{dataType}
 }
 
 // NewArrayDataType creates a DataType with multiple types
 func NewArrayDataType(dataTypes ...string) DataType {
-	return DataType{
-		ArrayType: dataTypes,
-	}
+	return dataTypes
 }
 
 // ValidateSource validates the source configuration

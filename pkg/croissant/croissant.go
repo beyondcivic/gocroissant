@@ -305,7 +305,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 		Description: fmt.Sprintf("Enumeration values for %s", name),
 		DataType:    NewNullableSingleDataType("sc:Enumeration"),
 		Fields:      fields,
-		Key:         NewSingleKey(fmt.Sprintf("%s/name", id)),
+		Key:         NewRecordSetKey(fmt.Sprintf("%s/name", id)),
 		Data:        data,
 	}
 
@@ -480,7 +480,7 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 		// Marshal metadata to JSON-LD with proper indentation
 		metadataJSON, err := json.MarshalIndent(metadata, "", "  ")
 		if err != nil {
-			return nil, CroissantError{Message: "failed to marshal JSON-LD: %w", Value: err}
+			return nil, CroissantError{Message: "failed to marshal JSON-LD", Value: err}
 		}
 
 		// Validate that the generated JSON is valid JSON-LD
