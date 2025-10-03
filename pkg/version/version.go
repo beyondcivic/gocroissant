@@ -21,6 +21,8 @@ import (
 )
 
 // These variables should be set at compile time.
+//
+// nolint:gochecknoglobals
 var (
 	// AppName is the name of the application.
 	AppName = "gocroissant"
