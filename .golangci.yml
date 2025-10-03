@@ -1,0 +1,116 @@
+version: '2'
+run:
+  go: '1.24'
+
+linters:
+  # https://golangci-lint.run/usage/linters/
+  enable:
+    # defaults
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    # More
+    - asasalint
+    - asciicheck
+    - bidichk
+    - copyloopvar
+    - cyclop
+    - decorder
+    - dogsled
+    - dupl
+    - dupword
+    - err113
+    - errchkjson
+    - errname
+    - errorlint
+    - exhaustive
+    #- exhaustruct
+    - exptostd
+    - fatcontext
+    - funlen
+    - gocheckcompilerdirectives
+    - gochecknoglobals
+    - gochecknoinits
+    - gochecksumtype
+    - gocognit
+    - goconst
+    - gocritic
+    - godot
+    #- godox #flags todos
+    - goheader
+    - goprintffuncname
+    - gosec
+    - grouper
+    - iface
+    - importas
+    - inamedparam
+    - interfacebloat
+    - intrange
+    - ireturn
+    #- lll
+    - loggercheck
+    - maintidx
+    - makezero
+    - mirror
+    - misspell
+    - mnd
+    - musttag
+    - nakedret
+    - nestif
+    - nilerr
+    - nilnesserr
+    - nilnil
+    #- nlreturn
+    - nonamedreturns
+    - perfsprint
+    - prealloc
+    - predeclared
+    - reassign
+    - recvcheck
+    - sloglint
+    - tagalign
+    #- tagliatelle
+    - unconvert
+    - unparam
+    - usestdlibvars
+    - varnamelen
+    - wastedassign
+    - whitespace
+    #- wrapcheck # checks if returned errors are wrapped
+    - zerologlint
+  settings:
+    mnd:
+      ignored-numbers:
+        - '2'
+        - '0600'
+        - '0750'
+    errcheck:
+      exclude-functions:
+        - '(*os.File).Close'
+    exhaustruct:
+      exclude:
+        - '.+/cobra\.Command$'
+        - 'survey'
+    funlen:
+      ignore-comments: true
+  exclusions:
+    rules:
+      - path: '(.+)_test\.go'
+        linters:
+          - funlen
+          - goconst
+
+output:
+  formats:
+    tab:
+      path: "./temp/lint.txt"
+      colors: false
+  path-prefix: ""
+  show-stats: true
+  sort-order:
+    - linter
+    - file
+    - severity
+
