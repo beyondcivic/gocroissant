@@ -25,7 +25,7 @@ go.work.sum
 .env
 fr.sh
 repo_structure.yaml
-gocroissant
+/gocroissant
 bin/gocroissant
 metadata.jsonld
 temp/
