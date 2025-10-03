@@ -1588,7 +1588,7 @@ func NewMetadataWithValidation(metadata Metadata) *MetadataWithValidation
 NewMetadataWithValidation creates a new MetadataWithValidation instance
 
 <a name="MetadataWithValidation.GetIssues"></a>
-### func \(\*MetadataWithValidation\) [GetIssues](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L419>)
+### func \(\*MetadataWithValidation\) [GetIssues](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L420>)
 
 ```go
 func (m *MetadataWithValidation) GetIssues() *Issues
@@ -1597,7 +1597,7 @@ func (m *MetadataWithValidation) GetIssues() *Issues
 GetIssues returns the validation issues
 
 <a name="MetadataWithValidation.HasErrors"></a>
-### func \(\*MetadataWithValidation\) [HasErrors](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L403>)
+### func \(\*MetadataWithValidation\) [HasErrors](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L404>)
 
 ```go
 func (m *MetadataWithValidation) HasErrors() bool
@@ -1606,7 +1606,7 @@ func (m *MetadataWithValidation) HasErrors() bool
 HasErrors returns true if there are validation errors
 
 <a name="MetadataWithValidation.HasWarnings"></a>
-### func \(\*MetadataWithValidation\) [HasWarnings](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L411>)
+### func \(\*MetadataWithValidation\) [HasWarnings](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L412>)
 
 ```go
 func (m *MetadataWithValidation) HasWarnings() bool
@@ -1615,13 +1615,13 @@ func (m *MetadataWithValidation) HasWarnings() bool
 HasWarnings returns true if there are validation warnings
 
 <a name="MetadataWithValidation.Report"></a>
-### func \(\*MetadataWithValidation\) [Report](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L395>)
+### func \(\*MetadataWithValidation\) [Report](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L396>)
 
 ```go
 func (m *MetadataWithValidation) Report() string
 ```
 
-Report returns a string report of validation issues
+Report returns a string report of validation issues Returns an empty string is there are no issues or warnings.
 
 <a name="MetadataWithValidation.Validate"></a>
 ### func \(\*MetadataWithValidation\) [Validate](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/validation.go#L384>)
