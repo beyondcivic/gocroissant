@@ -17,13 +17,13 @@ import (
 func CalculateSHA256(filePath string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		return "", CroissantError{Message: "failed to open file: %w", Value: err}
+		return "", CroissantError{Message: "failed to open file", Value: err}
 	}
 	defer file.Close()
 
 	hash := sha256.New()
 	if _, err := io.Copy(hash, file); err != nil {
-		return "", CroissantError{Message: "failed to calculate hash: %w", Value: err}
+		return "", CroissantError{Message: "failed to calculate hash", Value: err}
 	}
 
 	return hex.EncodeToString(hash.Sum(nil)), nil
@@ -33,7 +33,7 @@ func CalculateSHA256(filePath string) (string, error) {
 func GetCSVColumns(csvPath string) ([]string, []string, error) {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return nil, nil, CroissantError{Message: "failed to open CSV file: %w", Value: err}
+		return nil, nil, CroissantError{Message: "failed to open CSV file", Value: err}
 	}
 	defer file.Close()
 
@@ -43,7 +43,7 @@ func GetCSVColumns(csvPath string) ([]string, []string, error) {
 	// Read headers
 	headers, err := reader.Read()
 	if err != nil {
-		return nil, nil, CroissantError{Message: "failed to read CSV headers: %w", Value: err}
+		return nil, nil, CroissantError{Message: "failed to read CSV headers", Value: err}
 	}
 
 	// Clean headers
@@ -54,7 +54,7 @@ func GetCSVColumns(csvPath string) ([]string, []string, error) {
 	// Read first row for data type inference
 	firstRow, err := reader.Read()
 	if err != nil && !errors.Is(err, io.EOF) {
-		return nil, nil, CroissantError{Message: "failed to read first CSV row: %w", Value: err}
+		return nil, nil, CroissantError{Message: "failed to read first CSV row", Value: err}
 	}
 
 	// If we hit EOF, there's no data row
@@ -69,7 +69,7 @@ func GetCSVColumns(csvPath string) ([]string, []string, error) {
 func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]string, error) {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return nil, nil, CroissantError{Message: "failed to open CSV file: %w", Value: err}
+		return nil, nil, CroissantError{Message: "failed to open CSV file", Value: err}
 	}
 	defer file.Close()
 
@@ -83,7 +83,7 @@ func GetCSVColumnsAndSampleRows(csvPath string, maxRows int) ([]string, [][]stri
 	// Read headers
 	headers, err := reader.Read()
 	if err != nil {
-		return nil, nil, CroissantError{Message: "failed to read CSV headers: %w", Value: err}
+		return nil, nil, CroissantError{Message: "failed to read CSV headers", Value: err}
 	}
 
 	// Clean headers
@@ -148,7 +148,7 @@ func ValidateOutputPath(outputPath string) error {
 func DetectCSVDelimiter(csvPath string) (rune, error) {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return ',', CroissantError{Message: "failed to open CSV file: %w", Value: err}
+		return ',', CroissantError{Message: "failed to open CSV file", Value: err}
 	}
 	defer file.Close()
 
@@ -156,7 +156,7 @@ func DetectCSVDelimiter(csvPath string) (rune, error) {
 	buffer := make([]byte, 1024)
 	n, err := file.Read(buffer)
 	if err != nil && !errors.Is(err, io.EOF) {
-		return ',', CroissantError{Message: "failed to read file sample: %w", Value: err}
+		return ',', CroissantError{Message: "failed to read file sample", Value: err}
 	}
 
 	sample := string(buffer[:n])
@@ -186,7 +186,7 @@ func DetectCSVDelimiter(csvPath string) (rune, error) {
 func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]string, [][]string, error) {
 	file, err := os.Open(csvPath)
 	if err != nil {
-		return nil, nil, CroissantError{Message: "failed to open CSV file: %w", Value: err}
+		return nil, nil, CroissantError{Message: "failed to open CSV file", Value: err}
 	}
 	defer file.Close()
 
@@ -240,7 +240,7 @@ func ParseCSVWithOptions(csvPath string, delimiter rune, hasHeader bool) ([]stri
 func GetFileStats(filePath string) (map[string]interface{}, error) {
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
-		return nil, CroissantError{Message: "failed to get file stats: %w", Value: err}
+		return nil, CroissantError{Message: "failed to get file stats", Value: err}
 	}
 
 	stats := map[string]interface{}{
