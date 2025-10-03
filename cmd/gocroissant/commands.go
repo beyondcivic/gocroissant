@@ -1,6 +1,7 @@
 // commands.go
 // Contains cobra command definitions
-
+//
+//nolint:funlen,mnd
 package cmd
 
 import (
@@ -79,22 +80,10 @@ func generateCmd() *cobra.Command {
 
 			// Set validation options
 			if flagValidate || flagStrict || flagCheckFiles {
-				options := genValidateOptions(flagStrict, flagCheckFiles, false)
+				options := commonValidationCmd(flagStrict, flagCheckFiles, false)
 				metadata.ValidateWithOptions(options)
-				report := metadata.Report()
-				if report == "" {
-					fmt.Println("✓ Validation passed with no issues.")
-					os.Exit(0)
-				} else {
-					fmt.Println(report)
-				}
-				if metadata.HasErrors() {
-					fmt.Printf("\n Validation failed with errors\n")
-					os.Exit(1)
-				} else {
-					// If there's only warnings, return a safe exit code.
-					os.Exit(0)
-				}
+
+				analyzeMetadataIssues(metadata.GetIssues())
 			}
 		},
 	}
@@ -107,13 +96,32 @@ func generateCmd() *cobra.Command {
 }
 
 // Common configuration of validation options
-func genValidateOptions(flagStrict bool, flagCheckFiles bool, flagCheckUrls bool) croissant.ValidationOptions {
+func commonValidationCmd(flagStrict bool, flagCheckFiles bool, flagCheckUrls bool) croissant.ValidationOptions {
 	options := croissant.DefaultValidationOptions()
 	options.StrictMode = flagStrict
 	options.CheckFileExists = flagCheckFiles
 	options.ValidateURLs = flagCheckUrls
 
 	return options
+}
+
+// Pretty prints issues for command output.
+// Does not return, calls os.Exit().
+func analyzeMetadataIssues(issues *croissant.Issues) {
+	report := issues.Report()
+	if report != "" {
+		fmt.Println(report)
+	} else {
+		fmt.Println("✓ Validation passed with no issues.")
+	}
+
+	if issues.HasErrors() {
+		fmt.Printf("\n Validation failed with errors\n")
+		os.Exit(1)
+	}
+
+	// If there's only warnings, return a safe exit code.
+	os.Exit(0)
 }
 
 // Validate command - validate a croissant jsonld file.
@@ -136,9 +144,6 @@ func validateCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			// Set validation options
-			options := genValidateOptions(strict, checkFiles, checkUrls)
-
 			fmt.Printf("Validating Croissant metadata file '%s'...\n", jsonldPath)
 
 			// Read and parse the file manually to use validation options
@@ -147,6 +152,8 @@ func validateCmd() *cobra.Command {
 				fmt.Printf("Error reading file: %v\n", err)
 				os.Exit(1)
 			}
+			// Set validation options
+			options := commonValidationCmd(strict, checkFiles, checkUrls)
 
 			issues, err := croissant.ValidateJSONWithOptions(data, options)
 			if err != nil {
@@ -154,16 +161,7 @@ func validateCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			report := issues.Report()
-			if report != "" {
-				fmt.Println(report)
-			} else {
-				fmt.Println("✓ Validation passed with no issues.")
-			}
-
-			if issues.HasErrors() {
-				os.Exit(1)
-			}
+			analyzeMetadataIssues(issues)
 		},
 	}
 	validateCmd.Flags().Bool("strict", false, "Enable strict validation mode")
@@ -293,45 +291,10 @@ func matchCmd() *cobra.Command {
 				fmt.Printf("✗ Compatibility check FAILED\n")
 				fmt.Printf("The candidate metadata is NOT compatible with the reference.\n")
 			}
-
 			fmt.Println()
 
 			// Display detailed results
-			if len(result.MatchedFields) > 0 {
-				fmt.Printf("Matched fields (%d):\n", len(result.MatchedFields))
-				for _, field := range result.MatchedFields {
-					fmt.Printf("  ✓ %s\n", field)
-				}
-				fmt.Println()
-			}
-
-			if len(result.MissingFields) > 0 {
-				fmt.Printf("Missing fields (%d):\n", len(result.MissingFields))
-				for _, field := range result.MissingFields {
-					fmt.Printf("  ✗ %s (required by reference but not found in candidate)\n", field)
-				}
-				fmt.Println()
-			}
-
-			if len(result.TypeMismatches) > 0 {
-				fmt.Printf("Type mismatches (%d):\n", len(result.TypeMismatches))
-				for _, mismatch := range result.TypeMismatches {
-					fmt.Printf("  ✗ %s: reference expects '%s', candidate has '%s'\n",
-						mismatch.FieldName, mismatch.ReferenceType, mismatch.CandidateType)
-				}
-				fmt.Println()
-			}
-
-			if len(result.ExtraFields) > 0 && verbose {
-				fmt.Printf("Extra fields in candidate (%d):\n", len(result.ExtraFields))
-				for _, field := range result.ExtraFields {
-					fmt.Printf("  + %s (additional field in candidate)\n", field)
-				}
-				fmt.Println()
-			} else if len(result.ExtraFields) > 0 {
-				fmt.Printf("Candidate has %d additional field(s) (use --verbose to see details)\n", len(result.ExtraFields))
-				fmt.Println()
-			}
+			matchPrintResultAnalysis(result, verbose)
 
 			// Summary
 			fmt.Printf("Summary:\n")
@@ -348,4 +311,45 @@ func matchCmd() *cobra.Command {
 	matchCmd.Flags().BoolP("verbose", "v", false, "Show detailed information including extra fields in candidate")
 
 	return matchCmd
+}
+
+// Prints information about matched fields.
+// Lists matched, missing, type mismatched, and extra fields.
+// nolint:cyclop
+func matchPrintResultAnalysis(result *croissant.MatchResult, verbose bool) {
+	if len(result.MatchedFields) > 0 {
+		fmt.Printf("Matched fields (%d):\n", len(result.MatchedFields))
+		for _, field := range result.MatchedFields {
+			fmt.Printf("  ✓ %s\n", field)
+		}
+		fmt.Println()
+	}
+
+	if len(result.MissingFields) > 0 {
+		fmt.Printf("Missing fields (%d):\n", len(result.MissingFields))
+		for _, field := range result.MissingFields {
+			fmt.Printf("  ✗ %s (required by reference but not found in candidate)\n", field)
+		}
+		fmt.Println()
+	}
+
+	if len(result.TypeMismatches) > 0 {
+		fmt.Printf("Type mismatches (%d):\n", len(result.TypeMismatches))
+		for _, mismatch := range result.TypeMismatches {
+			fmt.Printf("  ✗ %s: reference expects '%s', candidate has '%s'\n",
+				mismatch.FieldName, mismatch.ReferenceType, mismatch.CandidateType)
+		}
+		fmt.Println()
+	}
+
+	if len(result.ExtraFields) > 0 && verbose {
+		fmt.Printf("Extra fields in candidate (%d):\n", len(result.ExtraFields))
+		for _, field := range result.ExtraFields {
+			fmt.Printf("  + %s (additional field in candidate)\n", field)
+		}
+		fmt.Println()
+	} else if len(result.ExtraFields) > 0 {
+		fmt.Printf("Candidate has %d additional field(s) (use --verbose to see details)\n", len(result.ExtraFields))
+		fmt.Println()
+	}
 }
