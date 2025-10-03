@@ -130,6 +130,8 @@ if err != nil {
 }
 ```
 
+datatypes.go Describes supported data types for values.
+
 Package croissant provides comprehensive functionality for working with the ML Commons Croissant metadata format \- a standardized way to describe machine learning datasets using JSON\-LD.
 
 ### Overview
@@ -325,153 +327,128 @@ validation.go
 
 ## Index
 
-- [croissant](#croissant)
-    - [Basic Usage](#basic-usage)
-    - [Advanced Generation with Validation](#advanced-generation-with-validation)
-    - [Data Type Inference](#data-type-inference)
-    - [Validation](#validation)
-    - [Schema Compatibility Checking](#schema-compatibility-checking)
-    - [JSON\\-LD Processing](#json-ld-processing)
-    - [Validation Options](#validation-options)
-    - [Overview](#overview)
-    - [Quick Start](#quick-start)
-    - [Features](#features)
-    - [Data Type Inference](#data-type-inference-1)
-    - [Validation Options](#validation-options-1)
-    - [Schema Compatibility Rules](#schema-compatibility-rules)
-    - [Error Handling](#error-handling)
-    - [Performance Considerations](#performance-considerations)
-    - [Examples](#examples)
-    - [Related Tools](#related-tools)
-    - [Specification Compliance](#specification-compliance)
-    - [License](#license)
-    - [Related Projects](#related-projects)
-  - [Index](#index)
-  - [Constants](#constants)
-  - [func CalculateSHA256](#func-calculatesha256)
-  - [func CountCSVRows](#func-countcsvrows)
-  - [func DetectCSVDelimiter](#func-detectcsvdelimiter)
-  - [func ExtractCroissantProperties](#func-extractcroissantproperties)
-  - [func GenerateMetadata](#func-generatemetadata)
-  - [func GetCSVColumnTypes](#func-getcsvcolumntypes)
-  - [func GetCSVColumns](#func-getcsvcolumns)
-  - [func GetCSVColumnsAndSampleRows](#func-getcsvcolumnsandsamplerows)
-  - [func GetExpandedProperty](#func-getexpandedproperty)
-  - [func GetFileStats](#func-getfilestats)
-  - [func GetPropertyArray](#func-getpropertyarray)
-  - [func GetPropertyValue](#func-getpropertyvalue)
-  - [func InferDataType](#func-inferdatatype)
-  - [func InferSemanticDataType](#func-infersemanticdatatype)
-  - [func IsCSVFile](#func-iscsvfile)
-  - [func IsValidDataType](#func-isvaliddatatype)
-  - [func ParseCSVWithOptions](#func-parsecsvwithoptions)
-  - [func SanitizeFileName](#func-sanitizefilename)
-  - [func ValidateCSVStructure](#func-validatecsvstructure)
-  - [func ValidateCrossReferences](#func-validatecrossreferences)
-  - [func ValidateDistributionNode](#func-validatedistributionnode)
-  - [func ValidateFieldNode](#func-validatefieldnode)
-  - [func ValidateMetadataNode](#func-validatemetadatanode)
-  - [func ValidateOutputPath](#func-validateoutputpath)
-  - [func ValidateRecordSetNode](#func-validaterecordsetnode)
-  - [type BaseNode](#type-basenode)
-    - [func (\*BaseNode) GetID](#func-basenode-getid)
-    - [func (\*BaseNode) GetName](#func-basenode-getname)
-    - [func (\*BaseNode) GetParent](#func-basenode-getparent)
-    - [func (\*BaseNode) SetParent](#func-basenode-setparent)
-  - [type Context](#type-context)
-    - [func CreateDefaultContext](#func-createdefaultcontext)
-  - [type CroissantError](#type-croissanterror)
-    - [func (CroissantError) Error](#func-croissanterror-error)
-  - [type DataContext](#type-datacontext)
-  - [type DataType](#type-datatype)
-    - [func NewArrayDataType](#func-newarraydatatype)
-    - [func NewNullableSingleDataType](#func-newnullablesingledatatype)
-    - [func NewSingleDataType](#func-newsingledatatype)
-    - [func (DataType) GetFirstType](#func-datatype-getfirsttype)
-    - [func (DataType) GetTypes](#func-datatype-gettypes)
-    - [func (DataType) IsArray](#func-datatype-isarray)
-    - [func (DataType) MarshalJSON](#func-datatype-marshaljson)
-    - [func (\*DataType) UnmarshalJSON](#func-datatype-unmarshaljson)
-  - [type DataTypeContext](#type-datatypecontext)
-  - [type Distribution](#type-distribution)
-  - [type DistributionNode](#type-distributionnode)
-    - [func (\*DistributionNode) Validate](#func-distributionnode-validate)
-  - [type Extract](#type-extract)
-  - [type ExtractNode](#type-extractnode)
-  - [type Field](#type-field)
-  - [type FieldMismatch](#type-fieldmismatch)
-  - [type FieldNode](#type-fieldnode)
-    - [func (\*FieldNode) Validate](#func-fieldnode-validate)
-  - [type FieldRef](#type-fieldref)
-  - [type FieldRefSlice](#type-fieldrefslice)
-    - [func (FieldRefSlice) MarshalJSON](#func-fieldrefslice-marshaljson)
-    - [func (\*FieldRefSlice) UnmarshalJSON](#func-fieldrefslice-unmarshaljson)
-  - [type FieldSource](#type-fieldsource)
-    - [func (FieldRefSlice) MarshalJSON](#func-fieldrefslice-marshaljson-1)
-    - [func (\*FieldRefSlice) UnmarshalJSON](#func-fieldrefslice-unmarshaljson-1)
-  - [type FieldSource](#type-fieldsource-1)
-    - [func (FieldSource) ValidateSource](#func-fieldsource-validatesource)
-  - [type FileObject](#type-fileobject)
-  - [type FileObjectRef](#type-fileobjectref)
-  - [type Issue](#type-issue)
-  - [type IssueType](#type-issuetype)
-  - [type Issues](#type-issues)
-    - [func NewIssues](#func-newissues)
-    - [func ValidateFile](#func-validatefile)
-    - [func ValidateJSON](#func-validatejson)
-    - [func ValidateJSONWithOptions](#func-validatejsonwithoptions)
-    - [func ValidateMetadata](#func-validatemetadata)
-    - [func ValidateMetadataWithOptions](#func-validatemetadatawithoptions)
-    - [func (\*Issues) AddError](#func-issues-adderror)
-    - [func (\*Issues) AddWarning](#func-issues-addwarning)
-    - [func (\*Issues) ErrorCount](#func-issues-errorcount)
-    - [func (\*Issues) HasErrors](#func-issues-haserrors)
-    - [func (\*Issues) HasWarnings](#func-issues-haswarnings)
-    - [func (\*Issues) Report](#func-issues-report)
-    - [func (\*Issues) WarningCount](#func-issues-warningcount)
-  - [type JSONLDProcessor](#type-jsonldprocessor)
-    - [func NewJSONLDProcessor](#func-newjsonldprocessor)
-    - [func (\*JSONLDProcessor) CompactJSONLD](#func-jsonldprocessor-compactjsonld)
-    - [func (\*JSONLDProcessor) ParseCroissantMetadata](#func-jsonldprocessor-parsecroissantmetadata)
-    - [func (\*JSONLDProcessor) ParseJSONLD](#func-jsonldprocessor-parsejsonld)
-    - [func (\*JSONLDProcessor) ValidateJSONLD](#func-jsonldprocessor-validatejsonld)
-  - [type KeyRef](#type-keyref)
-  - [type MatchResult](#type-matchresult)
-    - [func MatchMetadata](#func-matchmetadata)
-  - [type Metadata](#type-metadata)
-    - [func LoadMetadataFromFile](#func-loadmetadatafromfile)
-  - [type MetadataNode](#type-metadatanode)
-    - [func FromMetadata](#func-frommetadata)
-    - [func NewMetadataNode](#func-newmetadatanode)
-    - [func (\*MetadataNode) Validate](#func-metadatanode-validate)
-  - [type MetadataWithValidation](#type-metadatawithvalidation)
-    - [func GenerateMetadataWithValidation](#func-generatemetadatawithvalidation)
-    - [func NewMetadataWithValidation](#func-newmetadatawithvalidation)
-    - [func (\*MetadataWithValidation) GetIssues](#func-metadatawithvalidation-getissues)
-    - [func (\*MetadataWithValidation) HasErrors](#func-metadatawithvalidation-haserrors)
-    - [func (\*MetadataWithValidation) HasWarnings](#func-metadatawithvalidation-haswarnings)
-    - [func (\*MetadataWithValidation) Report](#func-metadatawithvalidation-report)
-    - [func (\*MetadataWithValidation) Validate](#func-metadatawithvalidation-validate)
-    - [func (\*MetadataWithValidation) ValidateWithOptions](#func-metadatawithvalidation-validatewithoptions)
-  - [type Node](#type-node)
-  - [type RecordSet](#type-recordset)
-    - [func CreateEnumerationRecordSet](#func-createenumerationrecordset)
-    - [func CreateSplitRecordSet](#func-createsplitrecordset)
-  - [type RecordSetKey](#type-recordsetkey)
-    - [func NewCompositeKey](#func-newcompositekey)
-    - [func NewRecordSetKey](#func-newrecordsetkey)
-    - [func (RecordSetKey) GetKeyIDs](#func-recordsetkey-getkeyids)
-    - [func (RecordSetKey) IsComposite](#func-recordsetkey-iscomposite)
-    - [func (RecordSetKey) MarshalJSON](#func-recordsetkey-marshaljson)
-    - [func (\*RecordSetKey) UnmarshalJSON](#func-recordsetkey-unmarshaljson)
-  - [type RecordSetNode](#type-recordsetnode)
-    - [func (\*RecordSetNode) Validate](#func-recordsetnode-validate)
-  - [type Source](#type-source)
-  - [type SourceNode](#type-sourcenode)
-    - [func (\*SourceNode) ValidateSource](#func-sourcenode-validatesource)
-  - [type Transform](#type-transform)
-  - [type ValidationOptions](#type-validationoptions)
-    - [func DefaultValidationOptions](#func-defaultvalidationoptions)
+- [Constants](<#constants>)
+- [func CalculateSHA256\(filePath string\) \(string, error\)](<#CalculateSHA256>)
+- [func CountCSVRows\(csvPath string\) \(int, error\)](<#CountCSVRows>)
+- [func DetectCSVDelimiter\(csvPath string\) \(rune, error\)](<#DetectCSVDelimiter>)
+- [func ExtractCroissantProperties\(expanded map\[string\]interface\{\}\) map\[string\]interface\{\}](<#ExtractCroissantProperties>)
+- [func GenerateMetadata\(csvPath string, outputPath string\) \(string, error\)](<#GenerateMetadata>)
+- [func GetCSVColumnTypes\(csvPath string, sampleSize int\) \(\[\]string, \[\]string, error\)](<#GetCSVColumnTypes>)
+- [func GetCSVColumns\(csvPath string\) \(\[\]string, \[\]string, error\)](<#GetCSVColumns>)
+- [func GetCSVColumnsAndSampleRows\(csvPath string, maxRows int\) \(\[\]string, \[\]\[\]string, error\)](<#GetCSVColumnsAndSampleRows>)
+- [func GetExpandedProperty\(expanded map\[string\]interface\{\}, property string\) interface\{\}](<#GetExpandedProperty>)
+- [func GetFileStats\(filePath string\) \(map\[string\]interface\{\}, error\)](<#GetFileStats>)
+- [func GetPropertyArray\(property interface\{\}\) \[\]interface\{\}](<#GetPropertyArray>)
+- [func GetPropertyValue\(property interface\{\}\) string](<#GetPropertyValue>)
+- [func InferDataType\(value string\) string](<#InferDataType>)
+- [func InferSemanticDataType\(fieldName, value string, context map\[string\]interface\{\}\) \[\]string](<#InferSemanticDataType>)
+- [func IsCSVFile\(filePath string\) bool](<#IsCSVFile>)
+- [func IsValidDataType\(dataType string\) bool](<#IsValidDataType>)
+- [func ParseCSVWithOptions\(csvPath string, delimiter rune, hasHeader bool\) \(\[\]string, \[\]\[\]string, error\)](<#ParseCSVWithOptions>)
+- [func SanitizeFileName\(fileName string\) string](<#SanitizeFileName>)
+- [func ValidateCSVStructure\(csvPath string\) error](<#ValidateCSVStructure>)
+- [func ValidateCrossReferences\(node \*MetadataNode, issues \*Issues\)](<#ValidateCrossReferences>)
+- [func ValidateDistributionNode\(dist \*DistributionNode, issues \*Issues, options ValidationOptions\)](<#ValidateDistributionNode>)
+- [func ValidateFieldNode\(field \*FieldNode, issues \*Issues, options ValidationOptions\)](<#ValidateFieldNode>)
+- [func ValidateMetadataNode\(node \*MetadataNode, issues \*Issues, options ValidationOptions\)](<#ValidateMetadataNode>)
+- [func ValidateOutputPath\(outputPath string\) error](<#ValidateOutputPath>)
+- [func ValidateRecordSetNode\(rs \*RecordSetNode, issues \*Issues, options ValidationOptions\)](<#ValidateRecordSetNode>)
+- [type BaseNode](<#BaseNode>)
+  - [func \(n \*BaseNode\) GetID\(\) string](<#BaseNode.GetID>)
+  - [func \(n \*BaseNode\) GetName\(\) string](<#BaseNode.GetName>)
+  - [func \(n \*BaseNode\) GetParent\(\) Node](<#BaseNode.GetParent>)
+  - [func \(n \*BaseNode\) SetParent\(parent Node\)](<#BaseNode.SetParent>)
+- [type Context](<#Context>)
+  - [func CreateDefaultContext\(\) Context](<#CreateDefaultContext>)
+- [type CroissantError](<#CroissantError>)
+  - [func \(e CroissantError\) Error\(\) string](<#CroissantError.Error>)
+- [type DataContext](<#DataContext>)
+- [type DataType](<#DataType>)
+  - [func NewArrayDataType\(dataTypes ...string\) DataType](<#NewArrayDataType>)
+  - [func NewNullableSingleDataType\(dataType string\) \*DataType](<#NewNullableSingleDataType>)
+  - [func NewSingleDataType\(dataType string\) DataType](<#NewSingleDataType>)
+  - [func \(d DataType\) GetFirstType\(\) string](<#DataType.GetFirstType>)
+  - [func \(d DataType\) GetTypes\(\) \[\]string](<#DataType.GetTypes>)
+  - [func \(d DataType\) IsArray\(\) bool](<#DataType.IsArray>)
+  - [func \(d DataType\) MarshalJSON\(\) \(\[\]byte, error\)](<#DataType.MarshalJSON>)
+  - [func \(d \*DataType\) UnmarshalJSON\(data \[\]byte\) error](<#DataType.UnmarshalJSON>)
+- [type DataTypeContext](<#DataTypeContext>)
+- [type Distribution](<#Distribution>)
+- [type DistributionNode](<#DistributionNode>)
+  - [func \(d \*DistributionNode\) Validate\(issues \*Issues\)](<#DistributionNode.Validate>)
+- [type Extract](<#Extract>)
+- [type ExtractNode](<#ExtractNode>)
+- [type Field](<#Field>)
+- [type FieldMismatch](<#FieldMismatch>)
+- [type FieldNode](<#FieldNode>)
+  - [func \(f \*FieldNode\) Validate\(issues \*Issues\)](<#FieldNode.Validate>)
+- [type FieldRef](<#FieldRef>)
+- [type FieldRefSlice](<#FieldRefSlice>)
+  - [func \(ref FieldRefSlice\) MarshalJSON\(\) \(\[\]byte, error\)](<#FieldRefSlice.MarshalJSON>)
+  - [func \(ref \*FieldRefSlice\) UnmarshalJSON\(data \[\]byte\) error](<#FieldRefSlice.UnmarshalJSON>)
+- [type FieldSource](<#FieldSource>)
+  - [func \(fs FieldSource\) ValidateSource\(\) bool](<#FieldSource.ValidateSource>)
+- [type FileObject](<#FileObject>)
+- [type FileObjectRef](<#FileObjectRef>)
+- [type Issue](<#Issue>)
+- [type IssueType](<#IssueType>)
+- [type Issues](<#Issues>)
+  - [func NewIssues\(\) \*Issues](<#NewIssues>)
+  - [func ValidateFile\(filePath string\) \(\*Issues, error\)](<#ValidateFile>)
+  - [func ValidateJSON\(data \[\]byte\) \(\*Issues, error\)](<#ValidateJSON>)
+  - [func ValidateJSONWithOptions\(data \[\]byte, options ValidationOptions\) \(\*Issues, error\)](<#ValidateJSONWithOptions>)
+  - [func ValidateMetadata\(metadata Metadata\) \*Issues](<#ValidateMetadata>)
+  - [func ValidateMetadataWithOptions\(metadata Metadata, options ValidationOptions\) \*Issues](<#ValidateMetadataWithOptions>)
+  - [func \(i \*Issues\) AddError\(message string, node ...Node\)](<#Issues.AddError>)
+  - [func \(i \*Issues\) AddWarning\(message string, node ...Node\)](<#Issues.AddWarning>)
+  - [func \(i \*Issues\) ErrorCount\(\) int](<#Issues.ErrorCount>)
+  - [func \(i \*Issues\) HasErrors\(\) bool](<#Issues.HasErrors>)
+  - [func \(i \*Issues\) HasWarnings\(\) bool](<#Issues.HasWarnings>)
+  - [func \(i \*Issues\) Report\(\) string](<#Issues.Report>)
+  - [func \(i \*Issues\) WarningCount\(\) int](<#Issues.WarningCount>)
+- [type JSONLDProcessor](<#JSONLDProcessor>)
+  - [func NewJSONLDProcessor\(\) \*JSONLDProcessor](<#NewJSONLDProcessor>)
+  - [func \(j \*JSONLDProcessor\) CompactJSONLD\(expanded interface\{\}, context map\[string\]interface\{\}\) \(map\[string\]interface\{\}, error\)](<#JSONLDProcessor.CompactJSONLD>)
+  - [func \(j \*JSONLDProcessor\) ParseCroissantMetadata\(data \[\]byte\) \(\*Metadata, error\)](<#JSONLDProcessor.ParseCroissantMetadata>)
+  - [func \(j \*JSONLDProcessor\) ParseJSONLD\(data \[\]byte\) \(map\[string\]interface\{\}, error\)](<#JSONLDProcessor.ParseJSONLD>)
+  - [func \(j \*JSONLDProcessor\) ValidateJSONLD\(data \[\]byte\) error](<#JSONLDProcessor.ValidateJSONLD>)
+- [type KeyRef](<#KeyRef>)
+- [type MatchResult](<#MatchResult>)
+  - [func MatchMetadata\(reference Metadata, candidate Metadata\) \*MatchResult](<#MatchMetadata>)
+- [type Metadata](<#Metadata>)
+  - [func LoadMetadataFromFile\(filePath string\) \(\*Metadata, error\)](<#LoadMetadataFromFile>)
+- [type MetadataNode](<#MetadataNode>)
+  - [func FromMetadata\(metadata Metadata\) \*MetadataNode](<#FromMetadata>)
+  - [func NewMetadataNode\(\) \*MetadataNode](<#NewMetadataNode>)
+  - [func \(m \*MetadataNode\) Validate\(issues \*Issues\)](<#MetadataNode.Validate>)
+- [type MetadataWithValidation](<#MetadataWithValidation>)
+  - [func GenerateMetadataWithValidation\(csvPath string, outputPath string\) \(\*MetadataWithValidation, error\)](<#GenerateMetadataWithValidation>)
+  - [func NewMetadataWithValidation\(metadata Metadata\) \*MetadataWithValidation](<#NewMetadataWithValidation>)
+  - [func \(m \*MetadataWithValidation\) GetIssues\(\) \*Issues](<#MetadataWithValidation.GetIssues>)
+  - [func \(m \*MetadataWithValidation\) HasErrors\(\) bool](<#MetadataWithValidation.HasErrors>)
+  - [func \(m \*MetadataWithValidation\) HasWarnings\(\) bool](<#MetadataWithValidation.HasWarnings>)
+  - [func \(m \*MetadataWithValidation\) Report\(\) string](<#MetadataWithValidation.Report>)
+  - [func \(m \*MetadataWithValidation\) Validate\(\)](<#MetadataWithValidation.Validate>)
+  - [func \(m \*MetadataWithValidation\) ValidateWithOptions\(options ValidationOptions\)](<#MetadataWithValidation.ValidateWithOptions>)
+- [type Node](<#Node>)
+- [type RecordSet](<#RecordSet>)
+  - [func CreateEnumerationRecordSet\(id, name string, values \[\]string, urls \[\]string\) RecordSet](<#CreateEnumerationRecordSet>)
+  - [func CreateSplitRecordSet\(\) RecordSet](<#CreateSplitRecordSet>)
+- [type RecordSetKey](<#RecordSetKey>)
+  - [func NewCompositeKey\(keyIDs ...string\) \*RecordSetKey](<#NewCompositeKey>)
+  - [func NewRecordSetKey\(keyID string\) \*RecordSetKey](<#NewRecordSetKey>)
+  - [func \(k RecordSetKey\) GetKeyIDs\(\) \[\]string](<#RecordSetKey.GetKeyIDs>)
+  - [func \(k RecordSetKey\) IsComposite\(\) bool](<#RecordSetKey.IsComposite>)
+  - [func \(key RecordSetKey\) MarshalJSON\(\) \(\[\]byte, error\)](<#RecordSetKey.MarshalJSON>)
+  - [func \(key \*RecordSetKey\) UnmarshalJSON\(data \[\]byte\) error](<#RecordSetKey.UnmarshalJSON>)
+- [type RecordSetNode](<#RecordSetNode>)
+  - [func \(r \*RecordSetNode\) Validate\(issues \*Issues\)](<#RecordSetNode.Validate>)
+- [type Source](<#Source>)
+- [type SourceNode](<#SourceNode>)
+  - [func \(s \*SourceNode\) ValidateSource\(\) bool](<#SourceNode.ValidateSource>)
+- [type Transform](<#Transform>)
+- [type ValidationOptions](<#ValidationOptions>)
+  - [func DefaultValidationOptions\(\) ValidationOptions](<#DefaultValidationOptions>)
 
 
 ## Constants
@@ -534,6 +511,12 @@ const VT_scDateT string = "sc:DateTime"
 
 ```go
 const VT_scEnum string = "sc:Enumeration"
+```
+
+<a name="VT_scFloat"></a>
+
+```go
+const VT_scFloat string = "sc:Float"
 ```
 
 <a name="VT_scGeoCoord"></a>
@@ -627,7 +610,7 @@ func ExtractCroissantProperties(expanded map[string]interface{}) map[string]inte
 ExtractCroissantProperties extracts common Croissant properties from expanded JSON\-LD.
 
 <a name="GenerateMetadata"></a>
-## func [GenerateMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L380>)
+## func [GenerateMetadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L242>)
 
 ```go
 func GenerateMetadata(csvPath string, outputPath string) (string, error)
@@ -699,7 +682,7 @@ func GetPropertyValue(property interface{}) string
 GetPropertyValue extracts a simple string value from a JSON\-LD property.
 
 <a name="InferDataType"></a>
-## func [InferDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L132>)
+## func [InferDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/datatypes.go#L43>)
 
 ```go
 func InferDataType(value string) string
@@ -708,7 +691,7 @@ func InferDataType(value string) string
 InferDataType infers the schema.org data type from a value.
 
 <a name="InferSemanticDataType"></a>
-## func [InferSemanticDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L222>)
+## func [InferSemanticDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/datatypes.go#L134>)
 
 ```go
 func InferSemanticDataType(fieldName, value string, context map[string]interface{}) []string
@@ -726,7 +709,7 @@ func IsCSVFile(filePath string) bool
 IsCSVFile checks if a file appears to be a CSV file based on extension.
 
 <a name="IsValidDataType"></a>
-## func [IsValidDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L186>)
+## func [IsValidDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/datatypes.go#L97>)
 
 ```go
 func IsValidDataType(dataType string) bool
@@ -865,7 +848,7 @@ func (n *BaseNode) SetParent(parent Node)
 
 
 <a name="Context"></a>
-## type [Context](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L247-L283>)
+## type [Context](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L262-L298>)
 
 Context represents the complete JSON\-LD context for Croissant 1.0.
 
@@ -910,7 +893,7 @@ type Context struct {
 ```
 
 <a name="CreateDefaultContext"></a>
-### func [CreateDefaultContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L331>)
+### func [CreateDefaultContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L193>)
 
 ```go
 func CreateDefaultContext() Context
@@ -942,7 +925,7 @@ func (e CroissantError) Error() string
 
 
 <a name="DataContext"></a>
-## type [DataContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L286-L289>)
+## type [DataContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L301-L304>)
 
 DataContext represents the data field in the context.
 
@@ -954,7 +937,7 @@ type DataContext struct {
 ```
 
 <a name="DataType"></a>
-## type [DataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L112>)
+## type [DataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L115>)
 
 DataType represents a data type that can be either a single string or an array of strings. It is represented internally as a list.
 
@@ -963,7 +946,7 @@ type DataType []string
 ```
 
 <a name="NewArrayDataType"></a>
-### func [NewArrayDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L362>)
+### func [NewArrayDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L398>)
 
 ```go
 func NewArrayDataType(dataTypes ...string) DataType
@@ -972,7 +955,7 @@ func NewArrayDataType(dataTypes ...string) DataType
 NewArrayDataType creates a DataType with multiple types.
 
 <a name="NewNullableSingleDataType"></a>
-### func [NewNullableSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L352>)
+### func [NewNullableSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L388>)
 
 ```go
 func NewNullableSingleDataType(dataType string) *DataType
@@ -981,7 +964,7 @@ func NewNullableSingleDataType(dataType string) *DataType
 NewSingleDataType creates a DataType with a single type.
 
 <a name="NewSingleDataType"></a>
-### func [NewSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L357>)
+### func [NewSingleDataType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L393>)
 
 ```go
 func NewSingleDataType(dataType string) DataType
@@ -990,7 +973,7 @@ func NewSingleDataType(dataType string) DataType
 NewSingleDataType creates a DataType with a single type.
 
 <a name="DataType.GetFirstType"></a>
-### func \(DataType\) [GetFirstType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L211>)
+### func \(DataType\) [GetFirstType](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L214>)
 
 ```go
 func (d DataType) GetFirstType() string
@@ -999,7 +982,7 @@ func (d DataType) GetFirstType() string
 GetFirstType returns the first data type \(useful for backward compatibility\).
 
 <a name="DataType.GetTypes"></a>
-### func \(DataType\) [GetTypes](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L206>)
+### func \(DataType\) [GetTypes](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L209>)
 
 ```go
 func (d DataType) GetTypes() []string
@@ -1008,7 +991,7 @@ func (d DataType) GetTypes() []string
 GetTypes returns all data types \(single or array\).
 
 <a name="DataType.IsArray"></a>
-### func \(DataType\) [IsArray](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L201>)
+### func \(DataType\) [IsArray](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L204>)
 
 ```go
 func (d DataType) IsArray() bool
@@ -1017,7 +1000,7 @@ func (d DataType) IsArray() bool
 IsArray returns true if this is an array of data types.
 
 <a name="DataType.MarshalJSON"></a>
-### func \(DataType\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L167>)
+### func \(DataType\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L170>)
 
 ```go
 func (d DataType) MarshalJSON() ([]byte, error)
@@ -1026,7 +1009,7 @@ func (d DataType) MarshalJSON() ([]byte, error)
 MarshalJSON implements custom JSON marshaling for DataType.
 
 <a name="DataType.UnmarshalJSON"></a>
-### func \(\*DataType\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L179>)
+### func \(\*DataType\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L182>)
 
 ```go
 func (d *DataType) UnmarshalJSON(data []byte) error
@@ -1035,7 +1018,7 @@ func (d *DataType) UnmarshalJSON(data []byte) error
 UnmarshalJSON implements custom JSON unmarshaling for DataType.
 
 <a name="DataTypeContext"></a>
-## type [DataTypeContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L292-L295>)
+## type [DataTypeContext](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L307-L310>)
 
 DataTypeContext represents the dataType field in the context.
 
@@ -1047,7 +1030,7 @@ type DataTypeContext struct {
 ```
 
 <a name="Distribution"></a>
-## type [Distribution](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L220-L232>)
+## type [Distribution](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L223-L247>)
 
 Distribution represents a file in the Croissant metadata.
 
@@ -1106,7 +1089,7 @@ func (d *DistributionNode) Validate(issues *Issues)
 Validate validates the distribution node.
 
 <a name="Extract"></a>
-## type [Extract](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L33-L39>)
+## type [Extract](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L33-L42>)
 
 Extract represents the extraction information for a field source.
 
@@ -1205,7 +1188,7 @@ func (f *FieldNode) Validate(issues *Issues)
 Validate validates the field node.
 
 <a name="FieldRef"></a>
-## type [FieldRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L52-L55>)
+## type [FieldRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L55-L58>)
 
 FieldRef represents a reference to another field.
 
@@ -1217,7 +1200,7 @@ type FieldRef struct {
 ```
 
 <a name="FieldRefSlice"></a>
-## type [FieldRefSlice](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L58>)
+## type [FieldRefSlice](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L61>)
 
 Parses ONE or MANY FieldRefs.
 
@@ -1226,7 +1209,7 @@ type FieldRefSlice []FieldRef
 ```
 
 <a name="FieldRefSlice.MarshalJSON"></a>
-### func \(FieldRefSlice\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L99>)
+### func \(FieldRefSlice\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L102>)
 
 ```go
 func (ref FieldRefSlice) MarshalJSON() ([]byte, error)
@@ -1235,7 +1218,7 @@ func (ref FieldRefSlice) MarshalJSON() ([]byte, error)
 
 
 <a name="FieldRefSlice.UnmarshalJSON"></a>
-### func \(\*FieldRefSlice\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L67>)
+### func \(\*FieldRefSlice\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L70>)
 
 ```go
 func (ref *FieldRefSlice) UnmarshalJSON(data []byte) error
@@ -1252,33 +1235,6 @@ Accepts:
 <a name="FieldSource"></a>
 ## type [FieldSource](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L24-L30>)
 
-Parses ONE or MANY FieldRefs.
-
-```go
-type FieldRefSlice []FieldRef
-```
-
-<a name="FieldRefSlice.MarshalJSON"></a>
-### func \(FieldRefSlice\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L96>)
-
-```go
-func (ref FieldRefSlice) MarshalJSON() ([]byte, error)
-```
-
-
-
-<a name="FieldRefSlice.UnmarshalJSON"></a>
-### func \(\*FieldRefSlice\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L74>)
-
-```go
-func (ref *FieldRefSlice) UnmarshalJSON(data []byte) error
-```
-
-
-
-<a name="FieldSource"></a>
-## type [FieldSource](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L35-L41>)
-
 FieldSource represents the source information for a field.
 
 ```go
@@ -1292,7 +1248,7 @@ type FieldSource struct {
 ```
 
 <a name="FieldSource.ValidateSource"></a>
-### func \(FieldSource\) [ValidateSource](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L367>)
+### func \(FieldSource\) [ValidateSource](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L403>)
 
 ```go
 func (fs FieldSource) ValidateSource() bool
@@ -1301,7 +1257,7 @@ func (fs FieldSource) ValidateSource() bool
 ValidateSource validates the source configuration.
 
 <a name="FileObject"></a>
-## type [FileObject](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L42-L44>)
+## type [FileObject](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L45-L47>)
 
 FileObject represents a file object reference.
 
@@ -1538,7 +1494,7 @@ func (j *JSONLDProcessor) ValidateJSONLD(data []byte) error
 ValidateJSONLD validates that the document is valid JSON\-LD.
 
 <a name="KeyRef"></a>
-## type [KeyRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L47-L49>)
+## type [KeyRef](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L50-L52>)
 
 KeyRef represents a key reference in a composite key.
 
@@ -1659,7 +1615,7 @@ if result.IsMatch {
 ```
 
 <a name="Metadata"></a>
-## type [Metadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L298-L315>)
+## type [Metadata](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L313-L351>)
 
 Metadata represents the complete Croissant metadata for a dataset.
 
@@ -1807,7 +1763,7 @@ type MetadataWithValidation struct {
 ```
 
 <a name="GenerateMetadataWithValidation"></a>
-### func [GenerateMetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L395>)
+### func [GenerateMetadataWithValidation](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L257>)
 
 ```go
 func GenerateMetadataWithValidation(csvPath string, outputPath string) (*MetadataWithValidation, error)
@@ -1894,7 +1850,7 @@ type Node interface {
 ```
 
 <a name="RecordSet"></a>
-## type [RecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L235-L244>)
+## type [RecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L250-L259>)
 
 RecordSet represents a record set in the Croissant metadata.
 
@@ -1912,16 +1868,16 @@ type RecordSet struct {
 ```
 
 <a name="CreateEnumerationRecordSet"></a>
-### func [CreateEnumerationRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L268>)
+### func [CreateEnumerationRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L130>)
 
 ```go
 func CreateEnumerationRecordSet(id, name string, values []string, urls []string) RecordSet
 ```
 
-CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data.
+CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data
 
 <a name="CreateSplitRecordSet"></a>
-### func [CreateSplitRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L316>)
+### func [CreateSplitRecordSet](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/croissant.go#L178>)
 
 ```go
 func CreateSplitRecordSet() RecordSet
@@ -1930,16 +1886,16 @@ func CreateSplitRecordSet() RecordSet
 CreateSplitRecordSet creates a standard ML split RecordSet.
 
 <a name="RecordSetKey"></a>
-## type [RecordSetKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L115>)
+## type [RecordSetKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L118>)
 
-RecordSetKey represents a record set key that can be either a single key or composite key.
+RecordSetKey represents a record set key that can be either a single key or composite key
 
 ```go
 type RecordSetKey []KeyRef
 ```
 
 <a name="NewCompositeKey"></a>
-### func [NewCompositeKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L343>)
+### func [NewCompositeKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L379>)
 
 ```go
 func NewCompositeKey(keyIDs ...string) *RecordSetKey
@@ -1948,7 +1904,7 @@ func NewCompositeKey(keyIDs ...string) *RecordSetKey
 NewCompositeKey creates a RecordSetKey with multiple key references.
 
 <a name="NewRecordSetKey"></a>
-### func [NewRecordSetKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L336>)
+### func [NewRecordSetKey](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L372>)
 
 ```go
 func NewRecordSetKey(keyID string) *RecordSetKey
@@ -1957,7 +1913,7 @@ func NewRecordSetKey(keyID string) *RecordSetKey
 NewRecordSetKey creates a RecordSetKey with a single key reference
 
 <a name="RecordSetKey.GetKeyIDs"></a>
-### func \(RecordSetKey\) [GetKeyIDs](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L155>)
+### func \(RecordSetKey\) [GetKeyIDs](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L158>)
 
 ```go
 func (k RecordSetKey) GetKeyIDs() []string
@@ -1966,7 +1922,7 @@ func (k RecordSetKey) GetKeyIDs() []string
 GetKeyIDs returns all key IDs \(single or composite\).
 
 <a name="RecordSetKey.IsComposite"></a>
-### func \(RecordSetKey\) [IsComposite](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L150>)
+### func \(RecordSetKey\) [IsComposite](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L153>)
 
 ```go
 func (k RecordSetKey) IsComposite() bool
@@ -1975,22 +1931,22 @@ func (k RecordSetKey) IsComposite() bool
 IsComposite returns true if this is a composite key.
 
 <a name="RecordSetKey.MarshalJSON"></a>
-### func \(RecordSetKey\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L118>)
+### func \(RecordSetKey\) [MarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L121>)
 
 ```go
 func (key RecordSetKey) MarshalJSON() ([]byte, error)
 ```
 
-MarshalJSON implements custom JSON marshaling for RecordSetKey.
+MarshalJSON implements custom JSON marshaling for RecordSetKey
 
 <a name="RecordSetKey.UnmarshalJSON"></a>
-### func \(\*RecordSetKey\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L130>)
+### func \(\*RecordSetKey\) [UnmarshalJSON](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L133>)
 
 ```go
 func (key *RecordSetKey) UnmarshalJSON(data []byte) error
 ```
 
-UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey.
+UnmarshalJSON implements custom JSON unmarshaling for RecordSetKey
 
 <a name="RecordSetNode"></a>
 ## type [RecordSetNode](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/metadata_node.go#L207-L215>)
@@ -2019,7 +1975,7 @@ func (r *RecordSetNode) Validate(issues *Issues)
 Validate validates the record set node.
 
 <a name="Source"></a>
-## type [Source](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L328-L333>)
+## type [Source](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L364-L369>)
 
 Source represents a more complete source definition.
 
@@ -2057,7 +2013,7 @@ func (s *SourceNode) ValidateSource() bool
 ValidateSource validates the source node.
 
 <a name="Transform"></a>
-## type [Transform](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L318-L325>)
+## type [Transform](<https://github.com:beyondcivic/gocroissant/blob/main/pkg/croissant/structs.go#L354-L361>)
 
 Transform represents a data transformation.
 
