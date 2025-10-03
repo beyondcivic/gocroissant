@@ -95,35 +95,6 @@ func generateCmd() *cobra.Command {
 	return generateCmd
 }
 
-// Common configuration of validation options
-func commonValidationCmd(flagStrict bool, flagCheckFiles bool, flagCheckUrls bool) croissant.ValidationOptions {
-	options := croissant.DefaultValidationOptions()
-	options.StrictMode = flagStrict
-	options.CheckFileExists = flagCheckFiles
-	options.ValidateURLs = flagCheckUrls
-
-	return options
-}
-
-// Pretty prints issues for command output.
-// Does not return, calls os.Exit().
-func analyzeMetadataIssues(issues *croissant.Issues) {
-	report := issues.Report()
-	if report != "" {
-		fmt.Println(report)
-	} else {
-		fmt.Println("✓ Validation passed with no issues.")
-	}
-
-	if issues.HasErrors() {
-		fmt.Printf("\n Validation failed with errors\n")
-		os.Exit(1)
-	}
-
-	// If there's only warnings, return a safe exit code.
-	os.Exit(0)
-}
-
 // Validate command - validate a croissant jsonld file.
 func validateCmd() *cobra.Command {
 	var validateCmd = &cobra.Command{
@@ -352,4 +323,33 @@ func matchPrintResultAnalysis(result *croissant.MatchResult, verbose bool) {
 		fmt.Printf("Candidate has %d additional field(s) (use --verbose to see details)\n", len(result.ExtraFields))
 		fmt.Println()
 	}
+}
+
+// Common configuration of validation options
+func commonValidationCmd(flagStrict bool, flagCheckFiles bool, flagCheckUrls bool) croissant.ValidationOptions {
+	options := croissant.DefaultValidationOptions()
+	options.StrictMode = flagStrict
+	options.CheckFileExists = flagCheckFiles
+	options.ValidateURLs = flagCheckUrls
+
+	return options
+}
+
+// Pretty prints issues for command output.
+// Does not return, calls os.Exit().
+func analyzeMetadataIssues(issues *croissant.Issues) {
+	report := issues.Report()
+	if report != "" {
+		fmt.Println(report)
+	} else {
+		fmt.Println("✓ Validation passed with no issues.")
+	}
+
+	if issues.HasErrors() {
+		fmt.Printf("\n Validation failed with errors\n")
+		os.Exit(1)
+	}
+
+	// If there's only warnings, return a safe exit code.
+	os.Exit(0)
 }
