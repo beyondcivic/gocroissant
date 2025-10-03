@@ -32,7 +32,7 @@ func DefaultValidationOptions() ValidationOptions {
 func ValidateFile(filePath string) (*Issues, error) {
 	data, err := os.ReadFile(filepath.Clean(filePath))
 	if err != nil {
-		return nil, CroissantError{Message: "failed to read file: %w", Value: err}
+		return nil, CroissantError{Message: "failed to read file", Value: err}
 	}
 
 	return ValidateJSON(data)
@@ -45,13 +45,13 @@ func ValidateJSON(data []byte) (*Issues, error) {
 
 	// First, validate that it's valid JSON-LD
 	if err := processor.ValidateJSONLD(data); err != nil {
-		return nil, CroissantError{Message: "invalid JSON-LD document: %w", Value: err}
+		return nil, CroissantError{Message: "invalid JSON-LD document", Value: err}
 	}
 
 	// Parse the metadata using JSON-LD processor
 	metadata, err := processor.ParseCroissantMetadata(data)
 	if err != nil {
-		return nil, CroissantError{Message: "failed to parse Croissant metadata: %w", Value: err}
+		return nil, CroissantError{Message: "failed to parse Croissant metadata", Value: err}
 	}
 
 	return ValidateMetadata(*metadata), nil
@@ -64,13 +64,13 @@ func ValidateJSONWithOptions(data []byte, options ValidationOptions) (*Issues, e
 
 	// First, validate that it's valid JSON-LD
 	if err := processor.ValidateJSONLD(data); err != nil {
-		return nil, CroissantError{Message: "invalid JSON-LD document: %w", Value: err}
+		return nil, CroissantError{Message: "invalid JSON-LD document", Value: err}
 	}
 
 	// Parse the metadata using JSON-LD processor
 	metadata, err := processor.ParseCroissantMetadata(data)
 	if err != nil {
-		return nil, CroissantError{Message: "failed to parse Croissant metadata: %w", Value: err}
+		return nil, CroissantError{Message: "failed to parse Croissant metadata", Value: err}
 	}
 
 	return ValidateMetadataWithOptions(*metadata, options), nil

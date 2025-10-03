@@ -16,40 +16,256 @@
 //	}
 //	fmt.Printf("Metadata saved to: %s\n", outputPath)
 //
+// # Advanced Generation with Validation
+//
+// Generate metadata and get the parsed structure for further processing:
+//
+//	metadata, err := croissant.GenerateMetadataWithValidation("data.csv", "dataset.jsonld")
+//	if err != nil {
+//		log.Fatalf("Error generating metadata: %v", err)
+//	}
+//
+//	// Validate the generated metadata
+//	options := croissant.DefaultValidationOptions()
+//	options.StrictMode = true
+//	validationResult := metadata.ValidateWithOptions(options)
+//
+//	if validationResult.HasErrors() {
+//		fmt.Println("Validation issues found:")
+//		fmt.Println(validationResult.Report())
+//	}
+//
 // # Data Type Inference
 //
 // The package automatically infers schema.org data types from CSV content:
-//   - Boolean values (true/false)
-//   - Integer numbers
-//   - Floating-point numbers
-//   - Dates in various formats
-//   - URLs
-//   - Default to Text for other content
+//   - Boolean values (true/false, 1/0) → sc:Boolean
+//   - Integer numbers (123, -456) → sc:Integer
+//   - Floating-point numbers (3.14, 2.5e10) → sc:Float
+//   - Dates in various formats (2023-01-01, 01/15/2023) → sc:Date
+//   - URLs (https://example.com) → sc:URL
+//   - Default to Text for other content → sc:Text
 //
 // # Validation
 //
 // Validate existing Croissant metadata:
 //
-//	issues, err := croissant.ValidateMetadata("metadata.jsonld")
+//	issues, err := croissant.ValidateFile("metadata.jsonld")
 //	if err != nil {
 //		log.Fatalf("Validation error: %v", err)
 //	}
-//	if len(issues) == 0 {
+//	if !issues.HasErrors() {
 //		fmt.Println("Validation passed")
+//	} else {
+//		fmt.Println("Validation issues:")
+//		fmt.Println(issues.Report())
+//	}
+//
+// # Schema Compatibility Checking
+//
+// Compare two metadata files for schema compatibility:
+//
+//	reference, err := croissant.LoadMetadataFromFile("reference.jsonld")
+//	if err != nil {
+//		log.Fatalf("Error loading reference: %v", err)
+//	}
+//
+//	candidate, err := croissant.LoadMetadataFromFile("candidate.jsonld")
+//	if err != nil {
+//		log.Fatalf("Error loading candidate: %v", err)
+//	}
+//
+//	result := croissant.MatchMetadata(*reference, *candidate)
+//	if result.IsMatch {
+//		fmt.Printf("Compatible! %d fields matched\n", len(result.MatchedFields))
+//	} else {
+//		fmt.Printf("Incompatible: %d missing, %d type mismatches\n",
+//			len(result.MissingFields), len(result.TypeMismatches))
+//	}
+//
+// # JSON-LD Processing
+//
+// Work directly with JSON-LD data:
+//
+//	data, err := os.ReadFile("metadata.jsonld")
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//
+//	issues, err := croissant.ValidateJSON(data)
+//	if err != nil {
+//		log.Fatalf("Validation error: %v", err)
+//	}
+//
+//	fmt.Printf("Validation completed with %d errors and %d warnings\n",
+//		len(issues.Errors), len(issues.Warnings))
+//
+// # Validation Options
+//
+// Customize validation behavior:
+//
+//	options := croissant.ValidationOptions{
+//		StrictMode:      true,  // Enable additional warnings
+//		CheckDataTypes:  true,  // Validate data type specifications
+//		ValidateURLs:    false, // Skip network calls for URL validation
+//		CheckFileExists: true,  // Verify referenced files exist
+//	}
+//
+//	issues, err := croissant.ValidateJSONWithOptions(data, options)
+//	if err != nil {
+//		log.Fatal(err)
 //	}
 package croissant
 
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
 
-// CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data.
+// InferDataType infers the schema.org data type from a value
+func InferDataType(value string) string {
+	// Trim whitespace
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return "sc:Text"
+	}
+
+	// Try to parse as boolean
+	lowerVal := strings.ToLower(value)
+	if lowerVal == "true" || lowerVal == "false" {
+		return "sc:Boolean"
+	}
+
+	// Try to parse as integer
+	if _, err := strconv.ParseInt(value, 10, 64); err == nil {
+		return "sc:Integer"
+	}
+
+	// Try to parse as float
+	if _, err := strconv.ParseFloat(value, 64); err == nil {
+		return "sc:Number"
+	}
+
+	// Try to parse as date (various formats)
+	dateFormats := []string{
+		"2006-01-02",
+		"01/02/2006",
+		"2006/01/02",
+		"2006-01-02T15:04:05",
+		"2006-01-02T15:04:05Z",
+		"2006-01-02T15:04:05-07:00",
+	}
+	for _, format := range dateFormats {
+		if _, err := time.Parse(format, value); err == nil {
+			return "sc:DateTime"
+		}
+	}
+
+	// Try to parse as URL
+	if _, err := url.ParseRequestURI(value); err == nil && (strings.HasPrefix(value, "http://") || strings.HasPrefix(value, "https://")) {
+		return "sc:URL"
+	}
+
+	// Try to detect email
+	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	if emailRegex.MatchString(value) {
+		return "sc:Text" // Email is still text but we could add a custom type if needed
+	}
+
+	// Default to Text
+	return "sc:Text"
+}
+
+// IsValidDataType checks if a dataType is valid according to Croissant specification
+func IsValidDataType(dataType string) bool {
+	validTypes := map[string]bool{
+		// Schema.org types
+		"sc:Text":           true,
+		"sc:Boolean":        true,
+		"sc:Integer":        true,
+		"sc:Number":         true,
+		"sc:Float":          true, // Infers to sc:Number
+		"sc:DateTime":       true,
+		"sc:URL":            true,
+		"sc:ImageObject":    true,
+		"sc:VideoObject":    true,
+		"sc:Enumeration":    true,
+		"sc:GeoShape":       true,
+		"sc:GeoCoordinates": true,
+
+		// Croissant-specific types
+		"cr:Label":            true,
+		"cr:Split":            true,
+		"cr:BoundingBox":      true,
+		"cr:SegmentationMask": true,
+
+		// Croissant Split types
+		"cr:TrainingSplit":   true,
+		"cr:ValidationSplit": true,
+		"cr:TestSplit":       true,
+	}
+
+	// Also accept Wikidata entities (wd:Q...)
+	if strings.HasPrefix(dataType, "wd:Q") {
+		return true
+	}
+
+	return validTypes[dataType]
+}
+
+// InferSemanticDataType attempts to infer semantic data types for ML datasets
+func InferSemanticDataType(fieldName, value string, context map[string]interface{}) []string {
+	fieldNameLower := strings.ToLower(fieldName)
+
+	// Check for split-related fields
+	if strings.Contains(fieldNameLower, "split") {
+		splitValues := []string{"train", "training", "val", "validation", "test", "testing"}
+		for _, splitVal := range splitValues {
+			if strings.Contains(strings.ToLower(value), splitVal) {
+				return []string{"cr:Split", "sc:Text"}
+			}
+		}
+	}
+
+	// Check for label-related fields
+	labelFields := []string{"label", "class", "category", "target", "annotation"}
+	for _, labelField := range labelFields {
+		if strings.Contains(fieldNameLower, labelField) {
+			baseType := InferDataType(value)
+			return []string{baseType, "cr:Label"}
+		}
+	}
+
+	// Check for bounding box patterns (arrays of 4 numbers)
+	if strings.Contains(fieldNameLower, "bbox") || strings.Contains(fieldNameLower, "box") {
+		// This would need more sophisticated parsing for actual bounding box detection
+		return []string{"cr:BoundingBox"}
+	}
+
+	// Check for enumeration patterns
+	if context != nil {
+		if enumValues, exists := context["enumValues"]; exists {
+			if enumSlice, ok := enumValues.([]string); ok {
+				for _, enumVal := range enumSlice {
+					if value == enumVal {
+						return []string{"sc:Enumeration", "sc:Text"}
+					}
+				}
+			}
+		}
+	}
+
+	// Default to basic type inference
+	return []string{InferDataType(value)}
+}
+
+// CreateEnumerationRecordSet creates a RecordSet for categorical/enumeration data
 func CreateEnumerationRecordSet(id, name string, values []string, urls []string) RecordSet {
 	fields := []Field{
 		{
@@ -90,7 +306,7 @@ func CreateEnumerationRecordSet(id, name string, values []string, urls []string)
 		Description: fmt.Sprintf("Enumeration values for %s", name),
 		DataType:    NewNullableSingleDataType(VT_scEnum),
 		Fields:      fields,
-		Key:         NewSingleKey(fmt.Sprintf("%s/name", id)),
+		Key:         NewRecordSetKey(fmt.Sprintf("%s/name", id)),
 		Data:        data,
 	}
 
@@ -265,7 +481,7 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 		// Marshal metadata to JSON-LD with proper indentation
 		metadataJSON, err := json.MarshalIndent(metadata, "", "  ")
 		if err != nil {
-			return nil, CroissantError{Message: "failed to marshal JSON-LD: %w", Value: err}
+			return nil, CroissantError{Message: "failed to marshal JSON-LD", Value: err}
 		}
 
 		// Validate that the generated JSON is valid JSON-LD

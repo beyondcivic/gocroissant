@@ -1,0 +1,64 @@
+{
+    "@context": {
+        "@language": "en",
+        "@vocab": "https://schema.org/",
+        "citeAs": "cr:citeAs",
+        "column": "cr:column",
+        "conformsTo": "dct:conformsTo",
+        "cr": "http://mlcommons.org/croissant/",
+        "data": {
+            "@id": "cr:data",
+            "@type": "@json"
+        },
+        "dataType": {
+            "@id": "cr:dataType",
+            "@type": "@vocab"
+        },
+        "dct": "http://purl.org/dc/terms/",
+        "extract": "cr:extract",
+        "field": "cr:field",
+        "fileObject": "cr:fileObject",
+        "fileProperty": "cr:fileProperty",
+        "format": "cr:format",
+        "sc": "https://schema.org/",
+        "source": "cr:source"
+    },
+    "@type": "sc:WRONG_TYPE",
+    "name": "mydataset",
+    "description": "This is a description.",
+    "datePublished": "1990-02-01",
+    "version": "1.0.0",
+    "distribution": [
+        {
+            "@id": "a-csv-table",
+            "@type": "cr:FileObject",
+            "name": "a-csv-table",
+            "contentSize": "117743 B",
+            "encodingFormat": "text/csv",
+            "sha256": "c617db2c7470716250f6f001be51304c76bcc8815527ab8bae734bdca0735737"
+        }
+    ],
+    "recordSet": [
+        {
+            "@id": "a-record-set",
+            "@type": "cr:RecordSet",
+            "name": "a-record-set",
+            "description": "This is a record set.",
+            "field": [
+                {
+                    "@id": "a-record-set/first-field",
+                    "@type": "cr:Field",
+                    "name": "first-field",
+                    "source": {
+                        "extract": {
+                            "column": "a-column"
+                        },
+                        "fileObject": {
+                            "@id": "a-csv-table"
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
