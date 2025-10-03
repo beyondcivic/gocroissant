@@ -79,11 +79,8 @@ func generateCmd() *cobra.Command {
 
 			// Set validation options
 			if flagValidate || flagStrict || flagCheckFiles {
-				options := croissant.DefaultValidationOptions()
-				options.StrictMode = flagStrict
-				options.CheckFileExists = flagCheckFiles
+				options := genValidateOptions(flagStrict, flagCheckFiles, false)
 				metadata.ValidateWithOptions(options)
-
 				report := metadata.Report()
 				if report == "" {
 					fmt.Println("✓ Validation passed with no issues.")
@@ -109,6 +106,16 @@ func generateCmd() *cobra.Command {
 	return generateCmd
 }
 
+// Common configuration of validation options
+func genValidateOptions(flagStrict bool, flagCheckFiles bool, flagCheckUrls bool) croissant.ValidationOptions {
+	options := croissant.DefaultValidationOptions()
+	options.StrictMode = flagStrict
+	options.CheckFileExists = flagCheckFiles
+	options.ValidateURLs = flagCheckUrls
+
+	return options
+}
+
 // Validate command - validate a croissant jsonld file.
 func validateCmd() *cobra.Command {
 	var validateCmd = &cobra.Command{
@@ -130,10 +137,7 @@ func validateCmd() *cobra.Command {
 			}
 
 			// Set validation options
-			options := croissant.DefaultValidationOptions()
-			options.StrictMode = strict
-			options.CheckFileExists = checkFiles
-			options.ValidateURLs = checkUrls
+			options := genValidateOptions(strict, checkFiles, checkUrls)
 
 			fmt.Printf("Validating Croissant metadata file '%s'...\n", jsonldPath)
 
