@@ -159,13 +159,16 @@ func InferSemanticDataType(fieldName, value string, context map[string]interface
 		return []string{VT_crBBox}
 	}
 
-	// Check for enumeration patterns
+	// If no additional context, default to basic type interface
 	if context != nil {
-		if enumValues, exists := context["enumValues"]; exists {
-			if enumSlice, ok := enumValues.([]string); ok {
-				if slices.Contains(enumSlice, value) {
-					return []string{VT_scEnum, VT_scText}
-				}
+		return []string{InferDataType(value)}
+	}
+
+	// Check for enumeration patterns
+	if enumValues, exists := context["enumValues"]; exists {
+		if enumSlice, ok := enumValues.([]string); ok {
+			if slices.Contains(enumSlice, value) {
+				return []string{VT_scEnum, VT_scText}
 			}
 		}
 	}
