@@ -293,10 +293,10 @@ func GenerateMetadataWithValidation(csvPath string, outputPath string) (*Metadat
 			Description: fmt.Sprintf("Field for %s", header),
 			DataType:    NewSingleDataType(dataType),
 			Source: FieldSource{
-				Extract: &Extract{
+				Extract: Extract{
 					Column: header,
 				},
-				FileObject: &FileObject{
+				FileObject: FileObject{
 					ID: fileName,
 				},
 			},
