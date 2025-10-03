@@ -83,6 +83,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Root cobra command.
+// Call Init() once to initialize child commands.
+// Global so it can be picked up by docs/doc-gen.go.
+// nolint:gochecknoglobals
 var RootCmd = &cobra.Command{
 	Use:   "gocroissant",
 	Short: "Croissant metadata tools",
@@ -91,8 +95,8 @@ Croissant is a standardized way to describe machine learning datasets using JSON
 	Version: version.Version,
 }
 
+// Call Once.
 func Init() {
-
 	// Initialize viper for configuration
 	viper.SetEnvPrefix("CROISSANT")
 	viper.AutomaticEnv()
