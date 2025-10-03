@@ -39,10 +39,10 @@ func generateCmd() *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			csvPath := args[0]
-			outputPath, _ := cmd.Flags().GetString("output")
-			validate, _ := cmd.Flags().GetBool("validate")
-			strict, _ := cmd.Flags().GetBool("strict")
-			checkFiles, _ := cmd.Flags().GetBool("check-files")
+			flagOutputPath, _ := cmd.Flags().GetString("output")
+			flagValidate, _ := cmd.Flags().GetBool("validate")
+			flagStrict, _ := cmd.Flags().GetBool("strict")
+			flagCheckFiles, _ := cmd.Flags().GetBool("check-files")
 
 			// Validate input file
 			if !fileExists(csvPath) {
@@ -56,7 +56,7 @@ func generateCmd() *cobra.Command {
 			}
 
 			// Determine output path
-			outputPath = determineOutputPath(outputPath, csvPath)
+			outputPath := determineOutputPath(flagOutputPath, csvPath)
 
 			// Validate output path
 			if err := croissant.ValidateOutputPath(outputPath); err != nil {
@@ -72,34 +72,32 @@ func generateCmd() *cobra.Command {
 				os.Exit(1)
 			}
 
-			// Set validation options
-			if validate || strict || checkFiles {
-				options := croissant.DefaultValidationOptions()
-				options.StrictMode = strict
-				options.CheckFileExists = checkFiles
-				metadata.ValidateWithOptions(options)
-
-				report := metadata.Report()
-				if report != "" {
-					fmt.Println(report)
-				} else {
-					fmt.Println("✓ Validation passed with no issues.")
-				}
-
-				if metadata.HasErrors() {
-					fmt.Printf("\nMetadata generation completed but with validation errors.\n")
-					if outputPath != "" {
-						fmt.Printf("Metadata saved to: %s\n", outputPath)
-					}
-					os.Exit(1)
-				}
-			}
-
 			fmt.Printf("✓ Croissant metadata generated successfully")
 			if outputPath != "" {
 				fmt.Printf(" and saved to: %s\n", outputPath)
-			} else {
-				fmt.Println()
+			}
+
+			// Set validation options
+			if flagValidate || flagStrict || flagCheckFiles {
+				options := croissant.DefaultValidationOptions()
+				options.StrictMode = flagStrict
+				options.CheckFileExists = flagCheckFiles
+				metadata.ValidateWithOptions(options)
+
+				report := metadata.Report()
+				if report == "" {
+					fmt.Println("✓ Validation passed with no issues.")
+					os.Exit(0)
+				} else {
+					fmt.Println(report)
+				}
+				if metadata.HasErrors() {
+					fmt.Printf("\n Validation failed with errors\n")
+					os.Exit(1)
+				} else {
+					// If there's only warnings, return a safe exit code.
+					os.Exit(0)
+				}
 			}
 		},
 	}
