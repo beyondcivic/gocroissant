@@ -392,6 +392,7 @@ func (m *MetadataWithValidation) ValidateWithOptions(options ValidationOptions) 
 }
 
 // Report returns a string report of validation issues
+// Returns an empty string is there are no issues or warnings.
 func (m *MetadataWithValidation) Report() string {
 	if m.issues == nil {
 		m.Validate()
