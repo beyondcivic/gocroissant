@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// IssueType represents the type of issue (error or warning)
+// IssueType represents the type of issue (error or warning).
 type IssueType int
 
 const (
@@ -15,20 +15,20 @@ const (
 	WarningIssue
 )
 
-// Issue represents a single validation issue
+// Issue represents a single validation issue.
 type Issue struct {
 	Type    IssueType
 	Message string
 	Context string // For context like "Metadata(mydataset) > FileObject(a-csv-table)"
 }
 
-// Issues represents a collection of validation issues
+// Issues represents a collection of validation issues.
 type Issues struct {
 	errors   map[string]struct{}
 	warnings map[string]struct{}
 }
 
-// NewIssues creates a new Issues instance
+// NewIssues creates a new Issues instance.
 func NewIssues() *Issues {
 	return &Issues{
 		errors:   make(map[string]struct{}),
@@ -36,7 +36,7 @@ func NewIssues() *Issues {
 	}
 }
 
-// AddError adds a new error to the issues collection
+// AddError adds a new error to the issues collection.
 func (i *Issues) AddError(message string, node ...Node) {
 	var context string
 	if len(node) > 0 {
@@ -48,7 +48,7 @@ func (i *Issues) AddError(message string, node ...Node) {
 	i.errors[message] = struct{}{}
 }
 
-// AddWarning adds a new warning to the issues collection
+// AddWarning adds a new warning to the issues collection.
 func (i *Issues) AddWarning(message string, node ...Node) {
 	var context string
 	if len(node) > 0 {
@@ -60,31 +60,31 @@ func (i *Issues) AddWarning(message string, node ...Node) {
 	i.warnings[message] = struct{}{}
 }
 
-// HasErrors returns true if there are any errors
+// HasErrors returns true if there are any errors.
 func (i *Issues) HasErrors() bool {
 	return len(i.errors) > 0
 }
 
-// HasWarnings returns true if there are any warnings
+// HasWarnings returns true if there are any warnings.
 func (i *Issues) HasWarnings() bool {
 	return len(i.warnings) > 0
 }
 
-// ErrorCount returns the number of errors
+// ErrorCount returns the number of errors.
 func (i *Issues) ErrorCount() int {
 	return len(i.errors)
 }
 
-// WarningCount returns the number of warnings
+// WarningCount returns the number of warnings.
 func (i *Issues) WarningCount() int {
 	return len(i.warnings)
 }
 
-// Report generates a human-readable report of all issues
+// Report generates a human-readable report of all issues.
 func (i *Issues) Report() string {
 	var result strings.Builder
 
-	// Sort before printing because maps are not ordered
+	// Sort before printing because maps are not ordered.
 	if len(i.errors) > 0 {
 		errors := make([]string, 0, len(i.errors))
 		for err := range i.errors {
@@ -117,13 +117,13 @@ func (i *Issues) Report() string {
 	return strings.TrimSpace(result.String())
 }
 
-// getIssueContext generates a context string for an issue based on the node
+// getIssueContext generates a context string for an issue based on the node.
 func getIssueContext(node Node) string {
 	if node == nil {
 		return ""
 	}
 
-	// Build up context by traversing parent hierarchy
+	// Build up context by traversing parent hierarchy.
 	var parts []string
 	current := node
 
@@ -141,7 +141,7 @@ func getIssueContext(node Node) string {
 	return strings.Join(parts, " > ")
 }
 
-// getNodeType returns the type name of a node
+// getNodeType returns the type name of a node.
 func getNodeType(node Node) string {
 	switch node.(type) {
 	case *MetadataNode:

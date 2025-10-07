@@ -7,7 +7,8 @@
 // # Usage
 //
 //	fmt.Printf("Version: %s\n", version.Version)
-//	fmt.Printf("Build info: %s\n", version.GetBuildInfo())
+//	stamp := version.RetrieveStamp()
+//	fmt.Printf("  Built with %s on %s\n", stamp.InfoGoCompiler, stamp.InfoBuildTime)
 //
 // The GetBuildInfo function provides detailed build information including
 // version, build time, Git commit, and Go version used for compilation.
@@ -19,12 +20,14 @@ import (
 	"runtime/debug"
 )
 
-// These variables should be set at compile time
+// These variables should be set at compile time.
+//
+// nolint:gochecknoglobals
 var (
-	// AppName is the name of the application
+	// AppName is the name of the application.
 	AppName = "gocroissant"
 
-	// Version is the service version
+	// Version is the service version.
 	Version = "dev"
 )
 

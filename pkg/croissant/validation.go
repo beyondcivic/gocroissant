@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
 
-// ValidationOptions represents options for validation
+// ValidationOptions represents options for validation.
 type ValidationOptions struct {
 	StrictMode      bool
 	CheckDataTypes  bool
@@ -17,7 +18,7 @@ type ValidationOptions struct {
 	CheckFileExists bool
 }
 
-// DefaultValidationOptions returns default validation options
+// DefaultValidationOptions returns default validation options.
 func DefaultValidationOptions() ValidationOptions {
 	return ValidationOptions{
 		StrictMode:      true,
@@ -27,9 +28,9 @@ func DefaultValidationOptions() ValidationOptions {
 	}
 }
 
-// ValidateFile validates a Croissant metadata file and returns issues
+// ValidateFile validates a Croissant metadata file and returns issues.
 func ValidateFile(filePath string) (*Issues, error) {
-	data, err := os.ReadFile(filePath)
+	data, err := os.ReadFile(filepath.Clean(filePath))
 	if err != nil {
 		return nil, CroissantError{Message: "failed to read file", Value: err}
 	}
@@ -37,7 +38,7 @@ func ValidateFile(filePath string) (*Issues, error) {
 	return ValidateJSON(data)
 }
 
-// ValidateJSON validates Croissant metadata in JSON-LD format and returns issues
+// ValidateJSON validates Croissant metadata in JSON-LD format and returns issues.
 func ValidateJSON(data []byte) (*Issues, error) {
 	// Use JSON-LD processor for proper validation and parsing
 	processor := NewJSONLDProcessor()
@@ -56,7 +57,7 @@ func ValidateJSON(data []byte) (*Issues, error) {
 	return ValidateMetadata(*metadata), nil
 }
 
-// ValidateJSONWithOptions validates Croissant metadata in JSON-LD format with options and returns issues
+// ValidateJSONWithOptions validates Croissant metadata in JSON-LD format with options and returns issues.
 func ValidateJSONWithOptions(data []byte, options ValidationOptions) (*Issues, error) {
 	// Use JSON-LD processor for proper validation and parsing
 	processor := NewJSONLDProcessor()
@@ -75,12 +76,12 @@ func ValidateJSONWithOptions(data []byte, options ValidationOptions) (*Issues, e
 	return ValidateMetadataWithOptions(*metadata, options), nil
 }
 
-// ValidateMetadata validates a Metadata struct and returns issues
+// ValidateMetadata validates a Metadata struct and returns issues.
 func ValidateMetadata(metadata Metadata) *Issues {
 	return ValidateMetadataWithOptions(metadata, DefaultValidationOptions())
 }
 
-// ValidateMetadataWithOptions validates a Metadata struct with specific options
+// ValidateMetadataWithOptions validates a Metadata struct with specific options.
 func ValidateMetadataWithOptions(metadata Metadata, options ValidationOptions) *Issues {
 	node := FromMetadata(metadata)
 	issues := NewIssues()
@@ -91,7 +92,7 @@ func ValidateMetadataWithOptions(metadata Metadata, options ValidationOptions) *
 	return issues
 }
 
-// ValidateMetadataNode performs comprehensive validation of a metadata node
+// ValidateMetadataNode performs comprehensive validation of a metadata node.
 func ValidateMetadataNode(node *MetadataNode, issues *Issues, options ValidationOptions) {
 	// Basic metadata validation
 	if node.Name == "" {
@@ -145,7 +146,7 @@ func ValidateMetadataNode(node *MetadataNode, issues *Issues, options Validation
 	ValidateCrossReferences(node, issues)
 }
 
-// ValidateDistributionNode validates a distribution node
+// ValidateDistributionNode validates a distribution node.
 func ValidateDistributionNode(dist *DistributionNode, issues *Issues, options ValidationOptions) {
 	// Required fields validation
 	if dist.Name == "" {
@@ -187,7 +188,7 @@ func ValidateDistributionNode(dist *DistributionNode, issues *Issues, options Va
 	}
 }
 
-// ValidateRecordSetNode validates a record set node
+// ValidateRecordSetNode validates a record set node.
 func ValidateRecordSetNode(rs *RecordSetNode, issues *Issues, options ValidationOptions) {
 	if rs.Name == "" {
 		issues.AddError("Property \"https://schema.org/name\" is mandatory, but does not exist.", rs)
@@ -212,7 +213,7 @@ func ValidateRecordSetNode(rs *RecordSetNode, issues *Issues, options Validation
 	}
 }
 
-// validateRecordSetKey validates that key references point to existing fields
+// validateRecordSetKey validates that key references point to existing fields.
 func validateRecordSetKey(rs *RecordSetNode, issues *Issues) {
 	if rs.Key == nil {
 		return
@@ -247,7 +248,7 @@ func validateRecordSetKey(rs *RecordSetNode, issues *Issues) {
 	}
 }
 
-// ValidateFieldNode validates a field node
+// ValidateFieldNode validates a field node.
 func ValidateFieldNode(field *FieldNode, issues *Issues, options ValidationOptions) {
 	if field == nil {
 		return
@@ -301,7 +302,7 @@ func ValidateFieldNode(field *FieldNode, issues *Issues, options ValidationOptio
 	}
 }
 
-// hasValidFieldSource checks if a field node has valid source configuration
+// hasValidFieldSource checks if a field node has valid source configuration.
 func hasValidFieldSource(field *FieldNode) bool {
 	if field == nil {
 		return false
@@ -319,7 +320,7 @@ func hasValidFieldSource(field *FieldNode) bool {
 	return hasFileObject && (hasExtract || hasFormat)
 }
 
-// ValidateCrossReferences validates that all references are valid
+// ValidateCrossReferences validates that all references are valid.
 func ValidateCrossReferences(node *MetadataNode, issues *Issues) {
 	// Build a map of all available IDs
 	availableIDs := make(map[string]bool)
@@ -365,14 +366,14 @@ func ValidateCrossReferences(node *MetadataNode, issues *Issues) {
 	}
 }
 
-// AddValidationToMetadata adds validation functionality to the Metadata struct
+// AddValidationToMetadata adds validation functionality to the Metadata struct.
 type MetadataWithValidation struct {
 	Metadata
 	issues  *Issues
 	options ValidationOptions
 }
 
-// NewMetadataWithValidation creates a new MetadataWithValidation instance
+// NewMetadataWithValidation creates a new MetadataWithValidation instance.
 func NewMetadataWithValidation(metadata Metadata) *MetadataWithValidation {
 	return &MetadataWithValidation{
 		Metadata: metadata,
@@ -380,12 +381,12 @@ func NewMetadataWithValidation(metadata Metadata) *MetadataWithValidation {
 	}
 }
 
-// Validate runs validation on the metadata
+// Validate runs validation on the metadata.
 func (m *MetadataWithValidation) Validate() {
 	m.issues = ValidateMetadataWithOptions(m.Metadata, m.options)
 }
 
-// ValidateWithOptions runs validation with specific options
+// ValidateWithOptions runs validation with specific options.
 func (m *MetadataWithValidation) ValidateWithOptions(options ValidationOptions) {
 	m.options = options
 	m.issues = ValidateMetadataWithOptions(m.Metadata, options)
@@ -400,7 +401,7 @@ func (m *MetadataWithValidation) Report() string {
 	return m.issues.Report()
 }
 
-// HasErrors returns true if there are validation errors
+// HasErrors returns true if there are validation errors.
 func (m *MetadataWithValidation) HasErrors() bool {
 	if m.issues == nil {
 		m.Validate()
@@ -408,7 +409,7 @@ func (m *MetadataWithValidation) HasErrors() bool {
 	return m.issues.HasErrors()
 }
 
-// HasWarnings returns true if there are validation warnings
+// HasWarnings returns true if there are validation warnings.
 func (m *MetadataWithValidation) HasWarnings() bool {
 	if m.issues == nil {
 		m.Validate()
@@ -416,7 +417,7 @@ func (m *MetadataWithValidation) HasWarnings() bool {
 	return m.issues.HasWarnings()
 }
 
-// GetIssues returns the validation issues
+// GetIssues returns the validation issues.
 func (m *MetadataWithValidation) GetIssues() *Issues {
 	if m.issues == nil {
 		m.Validate()
@@ -424,7 +425,7 @@ func (m *MetadataWithValidation) GetIssues() *Issues {
 	return m.issues
 }
 
-// Validation helper functions
+// Validation helper functions.
 
 func isValidConformsTo(conformsTo string) bool {
 	validVersions := []string{
@@ -483,7 +484,7 @@ func isValidEncodingFormat(format string) bool {
 	return validFormats[format] || strings.HasPrefix(format, "text/") || strings.HasPrefix(format, "application/") || strings.HasPrefix(format, "image/") || strings.HasPrefix(format, "audio/") || strings.HasPrefix(format, "video/")
 }
 
-// validateDataTypes validates all data types in a DataType (single or array)
+// validateDataTypes validates all data types in a DataType (single or array).
 func validateDataTypes(dt DataType) (bool, []string) {
 	types := dt.GetTypes()
 	if len(types) == 0 {

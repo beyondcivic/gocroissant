@@ -1,7 +1,7 @@
 // node.go
 package croissant
 
-// Node represents a node in the Croissant metadata structure
+// Node represents a node in the Croissant metadata structure.
 type Node interface {
 	GetName() string
 	GetID() string
@@ -10,7 +10,7 @@ type Node interface {
 	Validate(*Issues)
 }
 
-// BaseNode implements common functionality for all nodes
+// BaseNode implements common functionality for all nodes.
 type BaseNode struct {
 	ID     string `json:"@id,omitempty"`
 	Name   string `json:"name,omitempty"`

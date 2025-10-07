@@ -14,7 +14,7 @@ import (
 )
 
 // Version Command.
-// Displays tool version and build information
+// Displays tool version and build information.
 func versionCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
@@ -30,7 +30,7 @@ func versionCmd() *cobra.Command {
 	}
 }
 
-// Generate command
+// Generate command.
 func generateCmd() *cobra.Command {
 	var generateCmd = &cobra.Command{
 		Use:   "generate [csvPath]",
@@ -325,7 +325,7 @@ func matchPrintResultAnalysis(result *croissant.MatchResult, verbose bool) {
 	}
 }
 
-// Common configuration of validation options
+// Common configuration of validation options.
 func commonValidationCmd(flagStrict bool, flagCheckFiles bool, flagCheckUrls bool) croissant.ValidationOptions {
 	options := croissant.DefaultValidationOptions()
 	options.StrictMode = flagStrict

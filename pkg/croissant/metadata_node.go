@@ -3,7 +3,7 @@ package croissant
 
 import "fmt"
 
-// MetadataNode represents a Croissant metadata document
+// MetadataNode represents a Croissant metadata document.
 type MetadataNode struct {
 	BaseNode
 	Context       Context             `json:"@context"`
@@ -17,7 +17,7 @@ type MetadataNode struct {
 	Issues        *Issues             `json:"-"` // Not serialized to JSON
 }
 
-// NewMetadataNode creates a new MetadataNode
+// NewMetadataNode creates a new MetadataNode.
 func NewMetadataNode() *MetadataNode {
 	return &MetadataNode{
 		BaseNode: BaseNode{
@@ -31,7 +31,7 @@ func NewMetadataNode() *MetadataNode {
 	}
 }
 
-// Validate validates the metadata node
+// Validate validates the metadata node.
 func (m *MetadataNode) Validate(issues *Issues) {
 	// Validate required fields
 	if m.Name == "" {
@@ -61,7 +61,7 @@ func (m *MetadataNode) Validate(issues *Issues) {
 	}
 }
 
-// FromMetadata converts a Metadata struct to a MetadataNode
+// FromMetadata converts a Metadata struct to a MetadataNode.
 func FromMetadata(metadata Metadata) *MetadataNode {
 	node := &MetadataNode{
 		BaseNode: BaseNode{
@@ -128,7 +128,7 @@ func FromMetadata(metadata Metadata) *MetadataNode {
 	return node
 }
 
-// convertFieldToNode converts a Field to a FieldNode with proper nil handling
+// convertFieldToNode converts a Field to a FieldNode with proper nil handling.
 func convertFieldToNode(field Field, parent Node) *FieldNode {
 	fieldNode := &FieldNode{
 		BaseNode: BaseNode{
@@ -169,7 +169,7 @@ func convertFieldToNode(field Field, parent Node) *FieldNode {
 	return fieldNode
 }
 
-// DistributionNode represents a file distribution
+// DistributionNode represents a file distribution.
 type DistributionNode struct {
 	BaseNode
 	Type           string `json:"@type"`
@@ -180,7 +180,7 @@ type DistributionNode struct {
 	MD5            string `json:"md5,omitempty"`
 }
 
-// Validate validates the distribution node
+// Validate validates the distribution node.
 func (d *DistributionNode) Validate(issues *Issues) {
 	// Validate required fields
 	if d.Name == "" {
@@ -203,7 +203,7 @@ func (d *DistributionNode) Validate(issues *Issues) {
 	}
 }
 
-// RecordSetNode represents a record set
+// RecordSetNode represents a record set.
 type RecordSetNode struct {
 	BaseNode
 	Type        string                   `json:"@type"`
@@ -214,7 +214,7 @@ type RecordSetNode struct {
 	Data        []map[string]interface{} `json:"data,omitempty"`
 }
 
-// Validate validates the record set node
+// Validate validates the record set node.
 func (r *RecordSetNode) Validate(issues *Issues) {
 	// Validate required fields
 	if r.Name == "" {
@@ -243,22 +243,22 @@ func (r *RecordSetNode) Validate(issues *Issues) {
 	}
 }
 
-// validateDataType validates RecordSet dataType and associated requirements
+// validateDataType validates RecordSet dataType and associated requirements.
 func (r *RecordSetNode) validateDataType(issues *Issues) {
 	firstType := r.DataType.GetFirstType()
 
 	// Validate enumeration RecordSets
-	if firstType == "sc:Enumeration" {
+	if firstType == VT_scEnum {
 		r.validateEnumeration(issues)
 	}
 
 	// Validate split RecordSets
-	if firstType == "cr:Split" {
+	if firstType == VT_crSplit {
 		r.validateSplit(issues)
 	}
 }
 
-// validateEnumeration validates enumeration-specific requirements
+// validateEnumeration validates enumeration-specific requirements.
 func (r *RecordSetNode) validateEnumeration(issues *Issues) {
 	// Enumeration RecordSets must have a key
 	if r.Key == nil {
@@ -279,7 +279,7 @@ func (r *RecordSetNode) validateEnumeration(issues *Issues) {
 	}
 }
 
-// validateSplit validates split-specific requirements
+// validateSplit validates split-specific requirements.
 func (r *RecordSetNode) validateSplit(issues *Issues) {
 	// Split RecordSets should have name and url fields
 	hasNameField := false
@@ -303,7 +303,7 @@ func (r *RecordSetNode) validateSplit(issues *Issues) {
 	}
 }
 
-// validateKey validates that key references point to existing fields
+// validateKey validates that key references point to existing fields.
 func (r *RecordSetNode) validateKey(issues *Issues) {
 	if r.Key == nil {
 		return
@@ -338,7 +338,7 @@ func (r *RecordSetNode) validateKey(issues *Issues) {
 	}
 }
 
-// FieldNode represents a field
+// FieldNode represents a field.
 type FieldNode struct {
 	BaseNode
 	Type        string        `json:"@type"`
@@ -351,7 +351,7 @@ type FieldNode struct {
 	References  FieldRefSlice `json:"references,omitempty"`
 }
 
-// Validate validates the field node
+// Validate validates the field node.
 func (f *FieldNode) Validate(issues *Issues) {
 	// Validate required fields
 	if f.Name == "" {
@@ -381,7 +381,7 @@ func (f *FieldNode) Validate(issues *Issues) {
 		if parent := f.GetParent(); parent != nil {
 			if recordSet, ok := parent.(*RecordSetNode); ok {
 				// If it's an enumeration with inline data, skip source validation
-				if recordSet.DataType.GetFirstType() == "sc:Enumeration" && len(recordSet.Data) > 0 {
+				if recordSet.DataType.GetFirstType() == VT_scEnum && len(recordSet.Data) > 0 {
 					// Skip validation for enumeration fields with inline data
 				} else {
 					issues.AddError(fmt.Sprintf("Node \"%s\" is a field and has no source. Please, use http://mlcommons.org/croissant/source to specify the source.", f.ID), f)
@@ -395,16 +395,16 @@ func (f *FieldNode) Validate(issues *Issues) {
 	}
 }
 
-// SourceNode represents a source
+// SourceNode represents a source.
 type SourceNode struct {
 	Extract    ExtractNode   `json:"extract,omitempty"`
 	FileObject FileObjectRef `json:"fileObject,omitempty"`
 	FileSet    FileObjectRef `json:"fileSet,omitempty"`
-	Transform  *Transform    `json:"transform,omitempty"`
+	Transform  Transform     `json:"transform,omitempty"`
 	Format     string        `json:"format,omitempty"`
 }
 
-// ValidateSource validates the source node
+// ValidateSource validates the source node.
 func (s *SourceNode) ValidateSource() bool {
 	// Check if either extract has content or file object/set references are valid
 	hasExtract := s.Extract.Column != "" || s.Extract.JSONPath != "" || s.Extract.FileProperty != ""
@@ -413,7 +413,7 @@ func (s *SourceNode) ValidateSource() bool {
 	return hasExtract && hasFileRef
 }
 
-// ExtractNode represents extraction details
+// ExtractNode represents extraction details.
 type ExtractNode struct {
 	Regex        string `json:"regex,omitempty"`
 	Column       string `json:"column,omitempty"`
@@ -421,7 +421,7 @@ type ExtractNode struct {
 	FileProperty string `json:"fileProperty,omitempty"`
 }
 
-// FileObjectRef represents a reference to a file object
+// FileObjectRef represents a reference to a file object.
 type FileObjectRef struct {
 	ID string `json:"@id"`
 }
